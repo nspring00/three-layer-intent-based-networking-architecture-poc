@@ -9,7 +9,6 @@ public class ReasoningService : IReasoningService
     private readonly IIntentRepository _intentRepository;
     private readonly INetworkInfoRepository _networkInfoRepository;
 
-    // TODO use interfaces here
     public ReasoningService(
         ILogger<ReasoningService> logger,
         IIntentRepository intentRepository, 

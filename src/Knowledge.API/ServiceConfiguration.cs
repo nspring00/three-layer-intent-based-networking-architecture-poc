@@ -11,4 +11,9 @@ public static class ServiceConfiguration
         services.AddSingleton<INetworkInfoRepository, CachedNetworkInfoRepository>();
         services.AddSingleton<IReasoningService, ReasoningService>(); // TODO maybe scoped?
     }
+
+    public static void MapGrpcServices(this WebApplication app)
+    {
+        app.MapGrpcService<NetworkInfoUpdateService>();
+    }
 }

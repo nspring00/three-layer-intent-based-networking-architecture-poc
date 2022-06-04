@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+option csharp_namespace = "Knowledge.API";
+
+package NetworkInfoUpdate;
+
+service NetworkInfoUpdater {
+    rpc Update (NetworkInfoUpdateRequest) returns (NetworkInfoUpdateResponse) {}
+}
+
+message NetworkInfoUpdateRequest {
+    repeated RegionUpdate region_updates = 1;
+}
+
+message RegionUpdate {
+    string region_name = 1;
+    repeated TopologyUpdate topology_updates = 2;
+}
+
+message TopologyUpdate {
+    int32 network_object_id = 1;
+    enum NetworkObjectUpdateType {
+        ADD = 0;
+        REMOVE = 1;
+    }
+    NetworkObjectUpdateType update_type = 2;
+}
+
+message NetworkInfoUpdateResponse {
+    // Empty
+}
