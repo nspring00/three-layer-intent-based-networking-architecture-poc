@@ -2,15 +2,17 @@
 
 namespace Knowledge.API.Repository;
 
-public class IntentRepository
+public class CachedIntentRepository : IIntentRepository
 {
     private readonly List<Intent> _intents = new();
 
-    public IntentRepository()
+    public CachedIntentRepository()
     {
         // TODO remove after testing
         _intents.Add(new Intent(
-            new Region("Vienna"), new Efficiency(TargetMode.Max, 0.9f)));
+            new Region("Vienna"), new Efficiency(TargetMode.Max, 0.7f)));
+        _intents.Add(new Intent(
+            new Region("Linz"), new Efficiency(TargetMode.Min, 0.8f)));
     }
 
     public void Add(Intent intent)

@@ -1,5 +1,4 @@
-﻿using Knowledge.API.Repository;
-using Knowledge.API.Services;
+﻿using Knowledge.API;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,10 +9,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// TODO use interfaces
-builder.Services.AddSingleton<IntentRepository>();
-builder.Services.AddSingleton<NetworkInfoRepository>();
-builder.Services.AddSingleton<ReasoningService>(); // TODO maybe scoped?
+// Registration of custom services
+builder.Services.ConfigureServices();
 
 var app = builder.Build();
 

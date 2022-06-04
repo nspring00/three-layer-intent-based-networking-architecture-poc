@@ -1,4 +1,5 @@
 ﻿using Knowledge.API.Models;
+using Knowledge.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Knowledge.API.Controllers;
@@ -8,17 +9,21 @@ namespace Knowledge.API.Controllers;
 public class BusinessIntentController : ControllerBase
 {
     private readonly ILogger<BusinessIntentController> _logger;
+    private readonly IReasoningService _reasoningService;
 
-    public BusinessIntentController(ILogger<BusinessIntentController> logger)
+    public BusinessIntentController(
+        ILogger<BusinessIntentController> logger,
+        IReasoningService reasoningService)
     {
         _logger = logger;
+        _reasoningService = reasoningService;
     }
 
     // TODO move to message queue listener
     [HttpPost]
-    public IActionResult RequestReasoning([FromBody] List<string> regions)
+    public ActionResult<List<ReasoningComposition>> RequestReasoning([FromBody] List<string> regions)
     {
-        throw new NotImplementedException();
+        return regions.Select(r => _reasoningService.ReasonForRegion(r)).ToList();
     }
 
 }
