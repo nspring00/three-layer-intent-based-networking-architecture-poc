@@ -1,7 +1,7 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using NetworkLayer.API.Mappers;
-using NetworkLayer.API.Protos;
+using NetworkLayer.Grpc;
 
 namespace NetworkLayer.API.Services;
 

@@ -7,17 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\NetworkObjectUpdater.proto" GrpcServices="Server" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.46.0" />
+    <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.46.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Protobuf.Tools" Version="3.21.1" />
-    <PackageReference Include="Grpc.AspNetCore" Version="2.40.0" />
-    <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.46.0" />
-    <PackageReference Include="Grpc.Tools" Version="2.46.3">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <ProjectReference Include="..\NetworkLayer.Grpc\NetworkLayer.Grpc.csproj" />
   </ItemGroup>
 
 </Project>

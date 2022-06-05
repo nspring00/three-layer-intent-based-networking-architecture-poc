@@ -4,9 +4,9 @@ namespace NetworkLayer.API.Mappers;
 
 public static class NetworkObjectMapper
 {
-    public static Protos.NetworkObject MapNetworkObjectToGrpc(NetworkObject no)
+    public static Grpc.NetworkObject MapNetworkObjectToGrpc(NetworkObject no)
     {
-        return new Protos.NetworkObject
+        return new Grpc.NetworkObject
         {
             Id = no.Id,
             Application = no.Application,
@@ -15,9 +15,9 @@ public static class NetworkObjectMapper
         };
     }
 
-    private static Protos.Utilization MapUtilizationToGrpc(Utilization util)
+    private static Grpc.Utilization MapUtilizationToGrpc(Utilization util)
     {
-        return new Protos.Utilization
+        return new Grpc.Utilization
         {
             CpuUsage = util.CpuUtilization,
             MemoryUsage = util.MemoryUtilization
