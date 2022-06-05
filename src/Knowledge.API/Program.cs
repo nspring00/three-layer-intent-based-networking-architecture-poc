@@ -12,7 +12,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Registration of custom services
-builder.Services.ConfigureServices();
+builder.Services.ConfigureServices(builder.Configuration);
 
 var app = builder.Build();
 

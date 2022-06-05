@@ -28,17 +28,22 @@ public class ReasoningServiceTests
     public void TestMinIntentScaling(string region, int count, float average, float min, int expectedScale)
     {
         _networkInfoRepository.GetForRegion(region).Returns(
-            Enumerable.Repeat(new NetworkDevice(1, new Region(region), "", average), count).ToList());
+            Enumerable.Repeat(new NetworkDevice(1, new Region(region), "", new Utilization
+            {
+                CpuUtilization = average
+            }), count).ToList());
         _intentRepository.GetForRegion(region).Returns(
             new List<Intent>
-                {new(new Region(region), new Efficiency(TargetMode.Min, min))});
+            {
+                new(new Region(region), new Efficiency(TargetMode.Min, min))
+            });
 
         var response = _sut.ReasonForRegion(region);
 
         response.ActionRequired.Should().BeTrue();
         response.Action.Should().NotBeNull().And.Match<AgentAction>(a => a.Scale == expectedScale);
     }
-    
+
     [Theory]
     [InlineData("Region", 5, 0.8f, 0.7f, 1)]
     [InlineData("Region", 5, 0.8f, 0.6f, 2)]
@@ -46,10 +51,15 @@ public class ReasoningServiceTests
     public void TestMaxIntentScaling(string region, int count, float average, float max, int expectedScale)
     {
         _networkInfoRepository.GetForRegion(region).Returns(
-            Enumerable.Repeat(new NetworkDevice(1, new Region(region), "", average), count).ToList());
+            Enumerable.Repeat(new NetworkDevice(1, new Region(region), "", new Utilization
+            {
+                CpuUtilization = average
+            }), count).ToList());
         _intentRepository.GetForRegion(region).Returns(
             new List<Intent>
-                {new(new Region(region), new Efficiency(TargetMode.Max, max))});
+            {
+                new(new Region(region), new Efficiency(TargetMode.Max, max))
+            });
 
         var response = _sut.ReasonForRegion(region);
 

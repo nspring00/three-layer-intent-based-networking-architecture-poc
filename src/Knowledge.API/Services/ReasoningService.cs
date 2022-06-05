@@ -29,7 +29,7 @@ public class ReasoningService : IReasoningService
         var deviceCount = devices.Count;
         
         // TODO error handling
-        var utilizationSum = devices.Sum(d => d.Utilization);
+        var utilizationSum = devices.Sum(d => d.Utilization.CpuUtilization);
         var avg = utilizationSum / deviceCount;
 
         // Get min and max from intents
