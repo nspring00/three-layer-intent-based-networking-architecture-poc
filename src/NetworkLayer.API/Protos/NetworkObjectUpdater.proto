@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package nl;
+
+option csharp_namespace = "NetworkLayer.API.Protos";
+
+import "google/protobuf/timestamp.proto";
+
+service NetworkObjectUpdater {
+  rpc GetUpdate(NetworkObjectUpdateRequest) returns (NetworkObjectUpdateResponse) {}
+}
+
+message NetworkObjectUpdateRequest {
+    // Empty
+}
+
+message NetworkObjectUpdateResponse {
+    google.protobuf.Timestamp timestamp = 1;
+    repeated NetworkObject network_objects = 2;
+}
+
+message NetworkObject {
+    int32 id = 1;
+    string application = 2;
+    repeated string groups = 3;
+    Utilization utilization = 4;
+    float availability = 5;
+}
+
+message Utilization {
+    float cpu_usage = 1;
+    float memory_usage = 2;
+}
