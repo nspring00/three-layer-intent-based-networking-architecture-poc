@@ -16,7 +16,13 @@ message NetworkObjectUpdateRequest {
 
 message NetworkObjectUpdateResponse {
     google.protobuf.Timestamp timestamp = 1;
-    repeated NetworkObject network_objects = 2;
+    repeated NewNetworkObject created_objects = 2;
+    repeated NetworkObject network_objects = 3;
+}
+
+message NewNetworkObject {
+    int32 id = 1;
+    google.protobuf.Timestamp created_at = 2;
 }
 
 message NetworkObject {

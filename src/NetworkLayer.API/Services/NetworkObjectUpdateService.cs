@@ -21,6 +21,15 @@ public class NetworkObjectUpdateService : NetworkObjectUpdater.NetworkObjectUpda
             Timestamp = Timestamp.FromDateTime(DateTime.UtcNow)
         };
         
+        // TODO make this more refined
+        response.CreatedObjects.AddRange(
+            _networkObjectService.GetAll().Select(x => new NewNetworkObject
+            {
+                Id = x.Id,
+                CreatedAt = Timestamp.FromDateTime(x.CreatedAt)
+            })
+        );
+
         response.NetworkObjects.AddRange(_networkObjectService.GetAll()
             .Select(NetworkObjectMapper.MapNetworkObjectToGrpc));
         
