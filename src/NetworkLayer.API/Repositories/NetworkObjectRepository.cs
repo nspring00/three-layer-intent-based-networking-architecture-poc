@@ -13,27 +13,33 @@ public class NetworkObjectRepository : INetworkObjectRepository
         {
             new()
             {
-                Id = 1, Application = "Application1"
+                Id = 1, Application = "Application1",
+                Groups = {"Group1"}
             },
             new()
             {
-                Id = 2, Application = "Application1"
+                Id = 2, Application = "Application1",
+                Groups = {"Group1"}
             },
             new()
             {
-                Id = 3, Application = "Application2"
+                Id = 3, Application = "Application2",
+                Groups = {"Group2"}
             },
             new()
             {
-                Id = 4, Application = "Application1"
+                Id = 4, Application = "Application1",
+                Groups = {"Group2"}                
             },
             new()
             {
-                Id = 5, Application = "Application2"
+                Id = 5, Application = "Application2",
+                Groups = {"Group1", "Group2"}
             },
             new()
             {
-                Id = 7, Application = "Application2"
+                Id = 7, Application = "Application2",
+                Groups = {"Group1", "Group2"}
             }
         };
     }
@@ -45,6 +51,7 @@ public class NetworkObjectRepository : INetworkObjectRepository
         {
             networkObject.Utilization.CpuUtilization = _random.NextSingle();
             networkObject.Utilization.MemoryUtilization = _random.NextSingle();
+            networkObject.Availability = _random.NextSingle();
         }
 
         return _randomNOs;

@@ -37,6 +37,6 @@ public class NetworkObjectService : INetworkObjectService
 
     public NetworkUpdate AggregateUpdates(TimeSpan timeSpan)
     {
-        throw new NotImplementedException();<
+        throw new NotImplementedException();
     }
 }

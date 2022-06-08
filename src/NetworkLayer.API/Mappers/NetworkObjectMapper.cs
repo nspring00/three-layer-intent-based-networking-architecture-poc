@@ -9,7 +9,6 @@ public static class NetworkObjectMapper
         return new Grpc.NetworkObject
         {
             Id = no.Id,
-            Application = no.Application,
             Utilization = MapUtilizationToGrpc(no.Utilization),
             Availability = no.Availability
         };

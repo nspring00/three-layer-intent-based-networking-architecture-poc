@@ -26,7 +26,9 @@ public class NetworkObjectUpdateService : NetworkObjectUpdater.NetworkObjectUpda
             _networkObjectService.GetAll().Select(x => new NewNetworkObject
             {
                 Id = x.Id,
-                CreatedAt = Timestamp.FromDateTime(x.CreatedAt)
+                CreatedAt = Timestamp.FromDateTime(x.CreatedAt),
+                Application = x.Application,
+                Groups = { x.Groups }
             })
         );
 

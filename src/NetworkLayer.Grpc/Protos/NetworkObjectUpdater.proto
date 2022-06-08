@@ -23,14 +23,14 @@ message NetworkObjectUpdateResponse {
 message NewNetworkObject {
     int32 id = 1;
     google.protobuf.Timestamp created_at = 2;
+    string application = 3;
+    repeated string groups = 4;
 }
 
 message NetworkObject {
     int32 id = 1;
-    string application = 2;
-    repeated string groups = 3;
-    Utilization utilization = 4;
-    float availability = 5;
+    Utilization utilization = 2;
+    float availability = 3;
 }
 
 message Utilization {
