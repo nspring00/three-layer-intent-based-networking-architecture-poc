@@ -1,4 +1,5 @@
-﻿using Data.Console.Clients;
+﻿using Data.Console.Models;
+using Data.Console.Services;
 using Microsoft.Extensions.Logging;
 
 namespace Data.Console;
@@ -6,19 +7,55 @@ namespace Data.Console;
 public class ServiceRunner
 {
     private readonly ILogger<ServiceRunner> _logger;
-    private readonly NlGrpcClient _nlGrpcClient;
+    private readonly INetworkLayerService _networkLayerService;
+    private readonly INetworkObjectService _networkObjectService;
 
-    public ServiceRunner(ILogger<ServiceRunner> logger, NlGrpcClient nlGrpcClient)
+    private readonly IDictionary<Region, IList<Uri>> _uris = new Dictionary<Region, IList<Uri>>
+    {
+        {
+            new Region("Vienna"), new List<Uri>
+            {
+                new("https://localhost:7071")
+            }
+        }
+    };
+
+    public ServiceRunner(
+        ILogger<ServiceRunner> logger,
+        INetworkLayerService networkLayerService,
+        INetworkObjectService networkObjectService)
     {
         _logger = logger;
-        _nlGrpcClient = nlGrpcClient;
+        _networkLayerService = networkLayerService;
+        _networkObjectService = networkObjectService;
     }
-    
+
     public async Task Run()
     {
-        _logger.LogInformation("Hello, World!");
-        var response = await _nlGrpcClient.FetchUpdates(new Uri("https://localhost:7071"));
-        
-        
+        // TODO do this (maybe multiple times) first
+        var startTime = DateTime.UtcNow;
+        Thread.Sleep(5000);
+        await FetchAllUpdates();
+        Thread.Sleep(5000);
+        await FetchAllUpdates();
+
+        var endTime = DateTime.UtcNow;
+            
+        var updates = _networkObjectService.AggregateUpdates(startTime, endTime);
+        _networkObjectService.Reset();
+
+
+        System.Console.ReadLine();
+    }
+
+    private async Task FetchAllUpdates()
+    {
+        foreach (var (region, uris) in _uris)
+        {
+            foreach (var uri in uris)
+            {
+                await _networkLayerService.FetchAllUpdates(region, uri);
+            }
+        }
     }
 }

@@ -6,7 +6,7 @@ namespace Data.Console.Repositories;
 internal class NetworkObjectRepository : INetworkObjectRepository
 {
     private readonly ILogger<NetworkObjectRepository> _logger;
-    private readonly Dictionary<Region, List<NetworkObject>> _networkObjects = new();
+    private readonly Dictionary<Region, IList<NetworkObject>> _networkObjects = new();
 
     public NetworkObjectRepository(ILogger<NetworkObjectRepository> logger)
     {
@@ -38,5 +38,17 @@ internal class NetworkObjectRepository : INetworkObjectRepository
         var (region, id) = noId;
         _networkObjects.TryGetValue(region, out var networkObjects);
         return networkObjects?.FirstOrDefault(x => x.Id == id);
+    }
+
+    public IDictionary<Region, IList<NetworkObject>> GetAll()
+    {
+        return _networkObjects;
+    }
+
+    public bool Remove(NOId id)
+    {
+        var nos = _networkObjects[id.Region];
+        var toRemove = nos.FirstOrDefault(x => x.Id == id.Id);
+        return toRemove is not null && nos.Remove(toRemove);
     }
 }

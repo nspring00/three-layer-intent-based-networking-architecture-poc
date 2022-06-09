@@ -10,6 +10,7 @@ var builder = CoconaApp.CreateBuilder();
 builder.Services.AddSingleton<ServiceRunner>();
 builder.Services.AddSingleton<INetworkObjectRepository, NetworkObjectRepository>();
 builder.Services.AddSingleton<INetworkObjectService, NetworkObjectService>();
+builder.Services.AddSingleton<INetworkLayerService, NetworkLayerService>();
 builder.Services.AddSingleton<NlGrpcClient>();
 
 var app = builder.Build();
