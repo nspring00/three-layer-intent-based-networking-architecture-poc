@@ -26,38 +26,35 @@ public class KnowledgeGrpcClient : CachedGrpcClient
     private static NetworkInfoUpdateRequest CreateRequest(IDictionary<Region, NetworkUpdate> updates)
     {
         var request = new NetworkInfoUpdateRequest();
-        request.RegionUpdates.AddRange(updates.Select(x =>
+        request.RegionUpdates.AddRange(updates.Select(x => new RegionUpdate
         {
-            return new RegionUpdate
+            RegionName = x.Key.Name,
+            TopologyUpdates =
             {
-                RegionName = x.Key.Name,
-                TopologyUpdates =
+                x.Value.Added.Select(id => new TopologyUpdate
                 {
-                    x.Value.Added.Select(id => new TopologyUpdate
-                    {
-                        NetworkObjectId = id,
-                        UpdateType = TopologyUpdate.Types.NetworkObjectUpdateType.Add
-                    }),
-                    x.Value.Removed.Select(id => new TopologyUpdate
-                    {
-                        NetworkObjectId = id,
-                        UpdateType = TopologyUpdate.Types.NetworkObjectUpdateType.Remove
-                    })
-                },
-                WorkloadUpdates =
+                    NetworkObjectId = id,
+                    UpdateType = TopologyUpdate.Types.NetworkObjectUpdateType.Add
+                }),
+                x.Value.Removed.Select(id => new TopologyUpdate
                 {
-                    x.Value.Updates.Select(update => new WorkloadUpdate
+                    NetworkObjectId = id,
+                    UpdateType = TopologyUpdate.Types.NetworkObjectUpdateType.Remove
+                })
+            },
+            WorkloadUpdates =
+            {
+                x.Value.Updates.Select(update => new WorkloadUpdate
+                {
+                    NetworkObjectId = update.Key,
+                    Utilization = new Utilization
                     {
-                        NetworkObjectId = update.Key,
-                        Utilization = new Utilization
-                        {
-                            CpuUtilization = update.Value.Utilization.CpuUtilization,
-                            MemoryUtilization = update.Value.Utilization.MemoryUtilization
-                        },
-                        Availability = update.Value.Availability
-                    })
-                }
-            };
+                        CpuUtilization = update.Value.Utilization.CpuUtilization,
+                        MemoryUtilization = update.Value.Utilization.MemoryUtilization
+                    },
+                    Availability = update.Value.Availability
+                })
+            }
         }));
 
         return request;

@@ -9,6 +9,7 @@ public class ServiceRunner
     private readonly ILogger<ServiceRunner> _logger;
     private readonly INetworkLayerService _networkLayerService;
     private readonly INetworkObjectService _networkObjectService;
+    private readonly IKnowledgeService _knowledgeService;
 
     private readonly IDictionary<Region, IList<Uri>> _uris = new Dictionary<Region, IList<Uri>>
     {
@@ -23,11 +24,13 @@ public class ServiceRunner
     public ServiceRunner(
         ILogger<ServiceRunner> logger,
         INetworkLayerService networkLayerService,
-        INetworkObjectService networkObjectService)
+        INetworkObjectService networkObjectService,
+        IKnowledgeService knowledgeService)
     {
         _logger = logger;
         _networkLayerService = networkLayerService;
         _networkObjectService = networkObjectService;
+        _knowledgeService = knowledgeService;
     }
 
     public async Task Run()
@@ -44,17 +47,12 @@ public class ServiceRunner
         var updates = _networkObjectService.AggregateUpdates(startTime, endTime);
         _networkObjectService.Reset();
 
-        await SendUpdatesToKnowledge(updates);
+        await _knowledgeService.UpdateKnowledgeNOs(updates);
 
 
         System.Console.ReadLine();
     }
-
-    private async Task SendUpdatesToKnowledge(IDictionary<Region, NetworkUpdate> updates)
-    {
-        throw new NotImplementedException();
-    }
-
+    
     private async Task FetchAllUpdates()
     {
         foreach (var (region, uris) in _uris)
