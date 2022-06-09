@@ -16,13 +16,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Protos\NetworkObjectUpdater.proto">
-      <GrpcServices>Both</GrpcServices>
-    </None>
-  </ItemGroup>
-
+  
   <ItemGroup>
     <Protobuf Include="Protos\NetworkObjectUpdater.proto" GrpcServices="Both" />
   </ItemGroup>

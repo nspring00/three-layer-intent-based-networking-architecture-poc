@@ -159,13 +159,6 @@ public class NetworkObjectService : INetworkObjectService
             System.Console.WriteLine($"{info.Key} {info.Value.Utilization.CpuUtilization} {info.Value.Utilization.MemoryUtilization} {info.Value.Availability}");
         }
 
-        //var lastInfo = networkObject.Infos.Last();
-        //var lastElapsed = end - lastInfo.Key;
-        //var lastWeight = (float)(lastElapsed / totalTime);
-        //result.Utilization.CpuUtilization += lastWeight * lastInfo.Value.Utilization.CpuUtilization;
-        //result.Utilization.MemoryUtilization += lastWeight * lastInfo.Value.Utilization.MemoryUtilization;
-        //result.Availability += lastWeight * lastInfo.Value.Availability;
-
         // Clear all status infos about network objects
         networkObject.Infos.Clear();
 

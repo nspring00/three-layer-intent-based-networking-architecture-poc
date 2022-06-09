@@ -44,8 +44,15 @@ public class ServiceRunner
         var updates = _networkObjectService.AggregateUpdates(startTime, endTime);
         _networkObjectService.Reset();
 
+        await SendUpdatesToKnowledge(updates);
+
 
         System.Console.ReadLine();
+    }
+
+    private async Task SendUpdatesToKnowledge(IDictionary<Region, NetworkUpdate> updates)
+    {
+        throw new NotImplementedException();
     }
 
     private async Task FetchAllUpdates()
