@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "Knowledge.API.NetworkInfoUpdate";
+option csharp_namespace = "Knowledge.Grpc.NetworkInfoUpdate";
 
 package NetworkInfoUpdate;
 

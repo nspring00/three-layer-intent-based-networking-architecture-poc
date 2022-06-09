@@ -1,7 +1,7 @@
 ﻿using Grpc.Core;
 using Knowledge.API.Models;
-using Knowledge.API.NetworkInfoUpdate;
 using Knowledge.API.Repository;
+using Knowledge.Grpc.NetworkInfoUpdate;
 using Utilization = Knowledge.API.Models.Utilization;
 
 namespace Knowledge.API.Services;
