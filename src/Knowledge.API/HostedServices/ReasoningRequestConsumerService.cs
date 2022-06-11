@@ -41,6 +41,12 @@ public class ReasoningRequestConsumerService : IHostedService
         // TODO get this from config
         const string queueName = "knowledge_reasoning_requests";
         _channel = _channelPool.Get();
+        if (_channel is null)
+        {
+            _logger.LogError("Failed to get channel from pool");
+            return Task.CompletedTask;
+        }
+        
         _channel.QueueDeclare(queueName, true, false, false, null);
 
 
