@@ -8,10 +8,14 @@ namespace Knowledge.API.Services;
 
 public class NetworkInfoUpdateService : NetworkInfoUpdater.NetworkInfoUpdaterBase
 {
+    private readonly ILogger<NetworkInfoUpdateService> _logger;
     private readonly INetworkInfoRepository _networkInfoRepository;
 
-    public NetworkInfoUpdateService(INetworkInfoRepository networkInfoRepository)
+    public NetworkInfoUpdateService(
+        ILogger<NetworkInfoUpdateService> logger,
+        INetworkInfoRepository networkInfoRepository)
     {
+        _logger = logger;
         _networkInfoRepository = networkInfoRepository;
     }
 
@@ -22,9 +26,14 @@ public class NetworkInfoUpdateService : NetworkInfoUpdater.NetworkInfoUpdaterBas
         foreach (var regionUpdate in request.RegionUpdates)
         {
             var regionName = regionUpdate.RegionName!;
-            foreach (var topologyUpdate in regionUpdate.TopologyUpdates)
+            foreach (var addedNo in regionUpdate.Added)
             {
-                HandleTopologyUpdate(regionName, topologyUpdate);
+                AddDevice(regionName, addedNo);
+            }
+            
+            foreach (var removedId in regionUpdate.Removed)
+            {
+                _networkInfoRepository.Remove(regionName, removedId);
             }
 
             foreach (var workloadUpdate in regionUpdate.WorkloadUpdates)
@@ -41,38 +50,22 @@ public class NetworkInfoUpdateService : NetworkInfoUpdater.NetworkInfoUpdaterBas
         var device = _networkInfoRepository.Get(regionName, workloadUpdate.NetworkObjectId);
         if (device == null)
         {
-            // TODO throw NotFound or something???
-            AddDevice(regionName, workloadUpdate.NetworkObjectId, new Utilization
-            {
-                CpuUtilization = workloadUpdate.Utilization.CpuUtilization,
-                MemoryUtilization = workloadUpdate.Utilization.MemoryUtilization
-            });
+            _logger.LogError($"No device {regionName} {workloadUpdate.NetworkObjectId} exists");
             return;
+            // TODO throw NotFound or something???
+            //AddDevice(regionName, workloadUpdate.NetworkObjectId, new Utilization
+            //{
+            //    CpuUtilization = workloadUpdate.Utilization.CpuUtilization,
+            //    MemoryUtilization = workloadUpdate.Utilization.MemoryUtilization
+            //});
+            //return;
         }
 
         device.Utilization.CpuUtilization = workloadUpdate.Utilization.CpuUtilization;
         device.Utilization.MemoryUtilization = workloadUpdate.Utilization.MemoryUtilization;
     }
 
-    private void HandleTopologyUpdate(string regionName, TopologyUpdate topologyUpdate)
-    {
-        // TODO check first that all objects to remove exist and return error otherwise
-
-        switch (topologyUpdate.UpdateType)
-        {
-            case TopologyUpdate.Types.NetworkObjectUpdateType.Add:
-                AddDevice(regionName, topologyUpdate.NetworkObjectId);
-                break;
-            case TopologyUpdate.Types.NetworkObjectUpdateType.Remove:
-                _networkInfoRepository.Remove(regionName, topologyUpdate.NetworkObjectId);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(
-                    $"Unsupported topology update type {topologyUpdate.UpdateType}");
-        }
-    }
-
-    private void AddDevice(string region, int id, Utilization? utilization = null)
+    private void AddDevice(string region, AddedNetworkObject no, Utilization? utilization = null)
     {
         utilization ??= new Utilization
         {
@@ -80,6 +73,6 @@ public class NetworkInfoUpdateService : NetworkInfoUpdater.NetworkInfoUpdaterBas
         };
 
         _networkInfoRepository.Add(
-            new NetworkDevice(id, new Region(region), "TODO", utilization));
+            new NetworkDevice(no.Id, new Region(region), no.Application, utilization));
     }
 }

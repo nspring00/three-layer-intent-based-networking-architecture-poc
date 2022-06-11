@@ -1,6 +1,7 @@
 ﻿using Data.Console.Models;
 using Knowledge.Grpc.NetworkInfoUpdate;
 using Microsoft.Extensions.Logging;
+using AddedNetworkObject = Knowledge.Grpc.NetworkInfoUpdate.AddedNetworkObject;
 using Utilization = Knowledge.Grpc.NetworkInfoUpdate.Utilization;
 
 namespace Data.Console.Clients;
@@ -29,18 +30,16 @@ public class KnowledgeGrpcClient : CachedGrpcClient
         request.RegionUpdates.AddRange(updates.Select(x => new RegionUpdate
         {
             RegionName = x.Key.Name,
-            TopologyUpdates =
+            Added =
             {
-                x.Value.Added.Select(id => new TopologyUpdate
+                x.Value.Added.Select(addedNo => new AddedNetworkObject
                 {
-                    NetworkObjectId = id,
-                    UpdateType = TopologyUpdate.Types.NetworkObjectUpdateType.Add
-                }),
-                x.Value.Removed.Select(id => new TopologyUpdate
-                {
-                    NetworkObjectId = id,
-                    UpdateType = TopologyUpdate.Types.NetworkObjectUpdateType.Remove
+                    Id = addedNo.Id,
+                    Application = addedNo.Application
                 })
+            },
+            Removed = {
+                x.Value.Removed
             },
             WorkloadUpdates =
             {

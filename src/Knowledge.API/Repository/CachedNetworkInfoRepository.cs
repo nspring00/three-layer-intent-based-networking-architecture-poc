@@ -11,57 +11,56 @@ public class CachedNetworkInfoRepository : INetworkInfoRepository
     public CachedNetworkInfoRepository(ILogger<CachedNetworkInfoRepository> logger)
     {
         _logger = logger;
-        _devices.Add(new NetworkDevice(
-            1, new Region("Vienna"), "WorkerApp1", new Utilization
-            {
-                CpuUtilization = 0.9f, MemoryUtilization = 0.9f
-            }));
-        _devices.Add(new NetworkDevice(
-            2, new Region("Vienna"), "WorkerApp1", new Utilization
-            {
-                CpuUtilization = 0.9f, MemoryUtilization = 0.9f
-            }));
-        _devices.Add(new NetworkDevice(
-            3, new Region("Vienna"), "WorkerApp1", new Utilization
-            {
-                CpuUtilization = 0.9f, MemoryUtilization = 0.9f
-            }));
-        _devices.Add(new NetworkDevice(
-            4, new Region("Vienna"), "WorkerApp1", new Utilization
-            {
-                CpuUtilization = 0.9f, MemoryUtilization = 0.9f
-            }));
-        _devices.Add(new NetworkDevice(
-            5, new Region("Vienna"), "WorkerApp1", new Utilization
-            {
-                CpuUtilization = 0.9f, MemoryUtilization = 0.9f
-            }));
-
-        _devices.Add(new NetworkDevice(
-            1, new Region("Linz"), "WorkerApp1", new Utilization
-            {
-                CpuUtilization = 0.7f, MemoryUtilization = 0.7f
-            }));
-        _devices.Add(new NetworkDevice(
-            2, new Region("Linz"), "WorkerApp1", new Utilization
-            {
-                CpuUtilization = 0.7f, MemoryUtilization = 0.7f
-            }));
-        _devices.Add(new NetworkDevice(
-            3, new Region("Linz"), "WorkerApp1", new Utilization
-            {
-                CpuUtilization = 0.7f, MemoryUtilization = 0.7f
-            }));
-        _devices.Add(new NetworkDevice(
-            4, new Region("Linz"), "WorkerApp1", new Utilization
-            {
-                CpuUtilization = 0.7f, MemoryUtilization = 0.7f
-            }));
-        _devices.Add(new NetworkDevice(
-            5, new Region("Linz"), "WorkerApp1", new Utilization
-            {
-                CpuUtilization = 0.7f, MemoryUtilization = 0.7f
-            }));
+        //_devices.Add(new NetworkDevice(
+        //    1, new Region("Vienna"), "WorkerApp1", new Utilization
+        //    {
+        //        CpuUtilization = 0.9f, MemoryUtilization = 0.9f
+        //    }));
+        //_devices.Add(new NetworkDevice(
+        //    2, new Region("Vienna"), "WorkerApp1", new Utilization
+        //    {
+        //        CpuUtilization = 0.9f, MemoryUtilization = 0.9f
+        //    }));
+        //_devices.Add(new NetworkDevice(
+        //    3, new Region("Vienna"), "WorkerApp1", new Utilization
+        //    {
+        //        CpuUtilization = 0.9f, MemoryUtilization = 0.9f
+        //    }));
+        //_devices.Add(new NetworkDevice(
+        //    4, new Region("Vienna"), "WorkerApp1", new Utilization
+        //    {
+        //        CpuUtilization = 0.9f, MemoryUtilization = 0.9f
+        //    }));
+        //_devices.Add(new NetworkDevice(
+        //    5, new Region("Vienna"), "WorkerApp1", new Utilization
+        //    {
+        //        CpuUtilization = 0.9f, MemoryUtilization = 0.9f
+        //    }));
+        //_devices.Add(new NetworkDevice(
+        //    1, new Region("Linz"), "WorkerApp1", new Utilization
+        //    {
+        //        CpuUtilization = 0.7f, MemoryUtilization = 0.7f
+        //    }));
+        //_devices.Add(new NetworkDevice(
+        //    2, new Region("Linz"), "WorkerApp1", new Utilization
+        //    {
+        //        CpuUtilization = 0.7f, MemoryUtilization = 0.7f
+        //    }));
+        //_devices.Add(new NetworkDevice(
+        //    3, new Region("Linz"), "WorkerApp1", new Utilization
+        //    {
+        //        CpuUtilization = 0.7f, MemoryUtilization = 0.7f
+        //    }));
+        //_devices.Add(new NetworkDevice(
+        //    4, new Region("Linz"), "WorkerApp1", new Utilization
+        //    {
+        //        CpuUtilization = 0.7f, MemoryUtilization = 0.7f
+        //    }));
+        //_devices.Add(new NetworkDevice(
+        //    5, new Region("Linz"), "WorkerApp1", new Utilization
+        //    {
+        //        CpuUtilization = 0.7f, MemoryUtilization = 0.7f
+        //    }));
     }
 
     public void Add(NetworkDevice device)

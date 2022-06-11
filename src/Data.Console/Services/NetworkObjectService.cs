@@ -9,7 +9,7 @@ public class NetworkObjectService : INetworkObjectService
     private readonly ILogger<NetworkObjectService> _logger;
     private readonly INetworkObjectRepository _networkObjectRepository;
 
-    private readonly Dictionary<Region, List<int>> _added = new();
+    private readonly Dictionary<Region, List<AddedNetworkObject>> _added = new();
     private readonly Dictionary<Region, List<int>> _removed = new();
 
     public NetworkObjectService(
@@ -24,11 +24,16 @@ public class NetworkObjectService : INetworkObjectService
     {
         if (!_added.ContainsKey(networkObject.Region))
         {
-            _added.Add(networkObject.Region, new List<int>(networkObject.Id));
+            _added.Add(networkObject.Region, new List<AddedNetworkObject> { new(networkObject.Id, networkObject.Application) });
         }
         else
         {
-            _added[networkObject.Region].Add(networkObject.Id);
+            if (_added[networkObject.Region].Any(x => x.Id == networkObject.Id))
+            {
+                _logger.LogWarning("NetworkObject already exists: {Id}", networkObject.Id);
+                return;
+            }
+            _added[networkObject.Region].Add(new (networkObject.Id, networkObject.Application));
         }
         
         _networkObjectRepository.Create(networkObject);

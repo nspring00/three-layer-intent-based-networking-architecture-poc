@@ -32,7 +32,8 @@ public class NetworkLayerService : INetworkLayerService
             {
                 Region = region,
                 Id = newNo.Id,
-                Created = newNo.CreatedAt.ToDateTime()
+                Created = newNo.CreatedAt.ToDateTime(),
+                Application = newNo.Application
             });
         }
 
