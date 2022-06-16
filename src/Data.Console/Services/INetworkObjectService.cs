@@ -6,6 +6,7 @@ public interface INetworkObjectService
 {
     void Create(NetworkObject networkObject);
     void AddInfo(NOId id, DateTime updateTime, NetworkObjectInfo info);
+    bool Exists(NOId id);
     IDictionary<Region, NetworkUpdate> AggregateUpdates(DateTime from, DateTime to);
     void Reset();
 }

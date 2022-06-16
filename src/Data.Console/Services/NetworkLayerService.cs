@@ -28,6 +28,11 @@ public class NetworkLayerService : INetworkLayerService
         {
             if (newNo is null) continue;
 
+            if (_networkObjectService.Exists(new NOId(region, newNo.Id)))
+            {
+                continue;
+            }
+
             _networkObjectService.Create(new NetworkObject
             {
                 Region = region,

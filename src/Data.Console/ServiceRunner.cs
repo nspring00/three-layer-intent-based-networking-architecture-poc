@@ -37,20 +37,21 @@ public class ServiceRunner
     {
         // TODO do this (maybe multiple times) first
         var startTime = DateTime.UtcNow;
-        Thread.Sleep(5000);
-        await FetchAllUpdates();
-        Thread.Sleep(5000);
-        await FetchAllUpdates();
 
-        var endTime = DateTime.UtcNow;
-            
-        var updates = _networkObjectService.AggregateUpdates(startTime, endTime);
-        _networkObjectService.Reset();
+        while (true)
+        {
+            for (var i = 0; i < 4; i++)
+            {
+                Thread.Sleep(2500);
+                await FetchAllUpdates();
 
-        await _knowledgeService.UpdateKnowledgeNOs(updates);
-
-
-        System.Console.ReadLine();
+            }
+            var endTime = DateTime.UtcNow;
+            var updates = _networkObjectService.AggregateUpdates(startTime, endTime);
+            _networkObjectService.Reset();
+            await _knowledgeService.UpdateKnowledgeNOs(updates);
+            startTime = endTime;
+        }
     }
     
     private async Task FetchAllUpdates()

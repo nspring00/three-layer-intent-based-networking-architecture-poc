@@ -176,4 +176,9 @@ public class NetworkObjectService : INetworkObjectService
         _added.Clear();
         _removed.Clear();
     }
+
+    public bool Exists(NOId id)
+    {
+        return _networkObjectRepository.Get(id) != null;
+    }
 }
