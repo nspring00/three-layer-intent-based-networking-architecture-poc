@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+  rabbitmq:
+    image: "rabbitmq:3.9.13-management-alpine"
+    hostname: "rabbit"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - "RABBITMQ_DEFAULT_USER=ibsm"
+      - "RABBITMQ_DEFAULT_PASS=ibsm"
+networks:
+  default:
+    name: "ibsm"

@@ -8,9 +8,20 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A0EE42A7-8F20-4DC6-B04C-F13CE595B92B}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		docker\docker-compose.yml = docker\docker-compose.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Knowledge.Temp.Test", "test\Knowledge.Temp.Test\Knowledge.Temp.Test.csproj", "{90A4E51E-0093-4970-A910-5DB274BF1D67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Knowledge.Temp.Test", "test\Knowledge.Temp.Test\Knowledge.Temp.Test.csproj", "{90A4E51E-0093-4970-A910-5DB274BF1D67}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetworkLayer.API", "src\NetworkLayer.API\NetworkLayer.API.csproj", "{A87BDEE5-99B7-444B-8818-94869082E307}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data.Console", "src\Data.Console\Data.Console.csproj", "{99F6368F-EFB4-4281-A8E5-99254D038249}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetworkLayer.Grpc", "src\NetworkLayer.Grpc\NetworkLayer.Grpc.csproj", "{7048323C-4AFD-444F-94BF-46E09AAADD45}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data.Test", "test\Data.Test\Data.Test.csproj", "{6A0BE8CF-3E30-4F55-9250-51D6023E9FB3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Knowledge.Grpc", "src\Knowledge.Grpc\Knowledge.Grpc.csproj", "{D0B2363B-BA8B-4D4C-951D-60B3ADA4CC9E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +37,26 @@ Global
 		{90A4E51E-0093-4970-A910-5DB274BF1D67}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90A4E51E-0093-4970-A910-5DB274BF1D67}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{90A4E51E-0093-4970-A910-5DB274BF1D67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A87BDEE5-99B7-444B-8818-94869082E307}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A87BDEE5-99B7-444B-8818-94869082E307}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A87BDEE5-99B7-444B-8818-94869082E307}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A87BDEE5-99B7-444B-8818-94869082E307}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99F6368F-EFB4-4281-A8E5-99254D038249}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99F6368F-EFB4-4281-A8E5-99254D038249}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99F6368F-EFB4-4281-A8E5-99254D038249}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99F6368F-EFB4-4281-A8E5-99254D038249}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7048323C-4AFD-444F-94BF-46E09AAADD45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7048323C-4AFD-444F-94BF-46E09AAADD45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7048323C-4AFD-444F-94BF-46E09AAADD45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7048323C-4AFD-444F-94BF-46E09AAADD45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A0BE8CF-3E30-4F55-9250-51D6023E9FB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A0BE8CF-3E30-4F55-9250-51D6023E9FB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A0BE8CF-3E30-4F55-9250-51D6023E9FB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A0BE8CF-3E30-4F55-9250-51D6023E9FB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0B2363B-BA8B-4D4C-951D-60B3ADA4CC9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0B2363B-BA8B-4D4C-951D-60B3ADA4CC9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0B2363B-BA8B-4D4C-951D-60B3ADA4CC9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0B2363B-BA8B-4D4C-951D-60B3ADA4CC9E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

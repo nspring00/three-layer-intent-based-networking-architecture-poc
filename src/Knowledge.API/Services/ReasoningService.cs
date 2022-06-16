@@ -9,7 +9,6 @@ public class ReasoningService : IReasoningService
     private readonly IIntentRepository _intentRepository;
     private readonly INetworkInfoRepository _networkInfoRepository;
 
-    // TODO use interfaces here
     public ReasoningService(
         ILogger<ReasoningService> logger,
         IIntentRepository intentRepository, 
@@ -30,7 +29,7 @@ public class ReasoningService : IReasoningService
         var deviceCount = devices.Count;
         
         // TODO error handling
-        var utilizationSum = devices.Sum(d => d.Utilization);
+        var utilizationSum = devices.Sum(d => d.Utilization.CpuUtilization);
         var avg = utilizationSum / deviceCount;
 
         // Get min and max from intents

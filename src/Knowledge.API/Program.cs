@@ -4,13 +4,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddGrpc();
+builder.Services.AddGrpcReflection();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Registration of custom services
-builder.Services.ConfigureServices();
+builder.Services.ConfigureServices(builder.Configuration);
 
 var app = builder.Build();
 
@@ -19,6 +21,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    app.MapGrpcReflectionService();
 }
 
 //app.UseHttpsRedirection();
@@ -26,5 +30,6 @@ if (app.Environment.IsDevelopment())
 //app.UseAuthorization();
 
 app.MapControllers();
+app.MapGrpcServices();
 
 app.Run();
