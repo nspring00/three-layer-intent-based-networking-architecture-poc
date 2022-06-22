@@ -1,25 +1,30 @@
-﻿using Knowledge.API.Configs;
+﻿using Common.Web.Rabbit.Configs;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Exceptions;
 
-namespace Knowledge.API.Policies;
+namespace Common.Web.Rabbit.Policies;
 
 // Source: https://www.c-sharpcorner.com/article/publishing-rabbitmq-message-in-asp-net-core/
 public class RabbitModelPooledObjectPolicy : IPooledObjectPolicy<IModel>, IDisposable
 {
+    private readonly ILogger<RabbitModelPooledObjectPolicy> _logger;
     private readonly RabbitOptions _options;
-    private readonly IConnection _connection;
+    private readonly IConnection? _connection;
 
-    public RabbitModelPooledObjectPolicy(IOptions<RabbitOptions> optionsAccs)
+    public RabbitModelPooledObjectPolicy(
+        ILogger<RabbitModelPooledObjectPolicy> logger,
+        IOptions<RabbitOptions> optionsAccs)
     {
+        _logger = logger;
         _options = optionsAccs.Value;
         _connection = GetConnection();
     }
 
-    private IConnection GetConnection()
+    private IConnection? GetConnection()
     {
-        var factory = new ConnectionFactory()
+        var factory = new ConnectionFactory
         {
             HostName = _options.HostName,
             Port = _options.Port,
@@ -28,12 +33,20 @@ public class RabbitModelPooledObjectPolicy : IPooledObjectPolicy<IModel>, IDispo
             VirtualHost = _options.VHost
         };
 
-        return factory.CreateConnection();
+        try
+        {
+            return factory.CreateConnection();
+        }
+        catch (BrokerUnreachableException)
+        {
+            _logger.LogError("RabbitMQ Broker is unreachable");
+            return null;
+        }
     }
 
     public IModel Create()
     {
-        return _connection.CreateModel();
+        return _connection?.CreateModel()!; // TODO check
     }
 
     public bool Return(IModel obj)
@@ -49,6 +62,8 @@ public class RabbitModelPooledObjectPolicy : IPooledObjectPolicy<IModel>, IDispo
 
     public void Dispose()
     {
+        if (_connection is null) return;
+        
         _connection.Close();
         _connection.Dispose();
     }
