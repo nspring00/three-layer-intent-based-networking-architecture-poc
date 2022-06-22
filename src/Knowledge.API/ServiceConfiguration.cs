@@ -1,5 +1,4 @@
 ﻿using Common.Web.Rabbit;
-using Common.Web.Rabbit.Configs;
 using Knowledge.API.Configs;
 using Knowledge.API.HostedServices;
 using Knowledge.API.Repository;
@@ -14,7 +13,7 @@ public static class ServiceConfiguration
         services.AddSingleton<IIntentRepository, CachedIntentRepository>();
         services.AddSingleton<INetworkInfoRepository, CachedNetworkInfoRepository>();
         services.AddSingleton<IReasoningService, ReasoningService>(); // TODO maybe scoped?
-        services.Configure<RabbitQueueOptions>(configuration.GetSection("RabbitQueues"));
+        services.Configure<RabbitQueues>(configuration.GetSection("RabbitQueues")); // TODO fix config loading
         services.AddRabbitMq(configuration); 
         services.AddHostedService<ReasoningRequestConsumerService>();
     }
