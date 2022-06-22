@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using Common.Web.Rabbit.Configs;
 using Common.Web.Rabbit.Services;
+using Knowledge.API.Configs;
 using Knowledge.API.Contracts.Requests;
 using Knowledge.API.Services;
 using Microsoft.Extensions.ObjectPool;
@@ -18,7 +19,7 @@ public class ReasoningRequestConsumerService : RabbitConsumerService
     public ReasoningRequestConsumerService(ILogger<ReasoningRequestConsumerService> logger,
         ILogger<RabbitConsumerService> baseLogger, ObjectPool<IModel> channelPool,
         IReasoningService reasoningService,
-        IOptions<RabbitQueueOptions> queueOptions) : base(baseLogger, channelPool, queueOptions)
+        IOptions<RabbitQueueOptions> queueOptions) : base(baseLogger, channelPool, queueOptions.Value.ReasoningRequestQueueName)
     {
         _logger = logger;
         _reasoningService = reasoningService;

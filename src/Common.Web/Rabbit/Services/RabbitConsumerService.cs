@@ -1,7 +1,5 @@
 ﻿using System.Text;
-using Common.Web.Rabbit.Configs;
 using Microsoft.Extensions.ObjectPool;
-using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -11,7 +9,7 @@ public class RabbitConsumerService : IHostedService
 {
     private readonly ILogger<RabbitConsumerService> _baseLogger;
     private readonly ObjectPool<IModel> _channelPool;
-    private readonly IOptions<RabbitQueueOptions> _queueOptions;
+    private readonly string _queueName;
 
     private IModel? _channel;
     private string? _consumerTag;
@@ -19,11 +17,11 @@ public class RabbitConsumerService : IHostedService
     public RabbitConsumerService(
         ILogger<RabbitConsumerService> baseLogger,
         ObjectPool<IModel> channelPool,
-        IOptions<RabbitQueueOptions> queueOptions)
+        string queueName)
     {
         _baseLogger = baseLogger;
         _channelPool = channelPool;
-        _queueOptions = queueOptions;
+        _queueName = queueName;
     }
 
     public virtual void HandleMessage(string content, IDictionary<string, object> headers)
@@ -35,24 +33,23 @@ public class RabbitConsumerService : IHostedService
     {
         _baseLogger.LogInformation("Starting ReasoningRequestConsumerService");
 
-        var queueName = _queueOptions.Value.QueueName;
         _channel = _channelPool.Get();
         if (_channel is null)
         {
             _baseLogger.LogError($"Failed to create RabbitMQ channel");
             return Task.CompletedTask;
         }
-        _channel.QueueDeclare(queueName, true, false, false, null);
+        _channel.QueueDeclare(_queueName, true, false, false, null);
 
         var consumer = new EventingBasicConsumer(_channel);
-        consumer.Received += ((sender, ea) =>
+        consumer.Received += ((_, ea) =>
         {
             var content = Encoding.UTF8.GetString(ea.Body.Span);
             HandleMessage(content, ea.BasicProperties.Headers);
             _channel.BasicAck(ea.DeliveryTag, false);
         });
 
-        _consumerTag = _channel.BasicConsume(queueName, false, consumer);
+        _consumerTag = _channel.BasicConsume(_queueName, false, consumer);
 
         return Task.CompletedTask;
 
