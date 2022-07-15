@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 using Agent.API.Configs;
-using Agent.API.Contracts.Requests;
+using Agent.API.Contracts.Messages;
 using Agent.Core;
 using Common.Web.Rabbit.Services;
 using Microsoft.Extensions.ObjectPool;

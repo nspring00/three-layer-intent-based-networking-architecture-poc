@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Agent.API.Contracts.Requests;
+namespace Agent.API.Contracts.Messages;
 
 public class RegionActionRequiredRequest
 {

@@ -21,5 +21,6 @@ public static class ServiceConfiguration
     public static void MapGrpcServices(this WebApplication app)
     {
         app.MapGrpcService<NetworkInfoUpdateService>();
+        app.MapGrpcService<GrpcReasoningService>();
     }
 }
