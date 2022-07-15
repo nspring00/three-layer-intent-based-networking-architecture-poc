@@ -6,4 +6,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Agent.API.Contracts\Agent.API.Contracts.csproj" />
+    <ProjectReference Include="..\Agent.Core\Agent.Core.csproj" />
+    <ProjectReference Include="..\Common.Web\Common.Web.csproj" />
+  </ItemGroup>
+
 </Project>
