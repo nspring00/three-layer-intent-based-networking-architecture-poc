@@ -1,22 +1,28 @@
 ﻿using Agent.Core.Clients;
 using Agent.Core.Models;
 using Common.Models;
+using Microsoft.Extensions.Logging;
 
 namespace Agent.Core.Services;
 
 public class GrpcReasoningService : IReasoningService
 {
     private readonly KnowledgeGrpcClient _client;
+    private readonly ILogger<GrpcReasoningService> _logger;
 
-    private readonly Uri _knowledgeUri = new("https://localhost:7070");
+    private readonly Uri _knowledgeUri = new("https://localhost:7070"); // TODO get from config
 
-    public GrpcReasoningService(KnowledgeGrpcClient client)
+    public GrpcReasoningService(KnowledgeGrpcClient client, ILogger<GrpcReasoningService> logger)
     {
         _client = client;
+        _logger = logger;
     }
 
     public async Task<IDictionary<Region, AgentAction>> GetRequiredActions(IList<Region> regions)
     {
+        _logger.LogInformation("Retrieving required actions for regions {Regions}",
+            string.Join("", regions.Select(x => x.Name)));
+
         var actions = await _client.ExecuteReasoningAsync(_knowledgeUri, regions);
 
         // TODO validation??
@@ -26,8 +32,8 @@ public class GrpcReasoningService : IReasoningService
         }
 
         var filtered = actions
-                .Where(a => a.ActionRequired)
-                .ToList();
+            .Where(a => a.ActionRequired)
+            .ToList();
         if (filtered.Any(a => a.Action is null))
         {
             throw new Exception("Action is null when ActionRequired");
