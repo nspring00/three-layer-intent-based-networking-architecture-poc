@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿using Common.Models;
+using Grpc.Core;
 using Knowledge.Grpc.Reasoning;
 
 namespace Knowledge.API.Services;
@@ -21,7 +22,7 @@ public class GrpcReasoningService : Grpc.Reasoning.ReasoningService.ReasoningSer
 
     private RegionReasoningComposition HandleRegion(string regionName)
     {
-        var result = _reasoningService.ReasonForRegion(regionName);
+        var result = _reasoningService.ReasonForRegion(new Region(regionName));
         return new RegionReasoningComposition
         {
             RegionName = regionName, 

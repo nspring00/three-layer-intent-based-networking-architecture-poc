@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common.Web\Common.Web.csproj" />
+    <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\Knowledge.API.Contracts\Knowledge.API.Contracts.csproj" />
     <ProjectReference Include="..\Knowledge.Grpc\Knowledge.Grpc.csproj" />
   </ItemGroup>

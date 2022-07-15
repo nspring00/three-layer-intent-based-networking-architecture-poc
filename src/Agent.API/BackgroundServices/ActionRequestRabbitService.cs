@@ -2,6 +2,7 @@
 using Agent.API.Configs;
 using Agent.API.Contracts.Messages;
 using Agent.Core;
+using Common.Models;
 using Common.Web.Rabbit.Services;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
@@ -23,11 +24,11 @@ public class ActionRequestRabbitService : RabbitConsumerService
         _handler = handler;
     }
 
-    public override void HandleMessage(string content, IDictionary<string, object> headers)
+    public override async Task HandleMessage(string content, IDictionary<string, object> headers)
     {
         var request = JsonSerializer.Deserialize<RegionActionRequiredRequest>(content);
         if (request is null) return;
 
-        _handler.HandleRegions(new List<string> { request.Region });
+        await _handler.HandleRegions(new List<Region> { new(request.Region) });
     }
 }

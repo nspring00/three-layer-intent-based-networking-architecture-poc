@@ -1,4 +1,6 @@
-﻿namespace Data.Console.Models;
+﻿using Common.Models;
+
+namespace Data.Console.Models;
 
 public class NetworkObject
 {

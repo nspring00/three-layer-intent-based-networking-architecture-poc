@@ -25,9 +25,10 @@ public class RabbitConsumerService : IHostedService
         _queueOptions = queueOptions;
     }
 
-    public virtual void HandleMessage(string content, IDictionary<string, object> headers)
+    public virtual Task HandleMessage(string content, IDictionary<string, object> headers)
     {
         _baseLogger.LogInformation("Received message {Message}", content);
+        return Task.CompletedTask;
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
@@ -45,10 +46,10 @@ public class RabbitConsumerService : IHostedService
             _queueOptions.AutoDelete, _queueOptions.Arguments);
 
         var consumer = new EventingBasicConsumer(_channel);
-        consumer.Received += (_, ea) =>
+        consumer.Received += async (_, ea) =>
         {
             var content = Encoding.UTF8.GetString(ea.Body.Span);
-            HandleMessage(content, ea.BasicProperties.Headers);
+            await HandleMessage(content, ea.BasicProperties.Headers);
             _channel.BasicAck(ea.DeliveryTag, false);
         };
 

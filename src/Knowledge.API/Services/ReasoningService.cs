@@ -1,4 +1,5 @@
-﻿using Knowledge.API.Models;
+﻿using Common.Models;
+using Knowledge.API.Models;
 using Knowledge.API.Repository;
 
 namespace Knowledge.API.Services;
@@ -20,7 +21,7 @@ public class ReasoningService : IReasoningService
     }
 
     // Check if efficiency goal is reached for region
-    public ReasoningComposition ReasonForRegion(string region)
+    public ReasoningComposition ReasonForRegion(Region region)
     {
         _logger.LogInformation("Reasoning for region {Region}", region);
         

@@ -1,4 +1,5 @@
-﻿using Data.Console.Models;
+﻿using Common.Models;
+using Data.Console.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Data.Console.Repositories;

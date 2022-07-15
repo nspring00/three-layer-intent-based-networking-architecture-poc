@@ -1,4 +1,5 @@
-﻿using Data.Console.Clients;
+﻿using Common.Models;
+using Data.Console.Clients;
 using Data.Console.Models;
 using Microsoft.Extensions.Logging;
 

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Common.Models;
 using Data.Console.Models;
 using Data.Console.Repositories;
 using Microsoft.Extensions.Logging;

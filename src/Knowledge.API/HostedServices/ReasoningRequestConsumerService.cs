@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Common.Models;
 using Common.Web.Rabbit.Services;
 using Knowledge.API.Configs;
 using Knowledge.API.Contracts.Requests;
@@ -28,7 +29,7 @@ public class ReasoningRequestConsumerService : RabbitConsumerService
         };
     }
 
-    public override void HandleMessage(string content, IDictionary<string, object> headers)
+    public override Task HandleMessage(string content, IDictionary<string, object> headers)
     {
         try
         {
@@ -37,17 +38,17 @@ public class ReasoningRequestConsumerService : RabbitConsumerService
             if (request is null)
             {
                 _logger.LogWarning($"Failed to deserialize message {content}");
-                return;
+                return Task.CompletedTask;
             }
 
             if (request.Regions.Count == 0)
             {
                 _logger.LogWarning($"No regions specified for reasoning request {content}");
-                return;
+                return Task.CompletedTask;
             }
 
             var reasoningResults = request.Regions
-                .Select(r => _reasoningService.ReasonForRegion(r))
+                .Select(r => _reasoningService.ReasonForRegion(new Region(r)))
                 .ToList();
 
             _logger.LogInformation($"Reasoning results: {string.Join(", ", reasoningResults)}");
@@ -56,5 +57,7 @@ public class ReasoningRequestConsumerService : RabbitConsumerService
         {
             _logger.LogError(e, "");
         }
+
+        return Task.CompletedTask;
     }
 }
