@@ -5,5 +5,5 @@ namespace Data.Console.Services;
 
 public interface INetworkLayerService
 {
-    Task FetchAllUpdates(Region region, Uri uri);
+    Task FetchAllUpdates(int nlId, Region region, Uri uri);
 }

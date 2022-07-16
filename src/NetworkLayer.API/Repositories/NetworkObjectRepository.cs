@@ -5,7 +5,7 @@ namespace NetworkLayer.API.Repositories;
 public class NetworkObjectRepository : INetworkObjectRepository
 {
     private readonly List<NetworkObject> _randomNOs;
-    private readonly Random _random = new ();
+    private readonly Random _random = new();
 
     public NetworkObjectRepository()
     {
@@ -13,33 +13,45 @@ public class NetworkObjectRepository : INetworkObjectRepository
         {
             new()
             {
-                Id = 1, Application = "Application1",
-                Groups = {"Group1"}
+                Id = 1,
+                Application = "Application1",
+                Groups = { "Group1" },
+                CreatedAt = DateTime.UtcNow
             },
             new()
             {
-                Id = 2, Application = "Application1",
-                Groups = {"Group1"}
+                Id = 2,
+                Application = "Application1",
+                Groups = { "Group1" },
+                CreatedAt = DateTime.UtcNow
             },
             new()
             {
-                Id = 3, Application = "Application2",
-                Groups = {"Group2"}
+                Id = 3,
+                Application = "Application2",
+                Groups = { "Group2" },
+                CreatedAt = DateTime.UtcNow
             },
             new()
             {
-                Id = 4, Application = "Application1",
-                Groups = {"Group2"}                
+                Id = 4,
+                Application = "Application1",
+                Groups = { "Group2" },
+                CreatedAt = DateTime.UtcNow
             },
             new()
             {
-                Id = 5, Application = "Application2",
-                Groups = {"Group1", "Group2"}
+                Id = 5,
+                Application = "Application2",
+                Groups = { "Group1", "Group2" },
+                CreatedAt = DateTime.UtcNow
             },
             new()
             {
-                Id = 7, Application = "Application2",
-                Groups = {"Group1", "Group2"}
+                Id = 7,
+                Application = "Application2",
+                Groups = { "Group1", "Group2" },
+                CreatedAt = DateTime.UtcNow
             }
         };
     }

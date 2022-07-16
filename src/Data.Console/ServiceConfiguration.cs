@@ -1,4 +1,5 @@
-﻿using Data.Console.Clients;
+﻿using Common.Services;
+using Data.Console.Clients;
 using Data.Console.Repositories;
 using Data.Console.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +10,7 @@ public static class ServiceConfiguration
 {
     public static void ConfigureServices(this IServiceCollection services)
     {
+        services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddSingleton<ServiceRunner>();
         services.AddSingleton<INetworkObjectRepository, NetworkObjectRepository>();
         services.AddSingleton<INetworkObjectService, NetworkObjectService>();
