@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package nl.Topology;
+
+option csharp_namespace = "NetworkLayer.Grpc.Topology";
+
+service NetworkTopologyUpdater {
+    rpc ScaleUp (ScaleUpRequest) returns (ScaleUpResponse) {}
+    rpc ScaleDown (ScaleDownRequest) returns (ScaleDownResponse) {}
+}
+
+message ScaleUpRequest {
+    repeated NewNetworkObject new_network_objects = 1;
+}
+
+message NewNetworkObject {
+    int32 id = 1;
+    string application = 2;
+    repeated string groups = 3;
+}
+
+message ScaleUpResponse { }
+
+message ScaleDownRequest {
+    repeated int32 remove_ids = 1;
+}
+
+message ScaleDownResponse { }

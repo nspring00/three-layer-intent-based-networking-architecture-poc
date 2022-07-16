@@ -4,5 +4,7 @@ namespace NetworkLayer.API.Repositories;
 
 public interface INetworkObjectRepository
 {
-    public IList<NetworkObject> GetAll();
+    IList<NetworkObject> GetAll();
+    void Create(NetworkObject networkObject);
+    bool Delete(int id);
 }

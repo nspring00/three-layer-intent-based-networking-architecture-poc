@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package nl;
 
-option csharp_namespace = "NetworkLayer.Grpc";
+option csharp_namespace = "NetworkLayer.Grpc.NetworkObjects";
 
 import "google/protobuf/timestamp.proto";
 

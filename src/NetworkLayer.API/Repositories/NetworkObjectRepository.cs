@@ -1,14 +1,17 @@
-﻿using NetworkLayer.API.Models;
+﻿using Common.Services;
+using NetworkLayer.API.Models;
 
 namespace NetworkLayer.API.Repositories;
 
 public class NetworkObjectRepository : INetworkObjectRepository
 {
+    private readonly IDateTimeProvider _dateTimeProvider;
     private readonly List<NetworkObject> _randomNOs;
     private readonly Random _random = new();
 
-    public NetworkObjectRepository()
+    public NetworkObjectRepository(IDateTimeProvider dateTimeProvider)
     {
+        _dateTimeProvider = dateTimeProvider;
         _randomNOs = new List<NetworkObject>
         {
             new()
@@ -67,5 +70,17 @@ public class NetworkObjectRepository : INetworkObjectRepository
         }
 
         return _randomNOs;
+    }
+
+    public void Create(NetworkObject networkObject)
+    {
+        // TODO assign other values
+        networkObject.CreatedAt = _dateTimeProvider.Now;
+        _randomNOs.Add(networkObject);
+    }
+
+    public bool Delete(int id)
+    {
+        return _randomNOs.RemoveAll(x => x.Id == id) > 0;
     }
 }
