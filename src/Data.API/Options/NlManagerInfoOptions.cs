@@ -1,6 +1,6 @@
-﻿namespace Data.API.Configs;
+﻿namespace Data.API.Options;
 
-public class NlManagerInfoConfig
+public class NlManagerInfoOptions
 {
     public int Id { get; set; }
     public string Name { get; set; } = default!;

@@ -1,5 +1,5 @@
 ﻿using Common.Services;
-using Data.API.Configs;
+using Data.API.Options;
 using Data.API.Services;
 using Data.Console.Repositories;
 
@@ -10,7 +10,7 @@ public static class ServiceConfiguration
     public static void ConfigureServices(this IServiceCollection services, IConfiguration configuration)
     {
         var nlManagerSection = configuration.GetSection("NlManagers");
-        services.Configure<List<NlManagerInfoConfig>>(nlManagerSection);
+        services.Configure<List<NlManagerInfoOptions>>(nlManagerSection);
 
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddSingleton<INlManagerService, NlManagerService>();
