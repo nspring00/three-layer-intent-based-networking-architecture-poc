@@ -13,7 +13,9 @@ public static class ServiceConfiguration
     {
         services.AddSingleton<RegionActionRequiredHandler>(); // TODO make this scoped / use some mediator 
         services.AddSingleton<KnowledgeGrpcClient>();
+        services.AddSingleton<DataGrpcClient>();
         services.AddSingleton<IReasoningService, GrpcReasoningService>();
+        services.AddSingleton<ITopologyService, GrpcTopologyService>();
 
         services.Configure<RabbitQueues>(configuration.GetSection("RabbitQueues")); // TODO fix config loading
         services.AddRabbitMq(configuration);

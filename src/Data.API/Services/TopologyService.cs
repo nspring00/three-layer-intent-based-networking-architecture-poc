@@ -10,15 +10,18 @@ namespace Data.API.Services;
 
 public class TopologyService : Grpc.Topology.TopologyService.TopologyServiceBase
 {
+    private readonly ILogger<TopologyService> _logger;
     private readonly INetworkObjectRepository _networkObjectRepository;
     private readonly INlManagerService _nlManagerService;
     private readonly IDateTimeProvider _dateTimeProvider;
 
     public TopologyService(
+        ILogger<TopologyService> logger,
         INetworkObjectRepository networkObjectRepository,
         INlManagerService nlManagerService,
         IDateTimeProvider dateTimeProvider)
     {
+        _logger = logger;
         _networkObjectRepository = networkObjectRepository;
         _nlManagerService = nlManagerService;
         _dateTimeProvider = dateTimeProvider;
@@ -28,12 +31,20 @@ public class TopologyService : Grpc.Topology.TopologyService.TopologyServiceBase
         RegionTopologyRequest request,
         ServerCallContext context)
     {
+        _logger.LogInformation("Topologies requested for regions {Regions}", string.Join(", ", request.RegionNames));
+
         var now = _dateTimeProvider.Now;
         var topologies = request.RegionNames
             .Select(x => new Region(x))
             .Select(r => (Region: r, Devices: _networkObjectRepository.GetAllForRegionByNlId(r)))
             .Where(x => x.Devices is not null)
-            .Select(x => MapRegionTopology(x.Region, x.Devices!, now));
+            .Select(x => MapRegionTopology(x.Region, x.Devices!, now))
+            .ToList();
+
+        _logger.LogInformation("Found {NlManagerCount} NlManagers with {DeviceCount} devices for regions {Regions}",
+            topologies.Sum(x => x.NlManagers.Count),
+            topologies.Sum(x => x.NlManagers.Sum(y => y.ActiveDevices.Count)),
+            string.Join(", ", request.RegionNames));
 
         var response = new RegionTopologyResponse { RegionTopologies = { topologies } };
         return Task.FromResult(response);
