@@ -6,10 +6,13 @@ namespace NetworkLayer.API.Services;
 
 public class NetworkTopologyUpdateService : NetworkTopologyUpdater.NetworkTopologyUpdaterBase
 {
+    private readonly ILogger<NetworkTopologyUpdateService> _logger;
     private readonly INetworkObjectRepository _networkObjectRepository;
 
-    public NetworkTopologyUpdateService(INetworkObjectRepository networkObjectRepository)
+    public NetworkTopologyUpdateService(ILogger<NetworkTopologyUpdateService> logger,
+        INetworkObjectRepository networkObjectRepository)
     {
+        _logger = logger;
         _networkObjectRepository = networkObjectRepository;
     }
 
@@ -17,29 +20,55 @@ public class NetworkTopologyUpdateService : NetworkTopologyUpdater.NetworkTopolo
     {
         var newNOs = request.NewNetworkObjects.Select(x => new Models.NetworkObject
         {
-           Id = x.Id,
-           Application = x.Application,
-           Groups = x.Groups.ToList(),
-           Ip = "TODO"
-        });
+            Id = x.Id, Application = x.Application, Groups = x.Groups.ToList(), Ip = "TODO"
+        }).ToList();
 
+
+        var ids = new List<int>();
         foreach (var no in newNOs)
         {
             _networkObjectRepository.Create(no);
+            ids.Add(no.Id);
         }
 
-        var response = new ScaleUpResponse();
+        _logger.LogInformation("Scaling up by {ScaleUpCount}. Ids {Ids}", newNOs.Count,
+            string.Join(", ", ids));
+
+
+        var response = new ScaleUpResponse
+        {
+            CreatedIds =
+            {
+                ids
+            }
+        };
         return Task.FromResult(response);
     }
 
     public override Task<ScaleDownResponse> ScaleDown(ScaleDownRequest request, ServerCallContext context)
     {
+        var idsNotFound = new List<int>();
         foreach (var removeId in request.RemoveIds)
         {
-            _networkObjectRepository.Delete(removeId);
+            var success = _networkObjectRepository.Delete(removeId);
+            if (!success)
+            {
+                idsNotFound.Add(removeId);
+            }
         }
 
-        var response = new ScaleDownResponse();
+        _logger.LogInformation("Scaling down by {ScaleDownCount}. Removed {RemovedIds}. Not found {NotFoundIds}",
+            request.RemoveIds.Count,
+            string.Join(", ", request.RemoveIds.Except(idsNotFound)),
+            string.Join(", ", idsNotFound));
+
+        var response = new ScaleDownResponse
+        {
+            NotFoundIds =
+            {
+                idsNotFound
+            }
+        };
         return Task.FromResult(response);
     }
 }

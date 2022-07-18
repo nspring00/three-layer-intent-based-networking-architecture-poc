@@ -9,6 +9,8 @@ public class NetworkObjectRepository : INetworkObjectRepository
     private readonly List<NetworkObject> _randomNOs;
     private readonly Random _random = new();
 
+    private readonly IdGenerator _idGenerator = new();
+
     public NetworkObjectRepository(IDateTimeProvider dateTimeProvider)
     {
         _dateTimeProvider = dateTimeProvider;
@@ -16,42 +18,42 @@ public class NetworkObjectRepository : INetworkObjectRepository
         {
             new()
             {
-                Id = 1,
+                Id = _idGenerator.Next(),
                 Application = "Application1",
                 Groups = { "Group1" },
                 CreatedAt = DateTime.UtcNow
             },
             new()
             {
-                Id = 2,
+                Id = _idGenerator.Next(),
                 Application = "Application1",
                 Groups = { "Group1" },
                 CreatedAt = DateTime.UtcNow
             },
             new()
             {
-                Id = 3,
+                Id = _idGenerator.Next(),
                 Application = "Application2",
                 Groups = { "Group2" },
                 CreatedAt = DateTime.UtcNow
             },
             new()
             {
-                Id = 4,
+                Id = _idGenerator.Next(),
                 Application = "Application1",
                 Groups = { "Group2" },
                 CreatedAt = DateTime.UtcNow
             },
             new()
             {
-                Id = 5,
+                Id = _idGenerator.Next(),
                 Application = "Application2",
                 Groups = { "Group1", "Group2" },
                 CreatedAt = DateTime.UtcNow
             },
             new()
             {
-                Id = 7,
+                Id = _idGenerator.Next(),
                 Application = "Application2",
                 Groups = { "Group1", "Group2" },
                 CreatedAt = DateTime.UtcNow
@@ -75,6 +77,7 @@ public class NetworkObjectRepository : INetworkObjectRepository
     public void Create(NetworkObject networkObject)
     {
         // TODO assign other values
+        networkObject.Id = _idGenerator.Next();
         networkObject.CreatedAt = _dateTimeProvider.Now;
         _randomNOs.Add(networkObject);
     }
@@ -82,5 +85,11 @@ public class NetworkObjectRepository : INetworkObjectRepository
     public bool Delete(int id)
     {
         return _randomNOs.RemoveAll(x => x.Id == id) > 0;
+    }
+
+    private class IdGenerator
+    {
+        private int _nextId = 1;
+        public int Next() => _nextId++;
     }
 }

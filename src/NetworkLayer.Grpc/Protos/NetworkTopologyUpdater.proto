@@ -19,10 +19,14 @@ message NewNetworkObject {
     repeated string groups = 3;
 }
 
-message ScaleUpResponse { }
+message ScaleUpResponse {
+    repeated int32 created_ids = 1;
+}
 
 message ScaleDownRequest {
     repeated int32 remove_ids = 1;
 }
 
-message ScaleDownResponse { }
+message ScaleDownResponse {
+    repeated int32 not_found_ids = 1;
+}

@@ -2,7 +2,7 @@
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using NetworkLayer.API.Mappers;
-using NetworkLayer.Grpc;
+using NetworkLayer.Grpc.NetworkObjects;
 
 namespace NetworkLayer.API.Services;
 
