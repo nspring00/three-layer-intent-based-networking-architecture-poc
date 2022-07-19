@@ -46,7 +46,13 @@ public class TopologyService : Grpc.Topology.TopologyService.TopologyServiceBase
             topologies.Sum(x => x.NlManagers.Sum(y => y.ActiveDevices.Count)),
             string.Join(", ", request.RegionNames));
 
-        var response = new RegionTopologyResponse { RegionTopologies = { topologies } };
+        var response = new RegionTopologyResponse
+        {
+            RegionTopologies =
+            {
+                topologies
+            }
+        };
         return Task.FromResult(response);
     }
 
@@ -57,7 +63,11 @@ public class TopologyService : Grpc.Topology.TopologyService.TopologyServiceBase
     {
         return new RegionTopology
         {
-            RegionName = r.Name, NlManagers = { deviceDict.Select(x => MapNlManager(x.Key, x.Value, now)) }
+            RegionName = r.Name,
+            NlManagers =
+            {
+                deviceDict.Select(x => MapNlManager(x.Key, x.Value, now))
+            }
         };
     }
 
@@ -67,13 +77,19 @@ public class TopologyService : Grpc.Topology.TopologyService.TopologyServiceBase
         {
             Id = nlId,
             Uri = GetUriForNlManager(nlId)?.AbsoluteUri,
-            ActiveDevices = { devices.Select(x => MapDevice(x, now)) }
+            ActiveDevices =
+            {
+                devices.Select(x => MapDevice(x, now))
+            }
         };
     }
 
     private static DeviceInfo MapDevice(NetworkObject no, DateTime now)
     {
-        return new DeviceInfo { Id = no.Id, Uptime = Duration.FromTimeSpan(now - no.Created) };
+        return new DeviceInfo
+        {
+            Id = no.Id, Uptime = Duration.FromTimeSpan(now - no.Created)
+        };
     }
 
     private Uri? GetUriForNlManager(int nlId)

@@ -44,22 +44,22 @@ public class NetworkObjectRepository : INetworkObjectRepository
                         Application = "Application1",
                         Created = DateTime.UtcNow.AddMinutes(-2)
                     },
-                    new()
-                    {
-                        Id = 4,
-                        Region = new Region("Vienna"),
-                        NetworkLayerId = 2,
-                        Application = "Application1",
-                        Created = DateTime.UtcNow.AddMinutes(-3)
-                    },
-                    new()
-                    {
-                        Id = 5,
-                        Region = new Region("Vienna"),
-                        NetworkLayerId = 2,
-                        Application = "Application1",
-                        Created = DateTime.UtcNow.AddMinutes(0)
-                    }
+                    //new()
+                    //{
+                    //    Id = 4,
+                    //    Region = new Region("Vienna"),
+                    //    NetworkLayerId = 2,
+                    //    Application = "Application1",
+                    //    Created = DateTime.UtcNow.AddMinutes(-3)
+                    //},
+                    //new()
+                    //{
+                    //    Id = 5,
+                    //    Region = new Region("Vienna"),
+                    //    NetworkLayerId = 2,
+                    //    Application = "Application1",
+                    //    Created = DateTime.UtcNow.AddMinutes(0)
+                    //}
                 });
 
             _networkObjects.Add(new Region("Linz"),
@@ -73,14 +73,14 @@ public class NetworkObjectRepository : INetworkObjectRepository
                         Application = "Application2",
                         Created = DateTime.UtcNow.AddMinutes(-1)
                     },
-                    new()
-                    {
-                        Id = 7,
-                        Region = new Region("Linz"),
-                        NetworkLayerId = 4,
-                        Application = "Application2",
-                        Created = DateTime.UtcNow.AddMinutes(-3)
-                    }
+                    //new()
+                    //{
+                    //    Id = 7,
+                    //    Region = new Region("Linz"),
+                    //    NetworkLayerId = 4,
+                    //    Application = "Application2",
+                    //    Created = DateTime.UtcNow.AddMinutes(-3)
+                    //}
                 });
         }
     }

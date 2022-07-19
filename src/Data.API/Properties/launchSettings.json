@@ -13,6 +13,14 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_Kestrel__Enforce_HTTP2": "true"
+        /*"NlManagers__0__Id": "1",
+        "NlManagers__0__Region": "Vienna",
+        "NlManagers__0__Uri": "http://nl-vienna-1:80",
+        "NlManagers__0__Name": "nl-vienna-1",
+        "NlManagers__1__Id": "3",
+        "NlManagers__1__Region": "Linz",
+        "NlManagers__1__Uri": "http://nl-linz-1:80",
+        "NlManagers__1__Name": "nl-linz-1"*/
       },
       "applicationUrl": "https://localhost:7110;http://localhost:5110",
       "dotnetRunMessages": true
