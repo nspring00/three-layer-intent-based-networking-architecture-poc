@@ -16,7 +16,10 @@ public static class ServiceConfiguration
         services.AddSingleton<INlManagerService, NlManagerService>();
         services.AddSingleton<INetworkObjectRepository, NetworkObjectRepository>();
 
-        services.AddGrpc();
+        services.AddGrpc(options =>
+        {
+            options.EnableDetailedErrors = true;
+        });
         services.AddGrpcReflection();
     }
 }

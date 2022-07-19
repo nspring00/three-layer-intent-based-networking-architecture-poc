@@ -1,21 +1,25 @@
 ﻿using Agent.Core.Clients;
 using Agent.Core.Models;
+using Agent.Core.Options;
 using Common.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Agent.Core.Services;
 
 public class GrpcReasoningService : IReasoningService
 {
-    private readonly KnowledgeGrpcClient _client;
     private readonly ILogger<GrpcReasoningService> _logger;
+    private readonly KnowledgeGrpcClient _client;
+    private readonly Uri _reasoningUri;
 
-    private readonly Uri _knowledgeUri = new("https://localhost:7070"); // TODO get from config
-
-    public GrpcReasoningService(KnowledgeGrpcClient client, ILogger<GrpcReasoningService> logger)
+    public GrpcReasoningService(ILogger<GrpcReasoningService> logger, KnowledgeGrpcClient client,
+        IOptions<ExternalServiceConfig> serviceOptions)
     {
         _client = client;
         _logger = logger;
+        _reasoningUri = new Uri(serviceOptions.Value.ReasoningServiceUri);
+        logger.LogInformation("GrpcReasoningService configured with Reasoning Uri {ReasoningUri}", _reasoningUri);
     }
 
     public async Task<IDictionary<Region, AgentAction>> GetRequiredActions(IList<Region> regions)
@@ -23,7 +27,7 @@ public class GrpcReasoningService : IReasoningService
         _logger.LogInformation("Retrieving required actions for regions {Regions}",
             string.Join("", regions.Select(x => x.Name)));
 
-        var actions = await _client.ExecuteReasoningAsync(_knowledgeUri, regions);
+        var actions = await _client.ExecuteReasoningAsync(_reasoningUri, regions);
 
         // TODO validation??
         if (actions.GroupBy(a => a.Region).Any(x => x.Count() > 1))

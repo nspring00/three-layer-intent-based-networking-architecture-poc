@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A0EE42A7-8F20-4DC6-B04C-F13CE595B92B}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		docker\.env = docker\.env
 		docker\docker-compose.yml = docker\docker-compose.yml
 	EndProjectSection
 EndProject
@@ -55,7 +56,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Knowledge", "Knowledge", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NetworkLayer", "NetworkLayer", "{FD42B753-D1F1-40ED-A301-DD060752492B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data.Test.Manual", "src\Data.Test.Manual\Data.Test.Manual.csproj", "{00755EC4-E700-48AC-AB9C-52683F0B622B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data.Test.Manual", "src\Data.Test.Manual\Data.Test.Manual.csproj", "{00755EC4-E700-48AC-AB9C-52683F0B622B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

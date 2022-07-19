@@ -1,9 +1,11 @@
-﻿using Knowledge.API;
+﻿using Common.Web.AspNetCore;
+using Knowledge.API;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.CheckEnforceHttp2();
 builder.Services.AddGrpc();
 builder.Services.AddGrpcReflection();
 builder.Services.AddControllers();

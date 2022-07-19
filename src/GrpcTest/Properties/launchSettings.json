@@ -1,11 +1,11 @@
 {
   "profiles": {
-    "NetworkLayer.API": {
+    "GrpcTest": {
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:5071;https://localhost:7071",
+      "applicationUrl": "http://localhost:5052;https://localhost:7052",
       "dotnetRunMessages": true
     },
     "Docker": {

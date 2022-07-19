@@ -1,4 +1,5 @@
-﻿using Data.Console.Models;
+﻿using Common.Models;
+using Data.Console.Models;
 using Data.Console.Repositories;
 using Data.Console.Services;
 using FluentAssertions;

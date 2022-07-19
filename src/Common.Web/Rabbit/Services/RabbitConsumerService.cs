@@ -33,7 +33,7 @@ public class RabbitConsumerService : IHostedService
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _baseLogger.LogInformation("Starting ReasoningRequestConsumerService");
+        _baseLogger.LogInformation("Starting RabbitConsumerService with Queue {QueueName}", _queueOptions.QueueName);
 
         _channel = _channelPool.Get();
         if (_channel is null)
@@ -54,6 +54,8 @@ public class RabbitConsumerService : IHostedService
         };
 
         _consumerTag = _channel.BasicConsume(_queueOptions.QueueName, false, consumer);
+
+        _baseLogger.LogInformation("Successfully bound to RabbitMQ queue {QueueName}", _queueOptions.QueueName);
 
         return Task.CompletedTask;
     }

@@ -20,7 +20,7 @@ public class NetworkTopologyUpdateService : NetworkTopologyUpdater.NetworkTopolo
     {
         var newNOs = request.NewNetworkObjects.Select(x => new Models.NetworkObject
         {
-            Id = x.Id, Application = x.Application, Groups = x.Groups.ToList(), Ip = "TODO"
+            Application = x.Application, Groups = x.Groups.ToList(), Ip = "TODO"
         }).ToList();
 
 

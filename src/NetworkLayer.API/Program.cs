@@ -1,9 +1,11 @@
 ﻿using Common.Services;
+using Common.Web.AspNetCore;
 using NetworkLayer.API.Repositories;
 using NetworkLayer.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.CheckEnforceHttp2();
 builder.Services.AddGrpc();
 builder.Services.AddGrpcReflection();
 

@@ -40,7 +40,8 @@ public class RabbitModelPooledObjectPolicy : IPooledObjectPolicy<IModel>, IDispo
         catch (BrokerUnreachableException)
         {
             _logger.LogError("RabbitMQ Broker is unreachable");
-            return null;
+            //return null;
+            throw;
         }
     }
 
