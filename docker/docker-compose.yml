@@ -9,6 +9,114 @@ services:
     environment:
       - "RABBITMQ_DEFAULT_USER=ibsm"
       - "RABBITMQ_DEFAULT_PASS=ibsm"
+
+  knowledge:
+    image: ibsm-knowledge
+    build:
+      context: ../
+      dockerfile: src/Knowledge.API/Dockerfile
+    restart: on-failure
+    depends_on: 
+      - rabbitmq
+    ports:
+      - "11000:80"
+      - "11001:443"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Enforce_HTTP2=true
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__VHost=/
+      - RabbitMQ__UserName=ibsm
+      - RabbitMQ__Password=ibsm
+      - RabbitQueues__ReasoningResponseQueue__QueueName=agent_event_queue
+    volumes:
+      - ${CERTIFICATE_BASE_PATH}:/https/
+      
+  data:
+    image: ibsm-data
+    build: 
+      context: ../
+      dockerfile: src/Data.API/Dockerfile
+    restart: on-failure
+    ports:
+     - "11010:80"
+     - "11011:443"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Enforce_HTTP2=true
+      - NL__0__Id=1
+      - NL__0__Region=Vienna
+      - NL__0__Uri=http://nl-vienna-1:80
+      - NL__1__Id=2
+      - NL__1__Region=Vienna
+      - NL__1__Uri=http://nl-vienna-2:80
+      - NL__2__Id=3
+      - NL__2__Region=Linz
+      - NL__2__Uri=http://nl-linz-1:80
+    volumes:
+      - ${CERTIFICATE_BASE_PATH}:/https/
+  
+  agent:
+    image: ibsm-agent
+    build: 
+      context: ../
+      dockerfile: src/Agent.API/Dockerfile
+    restart: on-failure
+    depends_on:
+     - rabbitmq
+    environment:
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__VHost=/
+      - RabbitMQ__UserName=ibsm
+      - RabbitMQ__Password=ibsm
+      - RabbitQueues__RegionActionRequiredRequests__QueueName=agent_event_queue
+      - ExternalServices__ReasoningServiceUri=http://knowledge:80
+      - ExternalServices__TopologyServiceUri=http://data:80
+     
+  nl-vienna-1:
+    image: ibsm-networklayer
+    build: 
+      context: ../
+      dockerfile: src/NetworkLayer.API/Dockerfile
+    restart: on-failure
+    ports:
+     - "11020:80"
+     - "11021:443"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Enforce_HTTP2=true
+    volumes:
+      - ${CERTIFICATE_BASE_PATH}:/https/
+     
+  nl-linz-1:
+    image: ibsm-networklayer
+    build: 
+      context: ../
+      dockerfile: src/NetworkLayer.API/Dockerfile
+    restart: on-failure
+    ports:
+     - "11022:80"
+     - "11023:443"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Enforce_HTTP2=true
+    volumes:
+      - ${CERTIFICATE_BASE_PATH}:/https/
+      
 networks:
   default:
     name: "ibsm"
