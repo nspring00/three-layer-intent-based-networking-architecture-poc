@@ -1,7 +1,7 @@
 ﻿using Agent.API.BackgroundServices;
 using Agent.API.Configs;
-using Agent.Core;
 using Agent.Core.Clients;
+using Agent.Core.Handlers;
 using Agent.Core.Services;
 using Common.Web.Rabbit;
 
@@ -16,6 +16,7 @@ public static class ServiceConfiguration
         services.AddSingleton<DataGrpcClient>();
         services.AddSingleton<IReasoningService, GrpcReasoningService>();
         services.AddSingleton<ITopologyService, GrpcTopologyService>();
+        services.AddSingleton<INetworkLayerService, GrpcNetworkLayerService>();
 
         services.Configure<RabbitQueues>(configuration.GetSection("RabbitQueues")); // TODO fix config loading
         services.AddRabbitMq(configuration);

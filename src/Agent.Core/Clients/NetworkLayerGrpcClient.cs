@@ -6,7 +6,7 @@ namespace Agent.Core.Clients;
 
 public class NetworkLayerGrpcClient : CachedGrpcClient
 {
-    public async Task ScaleUp(Uri uri, IList<NetworkObjectCreateInfo> newNOs)
+    public async Task<IList<int>> ScaleUp(Uri uri, ICollection<NetworkObjectCreateInfo> newNOs)
     {
         var channel = GetChannel(uri);
         var client = new NetworkTopologyUpdater.NetworkTopologyUpdaterClient(channel);
@@ -16,24 +16,27 @@ public class NetworkLayerGrpcClient : CachedGrpcClient
             NewNetworkObjects = { newNOs.Select(MapNewNetworkObject) }
         };
         
-        await client.ScaleUpAsync(request);
+        var response = await client.ScaleUpAsync(request);
+
+        return response.CreatedIds.ToList();
     }
 
-    public async Task ScaleDown(Uri uri, IList<int> removeIds)
+    public async Task<IList<int>> ScaleDown(Uri uri, ICollection<int> removeIds)
     {
         var channel = GetChannel(uri);
         var client = new NetworkTopologyUpdater.NetworkTopologyUpdaterClient(channel);
 
         var request = new ScaleDownRequest { RemoveIds = { removeIds } };
 
-        await client.ScaleDownAsync(request);
+        var response = await client.ScaleDownAsync(request);
+
+        return response.NotFoundIds.ToList();
     }
 
     private static NewNetworkObject MapNewNetworkObject(NetworkObjectCreateInfo info)
     {
         return new NewNetworkObject
         {
-            Id = info.Id,
             Application = info.Application,
             Groups = { info.Groups }
         };

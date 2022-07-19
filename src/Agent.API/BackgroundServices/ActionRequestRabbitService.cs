@@ -2,6 +2,7 @@
 using Agent.API.Configs;
 using Agent.API.Contracts.Messages;
 using Agent.Core;
+using Agent.Core.Handlers;
 using Common.Models;
 using Common.Web.Rabbit.Services;
 using Microsoft.Extensions.ObjectPool;
