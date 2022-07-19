@@ -32,6 +32,11 @@ public class NlManagerService : INlManagerService
         return _nlManagers[nlId].Uri;
     }
 
+    public IList<NlManagerInfo> GetAll()
+    {
+        return _nlManagers.Values.ToList();
+    }
+
     private static NlManagerInfo MapNlManagerInfo(NlManagerInfoOptions options)
     {
         return new NlManagerInfo(options.Id, options.Name, new Uri(options.Uri), new Region(options.Region));
