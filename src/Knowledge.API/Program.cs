@@ -32,6 +32,7 @@ if (app.Environment.IsDevelopment())
 //app.UseAuthorization();
 
 app.MapControllers();
+app.MapGet("/", () => "Hello from Knowledge");
 app.MapGrpcServices();
 
 app.Run();

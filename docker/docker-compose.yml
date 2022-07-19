@@ -55,14 +55,14 @@ services:
       - NlManagers__0__Region=Vienna
       - NlManagers__0__Uri=http://nl-vienna-1:80
       - NlManagers__0__Name=nl-vienna-1
-      #- NlManagers__1__Id=2
-      #- NlManagers__1__Region=Vienna
-      #- NlManagers__1__Uri=http://nl-vienna-2:80
-      #- NlManagers__1__Name=nl-vienna-2
-      - NlManagers__1__Id=3
-      - NlManagers__1__Region=Linz
-      - NlManagers__1__Uri=http://nl-linz-1:80
-      - NlManagers__1__Name=nl-linz-1
+      - NlManagers__1__Id=2
+      - NlManagers__1__Region=Vienna
+      - NlManagers__1__Uri=http://nl-vienna-2:80
+      - NlManagers__1__Name=nl-vienna-2
+      - NlManagers__2__Id=3
+      - NlManagers__2__Region=Linz
+      - NlManagers__2__Uri=http://nl-linz-1:80
+      - NlManagers__2__Name=nl-linz-1
     volumes:
       - ${CERTIFICATE_BASE_PATH}:/https/
   
@@ -99,10 +99,15 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Password=password
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ASPNETCORE_Kestrel__Enforce_HTTP2=true
+      - NetworkObjects__0__Application=Application1
+      - NetworkObjects__1__Application=Application1
+      - NetworkObjects__2__Application=Application1
+      - NetworkObjects__3__Application=Application1
+      - NetworkObjects__4__Application=Application1
     volumes:
       - ${CERTIFICATE_BASE_PATH}:/https/
      
-  nl-linz-1:
+  nl-vienna-2:
     image: ibsm-networklayer
     build: 
       context: ../
@@ -117,6 +122,33 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Password=password
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ASPNETCORE_Kestrel__Enforce_HTTP2=true
+      - NetworkObjects__0__Application=Application1
+      - NetworkObjects__1__Application=Application1
+      - NetworkObjects__2__Application=Application1
+    volumes:
+      - ${CERTIFICATE_BASE_PATH}:/https/
+     
+  nl-linz-1:
+    image: ibsm-networklayer
+    build: 
+      context: ../
+      dockerfile: src/NetworkLayer.API/Dockerfile
+    restart: on-failure
+    ports:
+     - "11024:80"
+     - "11025:443"
+    environment:
+      #- ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Enforce_HTTP2=true
+      - NetworkObjects__0__Application=Application2
+      - NetworkObjects__1__Application=Application2
+      - NetworkObjects__2__Application=Application2
+      - NetworkObjects__3__Application=Application2
+      - NetworkObjects__4__Application=Application2
+      - NetworkObjects__5__Application=Application2
     volumes:
       - ${CERTIFICATE_BASE_PATH}:/https/
       

@@ -11,7 +11,7 @@ var app = builder.Build();
 
 //app.UseHttpsRedirection();
 
-app.MapGet("/", () => "Hello World!");
+app.MapGet("/", () => "Hello from Data");
 
 app.MapGrpcService<TopologyService>();
 

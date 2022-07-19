@@ -9,7 +9,7 @@ public class NetworkObjectRepository : INetworkObjectRepository
     private readonly ILogger<NetworkObjectRepository> _logger;
     private readonly Dictionary<Region, IList<NetworkObject>> _networkObjects = new();
 
-    private const bool InsertTestData = true;
+    private const bool InsertTestData = false;
 
     public NetworkObjectRepository(ILogger<NetworkObjectRepository> logger)
     {
