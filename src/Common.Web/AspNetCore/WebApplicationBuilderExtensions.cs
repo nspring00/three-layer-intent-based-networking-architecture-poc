@@ -8,15 +8,28 @@ public static class WebApplicationBuilderExtensions
 
     public static WebApplicationBuilder CheckEnforceHttp2(this WebApplicationBuilder builder)
     {
-        Console.WriteLine($"ASPNETCORE_Kestrel:Enforce_HTTP2={builder.Configuration[AppSettingsEnforceHttp2Flag]}");
         if (builder.Configuration[AppSettingsEnforceHttp2Flag] is not null &&
             builder.Configuration[AppSettingsEnforceHttp2Flag].Equals("true", StringComparison.OrdinalIgnoreCase))
         {
+            Console.WriteLine("Enforcing HTTP2 on all endpoints");
             builder.WebHost.ConfigureKestrel(options =>
             {
                 options.ConfigureEndpointDefaults(lo => lo.Protocols = HttpProtocols.Http2);
             });
         }
+
+        return builder;
+    }
+
+    public static WebApplicationBuilder ConfigurePortsForRestAndGrpcNoTls(this WebApplicationBuilder builder, int http1Port = 80, int http2Port = 8080)
+    {
+        builder.WebHost.ConfigureKestrel(options =>
+        {
+            options.ListenAnyIP(http1Port, listenOptions =>
+                listenOptions.Protocols = HttpProtocols.Http1);
+            options.ListenAnyIP(http2Port, listenOptions =>
+                listenOptions.Protocols = HttpProtocols.Http2);
+        });
 
         return builder;
     }

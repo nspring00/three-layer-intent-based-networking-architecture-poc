@@ -6,7 +6,11 @@ using NetworkLayer.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.CheckEnforceHttp2();
+if (builder.Environment.IsDocker())
+{
+    builder.ConfigurePortsForRestAndGrpcNoTls();
+}
+
 builder.Services.AddGrpc();
 builder.Services.AddGrpcReflection();
 
@@ -18,7 +22,7 @@ builder.Services.AddSingleton<INetworkObjectService, NetworkObjectService>();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsDocker())
 {
     app.MapGrpcReflectionService();
 }
