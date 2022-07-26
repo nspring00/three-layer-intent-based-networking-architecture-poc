@@ -1,4 +1,4 @@
-﻿namespace Knowledge.API.Configs;
+﻿namespace Common.Web.Rabbit.Configs;
 
 public class RabbitOptions
 {

@@ -1,4 +1,6 @@
-﻿using Data.Console.Models;
+﻿using Common.Grpc;
+using Common.Models;
+using Data.Console.Models;
 using Knowledge.Grpc.NetworkInfoUpdate;
 using Microsoft.Extensions.Logging;
 using AddedNetworkObject = Knowledge.Grpc.NetworkInfoUpdate.AddedNetworkObject;

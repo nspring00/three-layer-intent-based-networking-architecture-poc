@@ -1,4 +1,5 @@
-﻿using Data.Console.Clients;
+﻿using Common.Models;
+using Data.Console.Clients;
 using Data.Console.Models;
 using Microsoft.Extensions.Logging;
 
@@ -19,7 +20,7 @@ public class NetworkLayerService : INetworkLayerService
         _nlGrpcClient = nlGrpcClient;
     }
 
-    public async Task FetchAllUpdates(Region region, Uri uri)
+    public async Task FetchAllUpdates(int nlId, Region region, Uri uri)
     {
         var response = await _nlGrpcClient.FetchUpdates(uri);
 
@@ -35,6 +36,7 @@ public class NetworkLayerService : INetworkLayerService
 
             _networkObjectService.Create(new NetworkObject
             {
+                NetworkLayerId = nlId,
                 Region = region,
                 Id = newNo.Id,
                 Created = newNo.CreatedAt.ToDateTime(),

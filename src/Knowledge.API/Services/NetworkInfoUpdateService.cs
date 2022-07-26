@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿using Common.Models;
+using Grpc.Core;
 using Knowledge.API.Models;
 using Knowledge.API.Repository;
 using Knowledge.Grpc.NetworkInfoUpdate;
@@ -23,6 +24,8 @@ public class NetworkInfoUpdateService : NetworkInfoUpdater.NetworkInfoUpdaterBas
         NetworkInfoUpdateRequest request,
         ServerCallContext context)
     {
+        _logger.LogInformation($"Received update for {request.RegionUpdates.Count} regions");
+
         foreach (var regionUpdate in request.RegionUpdates)
         {
             var regionName = regionUpdate.RegionName!;
@@ -33,7 +36,7 @@ public class NetworkInfoUpdateService : NetworkInfoUpdater.NetworkInfoUpdaterBas
             
             foreach (var removedId in regionUpdate.Removed)
             {
-                _networkInfoRepository.Remove(regionName, removedId);
+                _networkInfoRepository.Remove(new Region(regionName), removedId);
             }
 
             foreach (var workloadUpdate in regionUpdate.WorkloadUpdates)
@@ -47,7 +50,7 @@ public class NetworkInfoUpdateService : NetworkInfoUpdater.NetworkInfoUpdaterBas
 
     private void HandleWorkloadUpdate(string regionName, WorkloadUpdate workloadUpdate)
     {
-        var device = _networkInfoRepository.Get(regionName, workloadUpdate.NetworkObjectId);
+        var device = _networkInfoRepository.Get(new Region(regionName), workloadUpdate.NetworkObjectId);
         if (device == null)
         {
             _logger.LogError($"No device {regionName} {workloadUpdate.NetworkObjectId} exists");

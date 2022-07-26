@@ -1,4 +1,4 @@
-﻿namespace Knowledge.API.Dtos;
+﻿namespace Knowledge.API.Contracts.Requests;
 
 public record ReasoningRequest
 {

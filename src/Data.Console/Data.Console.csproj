@@ -13,6 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Common.Grpc\Common.Grpc.csproj" />
+    <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\Knowledge.Grpc\Knowledge.Grpc.csproj" />
     <ProjectReference Include="..\NetworkLayer.Grpc\NetworkLayer.Grpc.csproj" />
   </ItemGroup>

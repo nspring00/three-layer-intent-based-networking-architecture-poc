@@ -1,10 +1,10 @@
-﻿using Knowledge.API.Configs;
+﻿using Common.Web.Rabbit.Configs;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Exceptions;
 
-namespace Knowledge.API.Policies;
+namespace Common.Web.Rabbit.Policies;
 
 // Source: https://www.c-sharpcorner.com/article/publishing-rabbitmq-message-in-asp-net-core/
 public class RabbitModelPooledObjectPolicy : IPooledObjectPolicy<IModel>, IDisposable
@@ -12,7 +12,6 @@ public class RabbitModelPooledObjectPolicy : IPooledObjectPolicy<IModel>, IDispo
     private readonly ILogger<RabbitModelPooledObjectPolicy> _logger;
     private readonly RabbitOptions _options;
     private readonly IConnection? _connection;
-    private bool _connected = false;
 
     public RabbitModelPooledObjectPolicy(
         ILogger<RabbitModelPooledObjectPolicy> logger,
@@ -25,7 +24,7 @@ public class RabbitModelPooledObjectPolicy : IPooledObjectPolicy<IModel>, IDispo
 
     private IConnection? GetConnection()
     {
-        var factory = new ConnectionFactory()
+        var factory = new ConnectionFactory
         {
             HostName = _options.HostName,
             Port = _options.Port,
@@ -36,23 +35,19 @@ public class RabbitModelPooledObjectPolicy : IPooledObjectPolicy<IModel>, IDispo
 
         try
         {
-            var conn = factory.CreateConnection();
-            _connected = true;
-            return conn;
-        } catch (BrokerUnreachableException e)
+            return factory.CreateConnection();
+        }
+        catch (BrokerUnreachableException)
         {
-            _logger.LogError(e, "RabbitMQ broker is unreachable");
-            return null;
+            _logger.LogError("RabbitMQ Broker is unreachable");
+            //return null;
+            throw;
         }
     }
 
-    public IModel? Create()
+    public IModel Create()
     {
-        if (_connection is null)
-        {
-            return null;
-        }
-        return _connection.CreateModel();
+        return _connection?.CreateModel()!; // TODO check
     }
 
     public bool Return(IModel? obj)
@@ -73,10 +68,7 @@ public class RabbitModelPooledObjectPolicy : IPooledObjectPolicy<IModel>, IDispo
 
     public void Dispose()
     {
-        if (_connection is null)
-        {
-            return;
-        }
+        if (_connection is null) return;
         
         _connection.Close();
         _connection.Dispose();

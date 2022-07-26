@@ -1,6 +1,6 @@
 ﻿using Grpc.Net.Client;
 
-namespace Data.Console.Clients;
+namespace Common.Grpc;
 
 public class CachedGrpcClient : IDisposable
 {

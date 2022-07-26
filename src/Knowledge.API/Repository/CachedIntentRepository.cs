@@ -1,4 +1,5 @@
-﻿using Knowledge.API.Models;
+﻿using Common.Models;
+using Knowledge.API.Models;
 
 namespace Knowledge.API.Repository;
 
@@ -20,8 +21,8 @@ public class CachedIntentRepository : IIntentRepository
         _intents.Add(intent);
     }
 
-    public IList<Intent> GetForRegion(string region)
+    public IList<Intent> GetForRegion(Region region)
     {
-        return _intents.Where(i => i.At.Name == region).ToList();
+        return _intents.Where(i => i.At == region).ToList();
     }
 }

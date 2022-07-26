@@ -1,8 +1,11 @@
-﻿namespace Data.Console.Models;
+﻿using Common.Models;
+
+namespace Data.Console.Models;
 
 public class NetworkObject
 {
-    public Region Region { get; set; } = default!;
+    public int NetworkLayerId { get; set; }
+    public Region Region { get; set; } = default!;  // TODO 
     public int Id { get; set; }
     public DateTime Created { get; set; }
     public string Application { get; set; } = default!;

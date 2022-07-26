@@ -1,0 +1,42 @@
+{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:24728",
+      "sslPort": 44336
+    }
+  },
+  "profiles": {
+    "Data.API": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_Kestrel__Enforce_HTTP2": "true"
+        /*"NlManagers__0__Id": "1",
+        "NlManagers__0__Region": "Vienna",
+        "NlManagers__0__Uri": "http://nl-vienna-1:80",
+        "NlManagers__0__Name": "nl-vienna-1",
+        "NlManagers__1__Id": "3",
+        "NlManagers__1__Region": "Linz",
+        "NlManagers__1__Uri": "http://nl-linz-1:80",
+        "NlManagers__1__Name": "nl-linz-1"*/
+      },
+      "applicationUrl": "https://localhost:7110;http://localhost:5110",
+      "dotnetRunMessages": true
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "publishAllPorts": true,
+      "useSSL": true
+    }
+  }
+}

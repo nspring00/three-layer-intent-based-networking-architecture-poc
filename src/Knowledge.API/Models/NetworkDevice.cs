@@ -1,4 +1,6 @@
-﻿namespace Knowledge.API.Models;
+﻿using Common.Models;
+
+namespace Knowledge.API.Models;
 
 public record NetworkDevice(int Id, Region Region, string Application, Utilization Utilization);
 

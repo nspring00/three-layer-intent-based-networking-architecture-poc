@@ -3,7 +3,7 @@
 public record NetworkObject
 {
     public int Id { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = default!;
     public string Ip { get; set; } = default!;
     public List<string> Groups { get; set; } = new();
     public string Application { get; set; } = default!;

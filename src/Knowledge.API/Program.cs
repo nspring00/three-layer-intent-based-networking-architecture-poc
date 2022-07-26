@@ -1,9 +1,14 @@
-﻿using Knowledge.API;
+﻿using Common.Web.AspNetCore;
+using Knowledge.API;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+if (builder.Environment.IsDocker())
+{
+    builder.ConfigurePortsForRestAndGrpcNoTls();
+}
 
+// Add services to the container.
 builder.Services.AddGrpc();
 builder.Services.AddGrpcReflection();
 builder.Services.AddControllers();
@@ -17,7 +22,7 @@ builder.Services.ConfigureServices(builder.Configuration);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsDocker())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -30,6 +35,7 @@ if (app.Environment.IsDevelopment())
 //app.UseAuthorization();
 
 app.MapControllers();
+app.MapGet("/", () => "Hello from Knowledge");
 app.MapGrpcServices();
 
 app.Run();
