@@ -8,16 +8,16 @@ public class ReasoningService : IReasoningService
 {
     private readonly ILogger<ReasoningService> _logger;
     private readonly IIntentRepository _intentRepository;
-    private readonly INetworkInfoRepository _networkInfoRepository;
+    private readonly IWorkloadRepository _workloadRepository;
 
     public ReasoningService(
         ILogger<ReasoningService> logger,
         IIntentRepository intentRepository, 
-        INetworkInfoRepository networkInfoRepository)
+        IWorkloadRepository workloadRepository)
     {
         _logger = logger;
         _intentRepository = intentRepository;
-        _networkInfoRepository = networkInfoRepository;
+        _workloadRepository = workloadRepository;
     }
 
     // Check if efficiency goal is reached for region
@@ -26,12 +26,15 @@ public class ReasoningService : IReasoningService
         _logger.LogInformation("Reasoning for region {Region}", region);
         
         var intents = _intentRepository.GetForRegion(region);
-        var devices = _networkInfoRepository.GetForRegion(region);
-        var deviceCount = devices.Count;
+        var latestWorkloadInfo = _workloadRepository.GetLatest(region);
+        if (latestWorkloadInfo is null)
+        {
+            _logger.LogError("No workload info for region {Region}", region);
+            return new ReasoningComposition(false);
+        }
         
-        // TODO error handling
-        var utilizationSum = devices.Sum(d => d.Utilization.CpuUtilization);
-        var avg = utilizationSum / deviceCount;
+        var avg = latestWorkloadInfo.AvgEfficiency;
+        var deviceCount = latestWorkloadInfo.DeviceCount;
 
         // Get min and max from intents
         var min = intents.FirstOrDefault(i => i.Set.TargetMode == TargetMode.Min);

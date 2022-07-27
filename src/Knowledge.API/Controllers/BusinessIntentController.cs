@@ -12,16 +12,16 @@ public class BusinessIntentController : ControllerBase
 {
     private readonly ILogger<BusinessIntentController> _logger;
     private readonly IReasoningService _reasoningService;
-    private readonly INetworkInfoRepository _networkInfoRepository;
+    private readonly IWorkloadRepository _workloadRepository;
 
     public BusinessIntentController(
         ILogger<BusinessIntentController> logger,
         IReasoningService reasoningService,
-        INetworkInfoRepository networkInfoRepository)
+        IWorkloadRepository workloadRepository)
     {
         _logger = logger;
         _reasoningService = reasoningService;
-        _networkInfoRepository = networkInfoRepository;
+        _workloadRepository = workloadRepository;
     }
 
     // TODO move to message queue listener
@@ -35,7 +35,7 @@ public class BusinessIntentController : ControllerBase
     [HttpGet("/devices/{region}")]
     public ActionResult<List<NetworkDevice>> GetDevices([FromRoute] string region)
     {
-        return _networkInfoRepository.GetForRegion(new Region(region)).ToList();
+        return _workloadRepository.GetForRegion(new Region(region)).ToList();
     }
 
 }

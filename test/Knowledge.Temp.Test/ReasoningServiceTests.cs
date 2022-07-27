@@ -12,14 +12,14 @@ public class ReasoningServiceTests
 {
     private readonly ReasoningService _sut;
     private readonly IIntentRepository _intentRepository;
-    private readonly INetworkInfoRepository _networkInfoRepository;
+    private readonly IWorkloadRepository _workloadRepository;
 
     public ReasoningServiceTests()
     {
         var logger = Substitute.For<ILogger<ReasoningService>>();
-        _networkInfoRepository = Substitute.For<INetworkInfoRepository>();
+        _workloadRepository = Substitute.For<IWorkloadRepository>();
         _intentRepository = Substitute.For<IIntentRepository>();
-        _sut = new ReasoningService(logger, _intentRepository, _networkInfoRepository);
+        _sut = new ReasoningService(logger, _intentRepository, _workloadRepository);
     }
 
     [Theory]
@@ -29,7 +29,7 @@ public class ReasoningServiceTests
     public void TestMinIntentScaling(string regionName, int count, float average, float min, int expectedScale)
     {
         var region = new Region(regionName);
-        _networkInfoRepository.GetForRegion(region).Returns(
+        _workloadRepository.GetForRegion(region).Returns(
             Enumerable.Repeat(new NetworkDevice(1, region, "", new Utilization
             {
                 CpuUtilization = average
@@ -53,7 +53,7 @@ public class ReasoningServiceTests
     public void TestMaxIntentScaling(string regionName, int count, float average, float max, int expectedScale)
     {
         var region = new Region(regionName);
-        _networkInfoRepository.GetForRegion(region).Returns(
+        _workloadRepository.GetForRegion(region).Returns(
             Enumerable.Repeat(new NetworkDevice(1, region, "", new Utilization
             {
                 CpuUtilization = average
