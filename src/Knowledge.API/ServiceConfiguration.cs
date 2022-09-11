@@ -4,6 +4,7 @@ using Knowledge.API.Configs;
 using Knowledge.API.HostedServices;
 using Knowledge.API.Repository;
 using Knowledge.API.Services;
+using MediatR;
 
 namespace Knowledge.API;
 
@@ -15,14 +16,22 @@ public static class ServiceConfiguration
         services.AddSingleton<IIntentRepository, CachedIntentRepository>();
         services.AddSingleton<IWorkloadRepository, CachedWorkloadRepository>();
         services.AddSingleton<IReasoningService, ReasoningService>(); // TODO maybe scoped?
+        services.AddSingleton<IWorkloadAnalysisService, WorkloadAnalysisService>();
         services.Configure<RabbitQueues>(configuration.GetSection("RabbitQueues")); // TODO fix config loading
         services.AddRabbitMq(configuration); 
         services.AddHostedService<ReasoningRequestConsumerService>();
+
+        services.ConfigureMediatR();
     }
 
     public static void MapGrpcServices(this WebApplication app)
     {
         app.MapGrpcService<NetworkInfoUpdateService>();
         app.MapGrpcService<GrpcReasoningService>();
+    }
+
+    private static void ConfigureMediatR(this IServiceCollection services)
+    {
+        services.AddMediatR(typeof(Program));
     }
 }
