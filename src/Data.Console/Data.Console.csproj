@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Cocona" Version="2.0.3" />
-    <PackageReference Include="Grpc.Net.Client" Version="2.46.0" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.48.0" />
   </ItemGroup>
 
   <ItemGroup>
