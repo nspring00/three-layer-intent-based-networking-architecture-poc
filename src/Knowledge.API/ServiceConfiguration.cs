@@ -1,4 +1,5 @@
-﻿using Common.Web.Rabbit;
+﻿using Common.Services;
+using Common.Web.Rabbit;
 using Knowledge.API.Configs;
 using Knowledge.API.HostedServices;
 using Knowledge.API.Repository;
@@ -10,6 +11,7 @@ public static class ServiceConfiguration
 {
     public static void ConfigureServices(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddSingleton<IIntentRepository, CachedIntentRepository>();
         services.AddSingleton<IWorkloadRepository, CachedWorkloadRepository>();
         services.AddSingleton<IReasoningService, ReasoningService>(); // TODO maybe scoped?

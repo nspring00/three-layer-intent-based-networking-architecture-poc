@@ -26,16 +26,15 @@ public class BusinessIntentController : ControllerBase
 
     // TODO move to message queue listener
     [HttpPost]
-    public ActionResult<List<ReasoningComposition>> RequestReasoning([FromBody] List<string> regions)
+    public ActionResult<IList<ReasoningComposition>> RequestReasoning([FromBody] List<string> regions)
     {
-        return regions.Select(r => _reasoningService.ReasonForRegion(new Region(r))).ToList();
+        return Ok(regions.Select(r => _reasoningService.ReasonForRegion(new Region(r))));
     }
 
     // TODO only for debugging
-    [HttpGet("/devices/{region}")]
-    public ActionResult<List<NetworkDevice>> GetDevices([FromRoute] string region)
+    [HttpGet("/workload/{region}")]
+    public ActionResult<IList<WorkloadInfo>> GetWorkload([FromRoute] string region)
     {
-        return _workloadRepository.GetForRegion(new Region(region)).ToList();
+        return Ok(_workloadRepository.GetForRegion(new Region(region)));
     }
-
 }

@@ -49,7 +49,7 @@ public class NoAggregationService : BackgroundService
             var endTime = _dateTimeProvider.Now;
             var updates = _networkObjectService.AggregateUpdates(startTime, endTime);
             _networkObjectService.Reset();
-            await _knowledgeService.UpdateKnowledgeNOs(updates);
+            await _knowledgeService.UpdateKnowledgeNOs(endTime, updates);
             startTime = endTime;
         }
     }

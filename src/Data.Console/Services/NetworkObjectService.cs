@@ -9,16 +9,19 @@ public class NetworkObjectService : INetworkObjectService
 {
     private readonly ILogger<NetworkObjectService> _logger;
     private readonly INetworkObjectRepository _networkObjectRepository;
+    private readonly IEfficiencyService _efficiencyService;
 
     private readonly Dictionary<Region, List<AddedNetworkObject>> _added = new();
     private readonly Dictionary<Region, List<int>> _removed = new();
 
     public NetworkObjectService(
         ILogger<NetworkObjectService> logger, 
-        INetworkObjectRepository networkObjectRepository)
+        INetworkObjectRepository networkObjectRepository,
+        IEfficiencyService efficiencyService)
     {
         _logger = logger;
         _networkObjectRepository = networkObjectRepository;
+        _efficiencyService = efficiencyService;
     }
 
     public void Create(NetworkObject networkObject)
@@ -77,45 +80,39 @@ public class NetworkObjectService : INetworkObjectService
         
         foreach (var region in regions)
         {
+            if (!nos.ContainsKey(region))
+            {
+                _logger.LogInformation("No NO list found for region {Region}", region.Name);
+                continue;
+            }
+
+            var deviceInfos = nos[region]
+                .Select(x => ComputeAverageInfo(x, from, to, totalTime))
+                .Where(x => x is not null)
+                .ToList();
+
+            if (deviceInfos.Count == 0)
+            {
+                _logger.LogInformation("No NOs found for region {Region}", region.Name);
+                continue;
+            }
+
+            var deviceCount = deviceInfos.Count;
+            var avgEfficiency = deviceInfos.Average(x => _efficiencyService.ComputeAvgEfficiency(x!.Utilization));
+            var avgAvailability = deviceInfos.Average(x => x!.Availability);
+
             var update = new NetworkUpdate
             {
-                Timestamp = to
+                DeviceCount = deviceCount,
+                AvgEfficiency = avgEfficiency,
+                AvgAvailability = avgAvailability
             };
+
+            _logger.LogInformation(
+                "Computed stats for Region {Region}: DeviceCount {DeviceCount}, AvgEfficiency {AvgEfficiency}, AvgAvailability {AvgAvailability}",
+                region.Name, deviceCount, avgEfficiency, avgAvailability);
+
             updates.Add(region, update);
-
-            if (nos.ContainsKey(region))
-            {
-                foreach (var networkObject in nos[region])
-                {
-                    var info = ComputeAverageInfo(networkObject, from, to, totalTime);
-                    if (info is null) continue;
-
-                    update.Updates.Add(networkObject.Id, info);
-
-                }
-            }
-
-            if (_added.ContainsKey(region))
-            {
-                var added = _added[region];
-                if (added.Count == 0)
-                {
-                    continue;
-                }
-
-                update.Added.AddRange(added);
-            }
-
-            if (_removed.ContainsKey(region))
-            {
-                var removed = _removed[region];
-                if (removed.Count == 0)
-                {
-                    continue;
-                }
-
-                update.Removed.AddRange(removed);
-            }
         }
 
         return updates;
@@ -162,13 +159,16 @@ public class NetworkObjectService : INetworkObjectService
             result.Utilization.CpuUtilization += weight * info.Value.Utilization.CpuUtilization;
             result.Utilization.MemoryUtilization += weight * info.Value.Utilization.MemoryUtilization;
             result.Availability += weight * info.Value.Availability;
-            System.Console.WriteLine($"{info.Key} {info.Value.Utilization.CpuUtilization} {info.Value.Utilization.MemoryUtilization} {info.Value.Availability}");
+            //System.Console.WriteLine($"{info.Key} {info.Value.Utilization.CpuUtilization} {info.Value.Utilization.MemoryUtilization} {info.Value.Availability}");
         }
 
         // Clear all status infos about network objects
         networkObject.Infos.Clear();
 
-        System.Console.WriteLine($"{networkObject.Id} {result.Utilization.CpuUtilization} {result.Utilization.MemoryUtilization} {result.Availability}");
+        //System.Console.WriteLine($"{networkObject.Id} {result.Utilization.CpuUtilization} {result.Utilization.MemoryUtilization} {result.Availability}");
+        _logger.LogInformation("Device {DeviceId}: CPU {Cpu}, Memory {Mem}, Availability {Availability}", networkObject.Id,
+            result.Utilization.CpuUtilization, result.Utilization.MemoryUtilization, result.Availability);
+
         return result;
     }
 

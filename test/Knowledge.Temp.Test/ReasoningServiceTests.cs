@@ -29,11 +29,12 @@ public class ReasoningServiceTests
     public void TestMinIntentScaling(string regionName, int count, float average, float min, int expectedScale)
     {
         var region = new Region(regionName);
-        _workloadRepository.GetForRegion(region).Returns(
-            Enumerable.Repeat(new NetworkDevice(1, region, "", new Utilization
-            {
-                CpuUtilization = average
-            }), count).ToList());
+        _workloadRepository.GetLatest(region).Returns(new WorkloadInfo
+        {
+            DeviceCount = count,
+            AvgEfficiency = average,
+            AvgAvailability = 1f
+        });
         _intentRepository.GetForRegion(region).Returns(
             new List<Intent>
             {
@@ -53,11 +54,12 @@ public class ReasoningServiceTests
     public void TestMaxIntentScaling(string regionName, int count, float average, float max, int expectedScale)
     {
         var region = new Region(regionName);
-        _workloadRepository.GetForRegion(region).Returns(
-            Enumerable.Repeat(new NetworkDevice(1, region, "", new Utilization
-            {
-                CpuUtilization = average
-            }), count).ToList());
+        _workloadRepository.GetLatest(region).Returns(new WorkloadInfo
+        {
+            DeviceCount = count,
+            AvgEfficiency = average,
+            AvgAvailability = 1f
+        });
         _intentRepository.GetForRegion(region).Returns(
             new List<Intent>
             {

@@ -103,6 +103,12 @@ public class CachedWorkloadRepository : IWorkloadRepository
         GetWorkloadList(region).Insert(0, workloadInfo);
     }
 
+    public IList<WorkloadInfo> GetForRegion(Region region)
+    {
+        _workloadInfos.TryGetValue(region, out var workloadInfos);
+        return workloadInfos ?? new List<WorkloadInfo>();
+    }
+
     public WorkloadInfo? GetLatest(Region region)
     {
         _workloadInfos.TryGetValue(region, out var workloadInfos);

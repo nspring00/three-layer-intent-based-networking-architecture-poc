@@ -18,8 +18,8 @@ public class KnowledgeService : IKnowledgeService
         _knowledgeUri = new Uri(externalServiceConfig.Value.KnowledgeServiceUri);
     }
     
-    public Task UpdateKnowledgeNOs(IDictionary<Region, NetworkUpdate> updates)
+    public Task UpdateKnowledgeNOs(DateTime timestamp, IDictionary<Region, NetworkUpdate> updates)
     {
-        return _knowledgeGrpcClient.UpdateKnowledge(_knowledgeUri, updates);
+        return _knowledgeGrpcClient.UpdateKnowledge(_knowledgeUri, timestamp, updates);
     }
 }

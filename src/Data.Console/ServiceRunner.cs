@@ -53,7 +53,7 @@ public class ServiceRunner
             var endTime = _dateTimeProvider.Now;
             var updates = _networkObjectService.AggregateUpdates(startTime, endTime);
             _networkObjectService.Reset();
-            await _knowledgeService.UpdateKnowledgeNOs(updates);
+            //await _knowledgeService.UpdateKnowledgeNOs(updates);
             startTime = endTime;
         }
     }

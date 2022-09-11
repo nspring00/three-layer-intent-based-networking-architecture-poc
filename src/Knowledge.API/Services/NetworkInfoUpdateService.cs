@@ -25,6 +25,7 @@ public class NetworkInfoUpdateService : NetworkInfoUpdater.NetworkInfoUpdaterBas
     {
         _logger.LogInformation($"Received update for {request.RegionUpdates.Count} regions");
 
+        // TODO use timestamp here?
         foreach (var regionUpdate in request.RegionUpdates)
         {
             var region = new Region(regionUpdate.RegionName);

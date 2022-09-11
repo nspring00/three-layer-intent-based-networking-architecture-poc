@@ -5,5 +5,5 @@ namespace Data.Console.Services;
 
 public interface IKnowledgeService
 {
-    Task UpdateKnowledgeNOs(IDictionary<Region, NetworkUpdate> updates);
+    Task UpdateKnowledgeNOs(DateTime timestamp, IDictionary<Region, NetworkUpdate> updates);
 }
