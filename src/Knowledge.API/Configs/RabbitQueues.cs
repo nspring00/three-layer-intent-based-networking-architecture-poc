@@ -4,13 +4,8 @@ namespace Knowledge.API.Configs;
 
 public class RabbitQueues
 {
-    public RabbitQueueOptions ReasoningRequestQueue { get; set; } = new()
+    public RabbitQueueOptions RegionActionRequiredRequests { get; set; } = new()
     {
-        QueueName = "knowledge_reasoning_requests"
-    };
-
-    public RabbitQueueOptions ReasoningResponseQueue { get; set; } = new()
-    {
-        QueueName = "agent_event_queue"
+        QueueName = "region_action_required_requests"
     };
 }

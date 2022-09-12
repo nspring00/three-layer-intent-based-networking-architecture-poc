@@ -1,7 +1,6 @@
 ﻿using Common.Services;
 using Common.Web.Rabbit;
 using Knowledge.API.Configs;
-using Knowledge.API.HostedServices;
 using Knowledge.API.Repository;
 using Knowledge.API.Services;
 using MediatR;
@@ -17,9 +16,14 @@ public static class ServiceConfiguration
         services.AddSingleton<IWorkloadRepository, CachedWorkloadRepository>();
         services.AddSingleton<IReasoningService, ReasoningService>(); // TODO maybe scoped?
         services.AddSingleton<IWorkloadAnalysisService, WorkloadAnalysisService>();
+
+
         services.Configure<RabbitQueues>(configuration.GetSection("RabbitQueues")); // TODO fix config loading
-        services.AddRabbitMq(configuration); 
-        services.AddHostedService<ReasoningRequestConsumerService>();
+        services.AddRabbitMq(configuration);
+        //services.AddHostedService<ReasoningRequestConsumerService>();
+
+        // TODO only for local, not cloud
+        services.AddSingleton<IAgentService, RabbitAgentService>();
 
         services.ConfigureMediatR();
     }

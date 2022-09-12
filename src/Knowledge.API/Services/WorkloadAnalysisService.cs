@@ -12,8 +12,10 @@ public class WorkloadAnalysisService : IWorkloadAnalysisService
         _workloadRepository = workloadRepository;
     }
 
+    // TODO move to reasoning service?
     public IDictionary<Region, bool> CheckIfAgentsShouldBeNotified(IList<Region> regions)
     {
-        return regions.ToDictionary(x => x, _ => false);
+        // TODO implement
+        return regions.ToDictionary(x => x, _ => true);
     }
 }
