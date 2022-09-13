@@ -28,7 +28,7 @@ public class NetworkInfoUpdateService : NetworkInfoUpdater.NetworkInfoUpdaterBas
         NetworkInfoUpdateRequest request,
         ServerCallContext context)
     {
-        _logger.LogInformation($"Received update for {request.RegionUpdates.Count} regions");
+        _logger.LogInformation("Received update for {RegionUpdatesCount} regions", request.RegionUpdates.Count);
 
         foreach (var regionUpdate in request.RegionUpdates)
         {

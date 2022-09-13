@@ -7,22 +7,22 @@ namespace Knowledge.API.NotificationHandlers;
 public class WorkloadInfoAddedNotificationHandler : INotificationHandler<WorkloadInfoAddedNotification>
 {
     private readonly ILogger<WorkloadInfoAddedNotificationHandler> _logger;
-    private readonly IWorkloadAnalysisService _workloadAnalysisService;
+    private readonly IReasoningService _reasoningService;
     private readonly IAgentService _agentService;
 
     public WorkloadInfoAddedNotificationHandler(
         ILogger<WorkloadInfoAddedNotificationHandler> logger,
-        IWorkloadAnalysisService workloadAnalysisService,
+        IReasoningService reasoningService,
         IAgentService agentService)
     {
         _logger = logger;
-        _workloadAnalysisService = workloadAnalysisService;
+        _reasoningService = reasoningService;
         _agentService = agentService;
     }
 
     public Task Handle(WorkloadInfoAddedNotification notification, CancellationToken cancellationToken)
     {
-        var allAgents= _workloadAnalysisService.CheckIfAgentsShouldBeNotified(notification.Regions);
+        var allAgents= _reasoningService.QuickReasoningForRegions(notification.Regions);
 
         var agentsToNotify = allAgents
             .Where(x => x.Value)
