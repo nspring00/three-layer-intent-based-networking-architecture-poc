@@ -110,65 +110,98 @@ public class ReasoningService : IReasoningService
             .IsInRange(trends[KeyPerformanceIndicator.Efficiency]);
 
         // Formula described in paper
+        // TODO check this
         var deviceCount = infos.MaxBy(x => x.Id)!.DeviceCount;
         var totalAvailability = 1 - (float)Math.Pow(1 - trends[KeyPerformanceIndicator.Availability], deviceCount);
         var availOk = kpiTargets[KeyPerformanceIndicator.Availability].IsInRange(totalAvailability);
 
         if (effOk && availOk)
         {
+            _logger.LogInformation("Region {Region} is ok", region.Name);
             return new ReasoningComposition(false);
         }
 
-        // TODO: Add more reasoning here
+        var bounds = new List<(int, int)>
+        {
+            GetEfficiencyDeviceCountBounds(deviceCount, trends[KeyPerformanceIndicator.Efficiency],
+                kpiTargets[KeyPerformanceIndicator.Efficiency]),
+            GetAvailabilityDeviceCountBounds(trends[KeyPerformanceIndicator.Availability],
+                kpiTargets[KeyPerformanceIndicator.Availability]),
+        };
+        
+        _logger.LogInformation("Bounds for region {Region}: {Bounds}", region.Name, bounds);
 
-
-        //          
-        //          var intents = _intentService.GetForRegion(region);
-        //          var latestWorkloadInfo = _workloadRepository.GetLatest(region);
-        //          if (latestWorkloadInfo is null)
-        //          {
-        //              _logger.LogError("No workload info for region {Region}", region);
-        //              return new ReasoningComposition(false);
-        //          }
-        //          
-        //          var avg = latestWorkloadInfo.AvgEfficiency;
-        //          var deviceCount = latestWorkloadInfo.DeviceCount;
-        //  
-        //          // Get min and max from intents
-        //          var min = intents.FirstOrDefault(i => i.Set.TargetMode == TargetMode.Min);
-        //          var max = intents.FirstOrDefault(i => i.Set.TargetMode == TargetMode.Max);
-        //  
-        //          _logger.LogInformation("Min: {Min}, Max: {Max}, Avg: {Avg}, Count: {Count}", min?.Set.TargetValue, max?.Set.TargetValue, avg, deviceCount);
-        //  
-        //          
-        //          //if (min is not null && max is not null && (avg < min.Set.TargetValue || avg > max.Set.TargetValue))
-        //          //{
-        //          //    // If both min and max are set, target their mean
-        //          //    var target = (min.Set.TargetValue + max.Set.TargetValue) / 2f;
-        //          //    var delta = (int)Math.Round(CalculateDelta(deviceCount, avg, target));
-        //          //    _logger.LogInformation("Min/Max Delta: {Delta}", delta);
-        //          //    return new ReasoningComposition(true, new AgentAction(delta));
-        //          //}
-        //          
-        //          if (max is not null && avg > max.Set.TargetValue)
-        //          {
-        //              // If only max, then scale up minimum required amount (ceil)
-        //              var delta = (int) Math.Ceiling(CalculateDelta(deviceCount, avg, max.Set.TargetValue));
-        //              _logger.LogInformation("Max Delta: {Delta}", delta);
-        //              return new ReasoningComposition(true, new AgentAction(delta));
-        //          }
-        //  
-        //          if (min is not null && avg < min.Set.TargetValue)
-        //          {
-        //              // If only min, then scale down minimum required amount (floor)
-        //              var delta = (int)Math.Floor(CalculateDelta(deviceCount, avg, min.Set.TargetValue));
-        //              _logger.LogInformation("Min Delta: {Delta}", delta);
-        //              return new ReasoningComposition(true, new AgentAction(delta));
-        //          }
-
-        return new ReasoningComposition(false);
+        var delta = ComputeScalingDelta(deviceCount, bounds);
+        return new ReasoningComposition(true, new AgentAction(delta));
     }
 
+    public int ComputeScalingDelta(int deviceCount, IList<(int, int)> bounds)
+    {
+        var highestMin = bounds.MaxBy(x => x.Item1).Item1;
+        var lowestMax = bounds.MinBy(x => x.Item2).Item2;
+        
+        _logger.LogInformation("Highest min: {HighestMin}, lowest max: {LowestMax}", highestMin, lowestMax);
+
+        int delta;
+        if (highestMin <= deviceCount && deviceCount <= lowestMax)
+        {
+            return 0;
+        }
+        if (highestMin <= lowestMax)
+        {
+            // All bounds are compatible
+            // --> find lowest scaling number that is compatible with all bounds
+            delta = deviceCount < highestMin ? highestMin - deviceCount : lowestMax - deviceCount;
+            _logger.LogInformation("All bounds compatible. Delta: {Delta}", delta);
+            return delta;
+        }
+        
+        // There are conflicting bounds
+        delta = ComputeScalingDeltaForConflicts(deviceCount, bounds);
+        _logger.LogInformation("Conflicting bounds. Delta: {Delta}", delta);
+        return delta;
+    }
+    
+    private static int ComputeScalingDeltaForConflicts(int deviceCount, IList<(int, int)> bounds)
+    {
+        var lowestMin = bounds.MinBy(x => x.Item1).Item1;
+        var highestMax = bounds.MaxBy(x => x.Item2).Item2;
+
+        var result = Enumerable.Range(lowestMin, highestMax - lowestMin + 1)
+            .MinBy(count => ComputeError(count, bounds));
+
+        var best = lowestMin;
+        var bestError = int.MaxValue;
+        for (var i = lowestMin; i <= highestMax; i++)
+        {
+            // Generate error value for each possible device count and choose the one with the lowest error
+            var error = ComputeError(i, bounds);
+            if (error >= bestError)
+            {
+                continue;
+            }
+
+            best = i;
+            bestError = error;
+        }
+        
+        // Currently computing this twice
+        // TODO remove one
+        Debug.Assert(result == best);
+
+        return result - deviceCount;
+    }
+    
+    private static int ComputeError(int deviceCount, IEnumerable<(int, int)> bounds)
+    {
+        return bounds.Sum(bound =>
+        {
+            var lowerError = bound.Item1 < deviceCount ? 0 : (int) Math.Pow(bound.Item1 - deviceCount, 2);
+            var upperError = bound.Item2 > deviceCount ? 0 : (int) Math.Pow(deviceCount - bound.Item2, 2);
+            return lowerError + upperError;
+        });
+    }
+    
     public static (int, int) GetEfficiencyDeviceCountBounds(int currentCount, float currentEff, MinMaxTarget target)
     {
         var minCount = 0;
@@ -205,11 +238,5 @@ public class ReasoningService : IReasoningService
         }
 
         return (minCount, maxCount);
-    }
-
-    // Formula see notion
-    private static float CalculateDelta(int count, float currentAvg, float targetAvg)
-    {
-        return count * (currentAvg / targetAvg - 1);
     }
 }

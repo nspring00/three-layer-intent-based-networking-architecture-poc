@@ -230,50 +230,31 @@ public class ReasoningServiceTests
         result.ActionRequired.Should().BeFalse();
     }
 
-
-    // [Theory]
-    // [InlineData("Region", 5, 0.7f, 0.8f, -1)]
-    // [InlineData("Region", 5, 0.6f, 0.8f, -2)]
-    // [InlineData("Region", 100, 0.6f, 0.8f, -25)]
-    // public void TestMinIntentScaling(string regionName, int count, float average, float min, int expectedScale)
-    // {
-    //     var region = new Region(regionName);
-    //     _workloadRepository.GetLatest(region).Returns(new WorkloadInfo
-    //     {
-    //         DeviceCount = count, AvgEfficiency = average, AvgAvailability = 1f
-    //     });
-    //     _intentRepository.GetForRegion(region).Returns(
-    //         new List<Intent>
-    //         {
-    //             new(region, new Efficiency(TargetMode.Min, min))
-    //         });
-    //
-    //     var response = _sut.ReasonForRegion(region);
-    //
-    //     response.ActionRequired.Should().BeTrue();
-    //     response.Action.Should().NotBeNull().And.Match<AgentAction>(a => a.Scale == expectedScale);
-    // }
-    //
-    // [Theory]
-    // [InlineData("Region", 5, 0.8f, 0.7f, 1)]
-    // [InlineData("Region", 5, 0.8f, 0.6f, 2)]
-    // [InlineData("Region", 100, 0.8f, 0.6f, 34)]
-    // public void TestMaxIntentScaling(string regionName, int count, float average, float max, int expectedScale)
-    // {
-    //     var region = new Region(regionName);
-    //     _workloadRepository.GetLatest(region).Returns(new WorkloadInfo
-    //     {
-    //         DeviceCount = count, AvgEfficiency = average, AvgAvailability = 1f
-    //     });
-    //     _intentRepository.GetForRegion(region).Returns(
-    //         new List<Intent>
-    //         {
-    //             new(region, new Efficiency(TargetMode.Max, max))
-    //         });
-    //
-    //     var response = _sut.ReasonForRegion(region);
-    //
-    //     response.ActionRequired.Should().BeTrue();
-    //     response.Action.Should().NotBeNull().And.Match<AgentAction>(a => a.Scale == expectedScale);
-    // }
+    [Theory]
+    [InlineData(100, 0, 80, 120)] // Ok
+    [InlineData(80, 0, 80, 120)] // Ok
+    [InlineData(120, 0, 80, 120)] // Ok
+    [InlineData(100, 0, 80, 120, 70, 110)] // Ok, many bounds
+    [InlineData(100, 0, 80, 120, 70, 110, 0, 130)] // Ok, many bounds
+    [InlineData(121, -1, 80, 120)] // Compatible bounds
+    [InlineData(79, 1, 80, 120)] // Compatible bounds
+    [InlineData(63, 17, 80, 120, 70, 100)] // Compatible bounds
+    [InlineData(134, -34, 80, 120, 70, 100)] // Compatible bounds
+    [InlineData(83, 0, 80, 82, 84, 89)] // Conflicting intents
+    [InlineData(89, 0, 80, 89, 80, 89, 90, 100)] // Conflicting intents
+    public void ComputeScalingDelta_WhenGivenInput_ThenGivenOutput(int deviceCount, int expectedResult, params int[] boundValues)
+    {
+        // Arrange
+        if (boundValues.Length % 2 != 0)
+        {
+            throw new ArgumentException("boundValues must have an even number of elements");
+        }
+        var bounds = boundValues.Chunk(2).Select(x => (x[0], x[1])).ToList(); 
+        
+        // Act
+        var result = _sut.ComputeScalingDelta(deviceCount, bounds);
+        
+        // Assert
+        result.Should().Be(expectedResult);
+    }
 }
