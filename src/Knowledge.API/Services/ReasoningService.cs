@@ -8,6 +8,8 @@ namespace Knowledge.API.Services;
 
 public class ReasoningService : IReasoningService
 {
+    public const int MaxInfosForReasoning = 5;
+
     private readonly ILogger<ReasoningService> _logger;
     private readonly IWorkloadRepository _workloadRepository;
     private readonly IIntentService _intentService;
@@ -69,7 +71,7 @@ public class ReasoningService : IReasoningService
                 // Use linear regression to calculate the trend
                 var data = infos.Select(x => new Tuple<double, double>(x.Id, GetKpiValue(x, kpi)));
                 var (a, b) = SimpleRegression.Fit(data);
-                var trend = a + b * (infos.First().Id + 1);
+                var trend = a + b * (infos.MaxBy(x => x.Id)!.Id + 1);
                 return (float)trend;
             });
     }
@@ -79,7 +81,8 @@ public class ReasoningService : IReasoningService
     {
         _logger.LogInformation("Reasoning for region {Region}", region.Name);
 
-        var infos = _workloadRepository.GetForRegion(region, 5);
+        var infos = _workloadRepository.GetForRegion(region, MaxInfosForReasoning);
+        var kpiTargets = _intentService.GetKpiTargetsForRegion(region);
 
         if (infos.Count == 0)
         {
@@ -87,7 +90,36 @@ public class ReasoningService : IReasoningService
             return new ReasoningComposition(false);
         }
 
+        if (kpiTargets.Count == 0)
+        {
+            _logger.LogWarning("No KPI targets for region {Region}", region.Name);
+            return new ReasoningComposition(false);
+        }
+
         _logger.LogInformation("Last 5 workload ids: {WorkloadIds}", infos.Select(i => i.Id));
+
+        var kpis = new KeyPerformanceIndicator[]
+        {
+            KeyPerformanceIndicator.Efficiency,
+            KeyPerformanceIndicator.Availability
+        };
+        var trends = GenerateKpiTrends(infos, kpis);
+
+        // Currently only efficiency and availability supported
+        var effOk = kpiTargets[KeyPerformanceIndicator.Efficiency]
+            .IsInRange(trends[KeyPerformanceIndicator.Efficiency]);
+
+        // Formula described in paper
+        var deviceCount = infos.MaxBy(x => x.Id)!.DeviceCount;
+        var totalAvailability = 1 - (float)Math.Pow(1 - trends[KeyPerformanceIndicator.Availability], deviceCount);
+        var availOk = kpiTargets[KeyPerformanceIndicator.Availability].IsInRange(totalAvailability);
+
+        if (effOk && availOk)
+        {
+            return new ReasoningComposition(false);
+        }
+
+        // TODO: Add more reasoning here
 
 
         //          
@@ -135,6 +167,44 @@ public class ReasoningService : IReasoningService
         //          }
 
         return new ReasoningComposition(false);
+    }
+
+    public static (int, int) GetEfficiencyDeviceCountBounds(int currentCount, float currentEff, MinMaxTarget target)
+    {
+        var minCount = 0;
+        var maxCount = int.MaxValue;
+        var (minEfficiency, maxEfficiency) = target;
+
+        if (maxEfficiency.HasValue)
+        {
+            minCount = (int)Math.Ceiling((currentCount * currentEff) / maxEfficiency.Value);
+        }
+
+        if (minEfficiency.HasValue)
+        {
+            maxCount = (int)Math.Floor((currentCount * currentEff) / minEfficiency.Value);
+        }
+
+        return (minCount, maxCount);
+    }
+
+    public static (int, int) GetAvailabilityDeviceCountBounds(float avgAvailability, MinMaxTarget target)
+    {
+        var minCount = 0;
+        var maxCount = int.MaxValue;
+        var (minAvailability, maxAvailability) = target;
+
+        if (minAvailability.HasValue)
+        {
+            minCount = (int)Math.Ceiling(Math.Log(1 - minAvailability.Value) / Math.Log(1 - avgAvailability));
+        }
+
+        if (maxAvailability.HasValue)
+        {
+            maxCount = (int)Math.Floor(Math.Log(1 - maxAvailability.Value) / Math.Log(1 - avgAvailability));
+        }
+
+        return (minCount, maxCount);
     }
 
     // Formula see notion

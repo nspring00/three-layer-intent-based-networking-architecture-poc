@@ -95,8 +95,7 @@ public class ReasoningServiceTests
         // Arrange
         var kpis = new List<KeyPerformanceIndicator>
         {
-            KeyPerformanceIndicator.Efficiency,
-            KeyPerformanceIndicator.Availability
+            KeyPerformanceIndicator.Efficiency, KeyPerformanceIndicator.Availability
         };
         var infos = new List<WorkloadInfo>
         {
@@ -128,20 +127,20 @@ public class ReasoningServiceTests
 
         // Act
         var trends = ReasoningService.GenerateKpiTrends(infos, kpis);
-        
+
         // Assert
         trends.Should().HaveCount(2);
         trends.Should().Contain(KeyPerformanceIndicator.Efficiency, 0.3f);
         trends.Should().Contain(KeyPerformanceIndicator.Availability, 0.4f);
     }
+
     [Fact]
     public void GenerateKpiTrends_WhenLinearWorkload_ThenLinearTrend()
     {
         // Arrange
         var kpis = new List<KeyPerformanceIndicator>
         {
-            KeyPerformanceIndicator.Efficiency,
-            KeyPerformanceIndicator.Availability
+            KeyPerformanceIndicator.Efficiency, KeyPerformanceIndicator.Availability
         };
         var infos = new List<WorkloadInfo>
         {
@@ -173,7 +172,7 @@ public class ReasoningServiceTests
 
         // Act
         var trends = ReasoningService.GenerateKpiTrends(infos, kpis);
-        
+
         // Assert
         trends.Should().HaveCount(2);
         trends.Should().ContainKey(KeyPerformanceIndicator.Efficiency).WhoseValue.Should()
@@ -181,6 +180,56 @@ public class ReasoningServiceTests
         trends.Should().ContainKey(KeyPerformanceIndicator.Availability).WhoseValue.Should()
             .BeApproximately(0.7f, 0.0001f);
     }
+
+    [Theory]
+    [InlineData(10, 0.5f, 0.3f, 0.7f, 8, 16)]
+    [InlineData(100, 0.8f, 0.7f, 0.9f, 89, 114)]
+    public void GetEfficiencyDeviceCountBounds_ReturnsCorrectValue(int currentCount, float currentEff, float minEff,
+        float maxEff, int minResult, int maxResult)
+    {
+        // Arrange
+        var target = new MinMaxTarget(minEff, maxEff);
+
+        // Act
+        var result = ReasoningService.GetEfficiencyDeviceCountBounds(currentCount, currentEff, target);
+
+        // Assert
+        var expectedResult = (minResult, maxResult);
+        result.Should().Be(expectedResult);
+    }    
+    
+    [Theory]
+    [InlineData(0.8f, 0.7f, 0.9f, 1, 1)]
+    [InlineData(0.3f, 0.7f, 0.9f, 4, 6)]
+    [InlineData(0.3f, 0.99f, 0.999f, 13, 19)]
+    public void GetAvailabilityDeviceCountBounds_ReturnsCorrectValue(float avgAvailability,
+        float minAvailability, float maxAvailability, int minResult, int maxResult)
+    {
+        // Arrange
+        var target = new MinMaxTarget(minAvailability, maxAvailability);
+
+        // Act
+        var result = ReasoningService.GetAvailabilityDeviceCountBounds(avgAvailability, target);
+
+        // Assert
+        var expectedResult = (minResult, maxResult);
+        result.Should().Be(expectedResult);
+    }
+
+    [Fact]
+    public void ReasonForRegion_WhenWorkloadIsNotAvailable_ShouldReturnFalse()
+    {
+        var region = new Region("Vienna");
+        _workloadRepository.GetForRegion(region, ReasoningService.MaxInfosForReasoning)
+            .Returns(new List<WorkloadInfo>());
+
+        // Act
+        var result = _sut.ReasonForRegion(region);
+
+        // Assert
+        result.ActionRequired.Should().BeFalse();
+    }
+
 
     // [Theory]
     // [InlineData("Region", 5, 0.7f, 0.8f, -1)]
