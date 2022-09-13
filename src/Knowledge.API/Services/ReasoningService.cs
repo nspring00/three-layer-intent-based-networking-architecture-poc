@@ -2,6 +2,7 @@
 using Common.Models;
 using Knowledge.API.Models;
 using Knowledge.API.Repository;
+using MathNet.Numerics.LinearRegression;
 
 namespace Knowledge.API.Services;
 
@@ -20,9 +21,10 @@ public class ReasoningService : IReasoningService
         _workloadRepository = workloadRepository;
         _intentService = intentService;
     }
-    
+
     public IDictionary<Region, bool> QuickReasoningForRegions(IList<Region> regions)
     {
+        _logger.LogInformation("Quick reasoning for {RegionCount} regions", regions.Count);
         return regions.ToDictionary(
             region => region,
             region =>
@@ -35,7 +37,7 @@ public class ReasoningService : IReasoningService
                     Debug.Assert(minMaxTarget.HasMin || minMaxTarget.HasMax);
 
                     var value = GetKpiValue(info, kpi);
-                    
+
                     if (minMaxTarget.HasMin && value < minMaxTarget.Min)
                         return true;
 
@@ -57,10 +59,37 @@ public class ReasoningService : IReasoningService
         };
     }
 
+    public static Dictionary<KeyPerformanceIndicator, float> GenerateKpiTrends(IList<WorkloadInfo> infos,
+        IList<KeyPerformanceIndicator> kpis)
+    {
+        return kpis.ToDictionary(
+            kpi => kpi,
+            kpi =>
+            {
+                // Use linear regression to calculate the trend
+                var data = infos.Select(x => new Tuple<double, double>(x.Id, GetKpiValue(x, kpi)));
+                var (a, b) = SimpleRegression.Fit(data);
+                var trend = a + b * (infos.First().Id + 1);
+                return (float)trend;
+            });
+    }
+
     // Check if efficiency goal is reached for region
     public ReasoningComposition ReasonForRegion(Region region)
     {
-        // _logger.LogInformation("Reasoning for region {Region}", region);
+        _logger.LogInformation("Reasoning for region {Region}", region.Name);
+
+        var infos = _workloadRepository.GetForRegion(region, 5);
+
+        if (infos.Count == 0)
+        {
+            _logger.LogWarning("No workload info for region {Region}", region.Name);
+            return new ReasoningComposition(false);
+        }
+
+        _logger.LogInformation("Last 5 workload ids: {WorkloadIds}", infos.Select(i => i.Id));
+
+
         //          
         //          var intents = _intentService.GetForRegion(region);
         //          var latestWorkloadInfo = _workloadRepository.GetLatest(region);

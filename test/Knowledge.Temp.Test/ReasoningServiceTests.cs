@@ -40,11 +40,11 @@ public class ReasoningServiceTests
     }
 
     [Theory]
-    [InlineData(10, 0.7f, 0.7f, 0.5f, 0.9f, 0.5f, 0.9f, false)]     // OK
-    [InlineData(10, 0.4f, 0.7f, 0.5f, 0.9f, 0.5f, 0.9f, true)]      // eff too low
-    [InlineData(10, 1f, 0.7f, 0.5f, 0.9f, 0.5f, 0.9f, true)]        // eff too high
-    [InlineData(10, 0.7f, 0.4f, 0.5f, 0.9f, 0.5f, 0.9f, true)]      // avail too low
-    [InlineData(10, 0.7f, 1f, 0.5f, 0.9f, 0.5f, 0.9f, true)]        // avail too high
+    [InlineData(10, 0.7f, 0.7f, 0.5f, 0.9f, 0.5f, 0.9f, false)] // OK
+    [InlineData(10, 0.4f, 0.7f, 0.5f, 0.9f, 0.5f, 0.9f, true)] // eff too low
+    [InlineData(10, 1f, 0.7f, 0.5f, 0.9f, 0.5f, 0.9f, true)] // eff too high
+    [InlineData(10, 0.7f, 0.4f, 0.5f, 0.9f, 0.5f, 0.9f, true)] // avail too low
+    [InlineData(10, 0.7f, 1f, 0.5f, 0.9f, 0.5f, 0.9f, true)] // avail too high
     public void QuickReasoning_WithGivenParams_ShouldReturnGivenResult(
         int deviceCount,
         float avgEfficiency,
@@ -74,19 +74,112 @@ public class ReasoningServiceTests
                 KeyPerformanceIndicator.Availability, new MinMaxTarget(minAvailability, maxAvailability)
             }
         };
-        
+
         _workloadRepository.GetLatest(region).Returns(workload);
         _intentService.GetKpiTargetsForRegion(region).Returns(kpiDict);
-        
+
         // Act
         var result = _sut.QuickReasoningForRegions(new List<Region>
         {
             region
         });
-        
+
         // Assert
         result.Should().HaveCount(1);
         result.Should().Contain(region, expectedResult);
+    }
+
+    [Fact]
+    public void GenerateKpiTrends_WhenConstantWorkload_ThenConstantTrend()
+    {
+        // Arrange
+        var kpis = new List<KeyPerformanceIndicator>
+        {
+            KeyPerformanceIndicator.Efficiency,
+            KeyPerformanceIndicator.Availability
+        };
+        var infos = new List<WorkloadInfo>
+        {
+            new()
+            {
+                Id = 3,
+                Timestamp = new DateTime(2022, 01, 03),
+                DeviceCount = 10,
+                AvgEfficiency = 0.3f,
+                AvgAvailability = 0.4f
+            },
+            new()
+            {
+                Id = 2,
+                Timestamp = new DateTime(2022, 01, 02),
+                DeviceCount = 10,
+                AvgEfficiency = 0.3f,
+                AvgAvailability = 0.4f
+            },
+            new()
+            {
+                Id = 1,
+                Timestamp = new DateTime(2022, 01, 01),
+                DeviceCount = 10,
+                AvgEfficiency = 0.3f,
+                AvgAvailability = 0.4f
+            }
+        };
+
+        // Act
+        var trends = ReasoningService.GenerateKpiTrends(infos, kpis);
+        
+        // Assert
+        trends.Should().HaveCount(2);
+        trends.Should().Contain(KeyPerformanceIndicator.Efficiency, 0.3f);
+        trends.Should().Contain(KeyPerformanceIndicator.Availability, 0.4f);
+    }
+    [Fact]
+    public void GenerateKpiTrends_WhenLinearWorkload_ThenLinearTrend()
+    {
+        // Arrange
+        var kpis = new List<KeyPerformanceIndicator>
+        {
+            KeyPerformanceIndicator.Efficiency,
+            KeyPerformanceIndicator.Availability
+        };
+        var infos = new List<WorkloadInfo>
+        {
+            new()
+            {
+                Id = 3,
+                Timestamp = new DateTime(2022, 01, 03),
+                DeviceCount = 10,
+                AvgEfficiency = 0.3f,
+                AvgAvailability = 0.6f
+            },
+            new()
+            {
+                Id = 2,
+                Timestamp = new DateTime(2022, 01, 02),
+                DeviceCount = 10,
+                AvgEfficiency = 0.4f,
+                AvgAvailability = 0.5f
+            },
+            new()
+            {
+                Id = 1,
+                Timestamp = new DateTime(2022, 01, 01),
+                DeviceCount = 10,
+                AvgEfficiency = 0.5f,
+                AvgAvailability = 0.4f
+            }
+        };
+
+        // Act
+        var trends = ReasoningService.GenerateKpiTrends(infos, kpis);
+        
+        // Assert
+        trends.Should().HaveCount(2);
+        trends.Should().ContainKey(KeyPerformanceIndicator.Efficiency).WhoseValue.Should()
+            .BeApproximately(0.2f, 0.0001f);
+        trends.Should().ContainKey(KeyPerformanceIndicator.Availability).WhoseValue.Should()
+            .BeApproximately(0.7f, 0.0001f);
     }
 
     // [Theory]

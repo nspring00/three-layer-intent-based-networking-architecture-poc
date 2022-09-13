@@ -107,6 +107,12 @@ public class CachedWorkloadRepository : IWorkloadRepository
     {
         _workloadInfos.TryGetValue(region, out var workloadInfos);
         return workloadInfos ?? new List<WorkloadInfo>();
+    }    
+    
+    public IList<WorkloadInfo> GetForRegion(Region region, int count)
+    {
+        _workloadInfos.TryGetValue(region, out var workloadInfos);
+        return workloadInfos?.Take(count).ToList() ?? new List<WorkloadInfo>();
     }
 
     public WorkloadInfo? GetLatest(Region region)
