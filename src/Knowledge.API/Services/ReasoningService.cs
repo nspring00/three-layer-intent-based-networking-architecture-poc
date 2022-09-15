@@ -64,12 +64,22 @@ public class ReasoningService : IReasoningService
     public static Dictionary<KeyPerformanceIndicator, float> GenerateKpiTrends(IList<WorkloadInfo> infos,
         IList<KeyPerformanceIndicator> kpis)
     {
+        if (infos.Count == 0)
+        {
+            return new Dictionary<KeyPerformanceIndicator, float>();
+        }
+
         return kpis.ToDictionary(
             kpi => kpi,
             kpi =>
             {
                 // Use linear regression to calculate the trend
-                var data = infos.Select(x => new Tuple<double, double>(x.Id, GetKpiValue(x, kpi)));
+                var data = infos.Select(x => new Tuple<double, double>(x.Id, GetKpiValue(x, kpi))).ToList();
+                if (data.Count == 1)
+                {
+                    return (float)data.First().Item2;
+                }
+
                 var (a, b) = SimpleRegression.Fit(data);
                 var trend = a + b * (infos.MaxBy(x => x.Id)!.Id + 1);
                 return (float)trend;
@@ -98,22 +108,50 @@ public class ReasoningService : IReasoningService
 
         _logger.LogInformation("Last 5 workload ids: {WorkloadIds}", infos.Select(i => i.Id));
 
-        var kpis = new KeyPerformanceIndicator[]
+        var kpis = new[]
         {
             KeyPerformanceIndicator.Efficiency,
             KeyPerformanceIndicator.Availability
         };
         var trends = GenerateKpiTrends(infos, kpis);
 
+        _logger.LogInformation("Trends: {Trends}", trends);
+
+        if (!kpiTargets.ContainsKey(KeyPerformanceIndicator.Efficiency) &&
+            !kpiTargets.ContainsKey(KeyPerformanceIndicator.Availability))
+        {
+            _logger.LogWarning("No trends for region {Region}", region.Name);
+            return new ReasoningComposition(false);
+        }
+
+        var deviceCount = infos.MaxBy(x => x.Id)!.DeviceCount;
+        _logger.LogInformation("Device count {Region}: {DeviceCount}", region.Name, deviceCount);
+        
         // Currently only efficiency and availability supported
-        var effOk = kpiTargets[KeyPerformanceIndicator.Efficiency]
-            .IsInRange(trends[KeyPerformanceIndicator.Efficiency]);
+        bool effOk = true;
+        bool availOk = true;
+
+        if (kpiTargets.ContainsKey(KeyPerformanceIndicator.Efficiency))
+        {
+            effOk = kpiTargets[KeyPerformanceIndicator.Efficiency]
+                .IsInRange(trends[KeyPerformanceIndicator.Efficiency]);
+            _logger.LogInformation("Efficiency trend: {EfficiencyTrend}, goal: {EfficiencyGoal}, ok: {EfficiencyOk}",
+                trends[KeyPerformanceIndicator.Efficiency],
+                kpiTargets[KeyPerformanceIndicator.Efficiency],
+                effOk);
+        }
 
         // Formula described in paper
-        // TODO check this
-        var deviceCount = infos.MaxBy(x => x.Id)!.DeviceCount;
-        var totalAvailability = 1 - (float)Math.Pow(1 - trends[KeyPerformanceIndicator.Availability], deviceCount);
-        var availOk = kpiTargets[KeyPerformanceIndicator.Availability].IsInRange(totalAvailability);
+        if (kpiTargets.ContainsKey(KeyPerformanceIndicator.Availability))
+        {
+            var totalAvailability = 1 - (float)Math.Pow(1 - trends[KeyPerformanceIndicator.Availability], deviceCount);
+            availOk = kpiTargets[KeyPerformanceIndicator.Availability].IsInRange(totalAvailability);
+            _logger.LogInformation(
+                "Availability trend: {AvailabilityTrend}, goal: {AvailabilityGoal}, ok: {AvailabilityOk}",
+                totalAvailability,
+                kpiTargets[KeyPerformanceIndicator.Availability],
+                availOk);
+        }
 
         if (effOk && availOk)
         {
@@ -121,17 +159,31 @@ public class ReasoningService : IReasoningService
             return new ReasoningComposition(false);
         }
 
-        var bounds = new List<(int, int)>
+        var bounds = new List<(int, int)>();
+
+        if (kpiTargets.ContainsKey(KeyPerformanceIndicator.Efficiency))
         {
-            GetEfficiencyDeviceCountBounds(deviceCount, trends[KeyPerformanceIndicator.Efficiency],
-                kpiTargets[KeyPerformanceIndicator.Efficiency]),
-            GetAvailabilityDeviceCountBounds(trends[KeyPerformanceIndicator.Availability],
-                kpiTargets[KeyPerformanceIndicator.Availability]),
-        };
-        
+            bounds.Add(GetEfficiencyDeviceCountBounds(deviceCount, trends[KeyPerformanceIndicator.Efficiency],
+                kpiTargets[KeyPerformanceIndicator.Efficiency]));
+        }
+
+        if (kpiTargets.ContainsKey(KeyPerformanceIndicator.Availability))
+        {
+            bounds.Add(GetAvailabilityDeviceCountBounds(trends[KeyPerformanceIndicator.Availability],
+                kpiTargets[KeyPerformanceIndicator.Availability]));
+        }
+
         _logger.LogInformation("Bounds for region {Region}: {Bounds}", region.Name, bounds);
 
         var delta = ComputeScalingDelta(deviceCount, bounds);
+        if (delta == 0)
+        {
+            _logger.LogInformation("No scaling needed for region {Region}", region.Name);
+            return new ReasoningComposition(false);
+        }
+
+        _logger.LogInformation("Current count: {CC}, target: {TC}, delta: {Delta}", deviceCount, deviceCount + delta,
+            delta);
         return new ReasoningComposition(true, new AgentAction(delta));
     }
 
@@ -139,7 +191,7 @@ public class ReasoningService : IReasoningService
     {
         var highestMin = bounds.MaxBy(x => x.Item1).Item1;
         var lowestMax = bounds.MinBy(x => x.Item2).Item2;
-        
+
         _logger.LogInformation("Highest min: {HighestMin}, lowest max: {LowestMax}", highestMin, lowestMax);
 
         int delta;
@@ -147,6 +199,7 @@ public class ReasoningService : IReasoningService
         {
             return 0;
         }
+
         if (highestMin <= lowestMax)
         {
             // All bounds are compatible
@@ -155,13 +208,13 @@ public class ReasoningService : IReasoningService
             _logger.LogInformation("All bounds compatible. Delta: {Delta}", delta);
             return delta;
         }
-        
+
         // There are conflicting bounds
         delta = ComputeScalingDeltaForConflicts(deviceCount, bounds);
         _logger.LogInformation("Conflicting bounds. Delta: {Delta}", delta);
         return delta;
     }
-    
+
     private static int ComputeScalingDeltaForConflicts(int deviceCount, IList<(int, int)> bounds)
     {
         var lowestMin = bounds.MinBy(x => x.Item1).Item1;
@@ -184,24 +237,24 @@ public class ReasoningService : IReasoningService
             best = i;
             bestError = error;
         }
-        
+
         // Currently computing this twice
         // TODO remove one
         Debug.Assert(result == best);
 
         return result - deviceCount;
     }
-    
+
     private static int ComputeError(int deviceCount, IEnumerable<(int, int)> bounds)
     {
         return bounds.Sum(bound =>
         {
-            var lowerError = bound.Item1 < deviceCount ? 0 : (int) Math.Pow(bound.Item1 - deviceCount, 2);
-            var upperError = bound.Item2 > deviceCount ? 0 : (int) Math.Pow(deviceCount - bound.Item2, 2);
+            var lowerError = bound.Item1 < deviceCount ? 0 : (int)Math.Pow(bound.Item1 - deviceCount, 2);
+            var upperError = bound.Item2 > deviceCount ? 0 : (int)Math.Pow(deviceCount - bound.Item2, 2);
             return lowerError + upperError;
         });
     }
-    
+
     public static (int, int) GetEfficiencyDeviceCountBounds(int currentCount, float currentEff, MinMaxTarget target)
     {
         var minCount = 0;
