@@ -15,6 +15,7 @@ public static class ServiceConfiguration
         services.AddSingleton<IIntentRepository, CachedIntentRepository>();
         services.AddSingleton<IWorkloadRepository, CachedWorkloadRepository>();
         services.AddSingleton<IReasoningService, ReasoningService>(); // TODO maybe scoped?
+        services.AddSingleton<IIntentService, IntentService>();
 
 
         services.Configure<RabbitQueues>(configuration.GetSection("RabbitQueues")); // TODO fix config loading
