@@ -4,35 +4,26 @@ option csharp_namespace = "Knowledge.Grpc.NetworkInfoUpdate";
 
 package NetworkInfoUpdate;
 
+import "google/protobuf/timestamp.proto";
+
 service NetworkInfoUpdater {
     rpc Update (NetworkInfoUpdateRequest) returns (NetworkInfoUpdateResponse) {}
 }
 
 message NetworkInfoUpdateRequest {
-    repeated RegionUpdate region_updates = 1;
+    google.protobuf.Timestamp timestamp = 1;
+    repeated RegionUpdate region_updates = 2;
 }
 
 message RegionUpdate {
     string region_name = 1;
-    repeated AddedNetworkObject added = 2;
-    repeated int32 removed = 3;
-    repeated WorkloadUpdate workload_updates = 4;
+    WorkloadInfo workload_info = 2;
 }
 
-message AddedNetworkObject {
-    int32 id = 1;
-    string application = 2;
-}
-
-message WorkloadUpdate {
-    int32 network_object_id = 1;
-    Utilization utilization = 2;
-    float availability = 3;
-}
-
-message Utilization {
-    float cpu_utilization = 1;
-    float memory_utilization = 2;
+message WorkloadInfo {
+    int32 device_count = 1;
+    float avg_efficiency = 2;
+    float avg_availability = 3;
 }
 
 message NetworkInfoUpdateResponse {

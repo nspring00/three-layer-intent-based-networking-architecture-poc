@@ -2,12 +2,18 @@
 
 namespace Knowledge.API.Models;
 
-public record Intent(Region At, Efficiency Set);
+public record Intent(Region Region, KpiTarget Target);
 
-public record Efficiency(TargetMode TargetMode, float TargetValue);
+public record KpiTarget(KeyPerformanceIndicator Kpi, TargetMode TargetMode, float TargetValue);
 
 public enum TargetMode
 {
     Min,
     Max
+}
+
+public enum KeyPerformanceIndicator
+{
+    Efficiency,
+    Availability
 }

@@ -22,6 +22,7 @@ public static class ServiceConfiguration
         services.AddSingleton<INetworkObjectService, NetworkObjectService>();
         services.AddSingleton<INetworkLayerService, NetworkLayerService>();
         services.AddSingleton<IKnowledgeService, KnowledgeService>();
+        services.AddSingleton<IEfficiencyService, EfficiencyService>();
 
         services.AddSingleton<NlGrpcClient>();
         services.AddSingleton<KnowledgeGrpcClient>();

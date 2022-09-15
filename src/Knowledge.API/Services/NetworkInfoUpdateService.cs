@@ -3,79 +3,56 @@ using Grpc.Core;
 using Knowledge.API.Models;
 using Knowledge.API.Repository;
 using Knowledge.Grpc.NetworkInfoUpdate;
-using Utilization = Knowledge.API.Models.Utilization;
+using MediatR;
+using WorkloadInfo = Knowledge.Grpc.NetworkInfoUpdate.WorkloadInfo;
 
 namespace Knowledge.API.Services;
 
 public class NetworkInfoUpdateService : NetworkInfoUpdater.NetworkInfoUpdaterBase
 {
     private readonly ILogger<NetworkInfoUpdateService> _logger;
-    private readonly INetworkInfoRepository _networkInfoRepository;
+    private readonly IWorkloadRepository _workloadRepository;
+    private readonly IMediator _mediator;
 
     public NetworkInfoUpdateService(
         ILogger<NetworkInfoUpdateService> logger,
-        INetworkInfoRepository networkInfoRepository)
+        IWorkloadRepository workloadRepository,
+        IMediator mediator)
     {
         _logger = logger;
-        _networkInfoRepository = networkInfoRepository;
+        _workloadRepository = workloadRepository;
+        _mediator = mediator;
     }
 
     public override Task<NetworkInfoUpdateResponse> Update(
         NetworkInfoUpdateRequest request,
         ServerCallContext context)
     {
-        _logger.LogInformation($"Received update for {request.RegionUpdates.Count} regions");
+        _logger.LogInformation("Received update for {RegionUpdatesCount} regions", request.RegionUpdates.Count);
 
         foreach (var regionUpdate in request.RegionUpdates)
         {
-            var regionName = regionUpdate.RegionName!;
-            foreach (var addedNo in regionUpdate.Added)
-            {
-                AddDevice(regionName, addedNo);
-            }
-            
-            foreach (var removedId in regionUpdate.Removed)
-            {
-                _networkInfoRepository.Remove(new Region(regionName), removedId);
-            }
-
-            foreach (var workloadUpdate in regionUpdate.WorkloadUpdates)
-            {
-                HandleWorkloadUpdate(regionName, workloadUpdate);
-            }
+            var region = new Region(regionUpdate.RegionName);
+            Models.WorkloadInfo update = MapWorkloadInfo(regionUpdate.WorkloadInfo);
+            _workloadRepository.Add(region, update);
         }
+
+        // Fire and forget notification event
+        var notification = new WorkloadInfoAddedNotification(request.Timestamp.ToDateTime(),
+            request.RegionUpdates.Select(x => new Region(x.RegionName)).ToList());
+        
+        _mediator.Publish(notification);
 
         return Task.FromResult(new NetworkInfoUpdateResponse());
     }
 
-    private void HandleWorkloadUpdate(string regionName, WorkloadUpdate workloadUpdate)
+    private static Models.WorkloadInfo MapWorkloadInfo(WorkloadInfo info)
     {
-        var device = _networkInfoRepository.Get(new Region(regionName), workloadUpdate.NetworkObjectId);
-        if (device == null)
+        return new Models.WorkloadInfo
         {
-            _logger.LogError($"No device {regionName} {workloadUpdate.NetworkObjectId} exists");
-            return;
-            // TODO throw NotFound or something???
-            //AddDevice(regionName, workloadUpdate.NetworkObjectId, new Utilization
-            //{
-            //    CpuUtilization = workloadUpdate.Utilization.CpuUtilization,
-            //    MemoryUtilization = workloadUpdate.Utilization.MemoryUtilization
-            //});
-            //return;
-        }
-
-        device.Utilization.CpuUtilization = workloadUpdate.Utilization.CpuUtilization;
-        device.Utilization.MemoryUtilization = workloadUpdate.Utilization.MemoryUtilization;
-    }
-
-    private void AddDevice(string region, AddedNetworkObject no, Utilization? utilization = null)
-    {
-        utilization ??= new Utilization
-        {
-            CpuUtilization = -1f, MemoryUtilization = -1f
+            DeviceCount = info.DeviceCount,
+            AvgEfficiency = info.AvgEfficiency,
+            AvgAvailability = info.AvgAvailability
         };
-
-        _networkInfoRepository.Add(
-            new NetworkDevice(no.Id, new Region(region), no.Application, utilization));
     }
 }
