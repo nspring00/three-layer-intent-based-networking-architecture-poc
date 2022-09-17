@@ -16,10 +16,16 @@ public class CachedIntentRepository : IIntentRepository
         _intents.Add(
             new Intent(
                 new Region("Vienna"), new KpiTarget(KeyPerformanceIndicator.Efficiency, TargetMode.Max, 0.7f))
+            {
+                Id = _idGenerator.Next()
+            }
         );
         _intents.Add(
             new Intent(
                 new Region("Linz"), new KpiTarget(KeyPerformanceIndicator.Efficiency, TargetMode.Min, 0.8f))
+            {
+                Id = _idGenerator.Next()
+            }
         );
     }
 
@@ -28,7 +34,7 @@ public class CachedIntentRepository : IIntentRepository
         _logger.LogInformation("Retrieving all {Count} intents", _intents.Count);
         return _intents;
     }
-    
+
     public IList<Intent> GetForRegion(Region region)
     {
         _logger.LogInformation("Retrieving intents for region {Region}", region.Name);
@@ -61,7 +67,13 @@ public class CachedIntentRepository : IIntentRepository
             intent.Region.Name, intent.Target.Kpi, intent.Target.TargetMode, intent.Target.TargetValue);
         return intent;
     }
-    
+
+    public bool Remove(int id)
+    {
+        _logger.LogInformation("Removing intent with id {Id}", id);
+        return _intents.RemoveAll(x => x.Id == id) > 0;
+    }
+
     private class IdGenerator
     {
         private int _nextId = 1;

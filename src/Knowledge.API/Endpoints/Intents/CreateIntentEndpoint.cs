@@ -33,7 +33,7 @@ public class CreateIntentEndpoint : Endpoint<CreateIntentRequest, CreateIntentRe
             return;
         }
 
-        await SendAsync(Map.FromEntity(result));
+        await SendCreatedAtAsync<GetIntentByIdEndpoint>(new {id = result.Id}, Map.FromEntity(result));
     }
 
 }

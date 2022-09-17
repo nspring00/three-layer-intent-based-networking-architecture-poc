@@ -39,4 +39,14 @@ public class IntentService : IIntentService
                 return new MinMaxTarget(min, max);
             });
     }
+
+    public bool RemoveIntent(int id)
+    {
+        return _intentRepository.Remove(id);
+    }
+
+    public Intent? GetIntentById(int id)
+    {
+        return _intentRepository.GetById(id);
+    }
 }

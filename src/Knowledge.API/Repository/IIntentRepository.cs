@@ -9,4 +9,5 @@ public interface IIntentRepository
     IList<Intent> GetForRegion(Region region);
     Intent? GetById(int id);
     Intent? Add(Intent intent);
+    bool Remove(int id);
 }

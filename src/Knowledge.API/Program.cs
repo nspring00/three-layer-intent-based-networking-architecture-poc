@@ -1,6 +1,7 @@
 ﻿using Common.Web.AspNetCore;
 using FastEndpoints;
 using Knowledge.API;
+using Knowledge.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +37,9 @@ if (app.Environment.IsDevelopment() || app.Environment.IsDocker())
 //app.UseAuthorization();
 
 app.MapGet("/", () => "Hello from Knowledge");
+// TODO for some reason fastEndpoints delete does not bind
+app.MapDelete("/intents/{id:int}",
+    (int id, IIntentService intentService) => intentService.RemoveIntent(id) ? Results.Ok() : Results.NotFound());
 app.UseFastEndpoints();
 app.MapGrpcServices();
 
