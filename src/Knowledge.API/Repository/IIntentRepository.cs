@@ -10,4 +10,5 @@ public interface IIntentRepository
     Intent? GetById(int id);
     Intent? Add(Intent intent);
     bool Remove(int id);
+    bool Update(Intent intent);
 }

@@ -45,6 +45,11 @@ public class IntentService : IIntentService
         return _intentRepository.Remove(id);
     }
 
+    public bool UpdateIntent(Intent intent)
+    {
+        return _intentRepository.Update(intent);
+    }
+
     public Intent? GetIntentById(int id)
     {
         return _intentRepository.GetById(id);

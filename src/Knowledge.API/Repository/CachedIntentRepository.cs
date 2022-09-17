@@ -74,6 +74,29 @@ public class CachedIntentRepository : IIntentRepository
         return _intents.RemoveAll(x => x.Id == id) > 0;
     }
 
+    public bool Update(Intent intent)
+    {
+        _logger.LogInformation("Updating intent with id {Id}", intent.Id);
+        if (_intents.All(x => x.Id != intent.Id))
+        {
+            _logger.LogError("Intent with id {Id} does not exist", intent.Id);
+            return false;
+        }
+        
+        if (_intents.Any(x => x.Region == intent.Region && x.Target.Kpi == intent.Target.Kpi &&
+                              x.Target.TargetMode == intent.Target.TargetMode && x.Id != intent.Id))
+        {
+            _logger.LogError("Intent already exists for region {Region} and kpi {Kpi} and target mode {TargetMode}",
+                intent.Region.Name, intent.Target.Kpi, intent.Target.TargetMode);
+            return false;
+        }
+        
+        var existingIntent = _intents.First(x => x.Id == intent.Id);
+        _intents.Remove(existingIntent);
+        _intents.Add(intent);
+        return true;
+    }
+
     private class IdGenerator
     {
         private int _nextId = 1;

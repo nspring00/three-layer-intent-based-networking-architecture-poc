@@ -10,4 +10,5 @@ public interface IIntentService
     Intent? AddIntent(Intent intent);
     IDictionary<KeyPerformanceIndicator, MinMaxTarget> GetKpiTargetsForRegion(Region region);
     bool RemoveIntent(int id);
+    bool UpdateIntent(Intent intent);
 }
