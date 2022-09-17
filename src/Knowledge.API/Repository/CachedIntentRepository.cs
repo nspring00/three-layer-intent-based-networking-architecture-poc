@@ -59,6 +59,33 @@ public class CachedIntentRepository : IIntentRepository
             return null;
         }
 
+        switch (intent.Target.TargetMode)
+        {
+            // Check there is no max < min for the same region and kpi
+            case TargetMode.Min when _intents.Any(x =>
+                x.Region == intent.Region && x.Target.Kpi == intent.Target.Kpi &&
+                x.Target.TargetMode == TargetMode.Max && x.Target.TargetValue < intent.Target.TargetValue):
+                _logger.LogError(
+                    "Intent with target mode {TargetMode} is not allowed because there is already a max intent with a lower value for region {Region} and kpi {Kpi}",
+                    intent.Target.TargetMode, intent.Region.Name, intent.Target.Kpi);
+                return null;
+            // Check there is no min > max for the same region and kpi
+            case TargetMode.Max when _intents.Any(x =>
+                x.Region == intent.Region && x.Target.Kpi == intent.Target.Kpi &&
+                x.Target.TargetMode == TargetMode.Min && x.Target.TargetValue > intent.Target.TargetValue):
+                _logger.LogError(
+                    "Intent with target mode {TargetMode} is not allowed because there is already a min intent with a higher value for region {Region} and kpi {Kpi}",
+                    intent.Target.TargetMode, intent.Region.Name, intent.Target.Kpi);
+                return null;
+        }
+
+        if (_intents.Any(x => x.Region == intent.Region && x.Target.Kpi == intent.Target.Kpi && x.Target.TargetMode == intent.Target.TargetMode))
+        {
+            _logger.LogError("Intent already exists for region {Region} and kpi {Kpi} and target mode {TargetMode}",
+                intent.Region.Name, intent.Target.Kpi, intent.Target.TargetMode);
+            return null;
+        }
+
         intent.Id = _idGenerator.Next();
         _intents.Add(intent);
 
@@ -89,6 +116,26 @@ public class CachedIntentRepository : IIntentRepository
             _logger.LogError("Intent already exists for region {Region} and kpi {Kpi} and target mode {TargetMode}",
                 intent.Region.Name, intent.Target.Kpi, intent.Target.TargetMode);
             return false;
+        }
+        
+        switch (intent.Target.TargetMode)
+        {
+            // Check there is no max < min for the same region and kpi
+            case TargetMode.Min when _intents.Any(x =>
+                x.Id != intent.Id && x.Region == intent.Region && x.Target.Kpi == intent.Target.Kpi &&
+                x.Target.TargetMode == TargetMode.Max && x.Target.TargetValue < intent.Target.TargetValue):
+                _logger.LogError(
+                    "Intent with target mode {TargetMode} is not allowed because there is already a max intent with a lower value for region {Region} and kpi {Kpi}",
+                    intent.Target.TargetMode, intent.Region.Name, intent.Target.Kpi);
+                return false;
+            // Check there is no min > max for the same region and kpi
+            case TargetMode.Max when _intents.Any(x =>
+                x.Id != intent.Id && x.Region == intent.Region && x.Target.Kpi == intent.Target.Kpi &&
+                x.Target.TargetMode == TargetMode.Min && x.Target.TargetValue > intent.Target.TargetValue):
+                _logger.LogError(
+                    "Intent with target mode {TargetMode} is not allowed because there is already a min intent with a higher value for region {Region} and kpi {Kpi}",
+                    intent.Target.TargetMode, intent.Region.Name, intent.Target.Kpi);
+                return false;
         }
         
         var existingIntent = _intents.First(x => x.Id == intent.Id);
