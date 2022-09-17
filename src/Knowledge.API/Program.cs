@@ -1,4 +1,5 @@
 ﻿using Common.Web.AspNetCore;
+using FastEndpoints;
 using Knowledge.API;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +12,7 @@ if (builder.Environment.IsDocker())
 // Add services to the container.
 builder.Services.AddGrpc();
 builder.Services.AddGrpcReflection();
-builder.Services.AddControllers();
+builder.Services.AddFastEndpoints();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -34,8 +35,8 @@ if (app.Environment.IsDevelopment() || app.Environment.IsDocker())
 
 //app.UseAuthorization();
 
-app.MapControllers();
 app.MapGet("/", () => "Hello from Knowledge");
+app.UseFastEndpoints();
 app.MapGrpcServices();
 
 app.Run();

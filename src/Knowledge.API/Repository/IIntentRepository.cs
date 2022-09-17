@@ -5,5 +5,6 @@ namespace Knowledge.API.Repository;
 
 public interface IIntentRepository
 {
-    IList<KpiTarget> GetForRegion(Region region);
+    Intent? Add(Intent intent);
+    IList<Intent> GetForRegion(Region region);
 }

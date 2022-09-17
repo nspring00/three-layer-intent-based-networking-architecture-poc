@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FastEndpoints" Version="5.2.0-beta9" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.48.0" />
     <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.48.0" />
     <PackageReference Include="MathNet.Numerics" Version="5.0.0" />

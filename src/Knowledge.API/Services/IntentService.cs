@@ -12,15 +12,20 @@ public class IntentService : IIntentService
     {
         _intentRepository = intentRepository;
     }
-    
+
+    public Intent? AddIntent(Intent intent)
+    {
+        return _intentRepository.Add(intent);
+    }
+
     public IDictionary<KeyPerformanceIndicator, MinMaxTarget> GetKpiTargetsForRegion(Region region)
     {
         return _intentRepository.GetForRegion(region)
-            .GroupBy(x => x.Kpi)
+            .GroupBy(x => x.Target.Kpi)
             .ToDictionary(x => x.Key, x =>
             {
-                var min = x.FirstOrDefault(k => k.TargetMode == TargetMode.Min)?.TargetValue;
-                var max = x.FirstOrDefault(k => k.TargetMode == TargetMode.Max)?.TargetValue;
+                var min = x.FirstOrDefault(k => k.Target.TargetMode == TargetMode.Min)?.Target.TargetValue;
+                var max = x.FirstOrDefault(k => k.Target.TargetMode == TargetMode.Max)?.Target.TargetValue;
                 return new MinMaxTarget(min, max);
             });
     }
