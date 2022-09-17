@@ -2,4 +2,5 @@
 
 public class CreateIntentResponse
 {
+    public int Id { get; set; }
 }

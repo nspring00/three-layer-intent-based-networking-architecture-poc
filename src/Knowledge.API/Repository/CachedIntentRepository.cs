@@ -7,6 +7,7 @@ public class CachedIntentRepository : IIntentRepository
 {
     private readonly ILogger<CachedIntentRepository> _logger;
     private readonly List<Intent> _intents = new();
+    private readonly IdGenerator _idGenerator = new();
 
     public CachedIntentRepository(ILogger<CachedIntentRepository> logger)
     {
@@ -36,6 +37,11 @@ public class CachedIntentRepository : IIntentRepository
             .ToList();
     }
 
+    public Intent? GetById(int id)
+    {
+        return _intents.FirstOrDefault(x => x.Id == id);
+    }
+
     public Intent? Add(Intent intent)
     {
         if (_intents.Any(x =>
@@ -47,11 +53,18 @@ public class CachedIntentRepository : IIntentRepository
             return null;
         }
 
+        intent.Id = _idGenerator.Next();
         _intents.Add(intent);
 
         _logger.LogInformation(
             "Added intent for region {Region} and kpi {Kpi} and target mode {TargetMode} with value {Value}",
             intent.Region.Name, intent.Target.Kpi, intent.Target.TargetMode, intent.Target.TargetValue);
         return intent;
+    }
+    
+    private class IdGenerator
+    {
+        private int _nextId = 1;
+        public int Next() => _nextId++;
     }
 }

@@ -5,19 +5,23 @@ using Knowledge.API.Models;
 
 namespace Knowledge.API.Mappers;
 
-public class GetIntentsMapper : Mapper<GetIntentsRequest, GetIntentsResponse, IList<Intent>>
+public class GetIntentsMapper : Mapper<GetIntentsRequest, List<GetIntentResponse>,
+    IList<Intent>>
 {
-    public override GetIntentsResponse FromEntity(IList<Intent> e)
+    public override List<GetIntentResponse> FromEntity(IList<Intent> intents)
     {
-        return new GetIntentsResponse
+        return intents.Select(MapIntentToGetIntentResponse).ToList();
+    }
+
+    private static GetIntentResponse MapIntentToGetIntentResponse(Intent intent)
+    {
+        return new GetIntentResponse
         {
-            Intents = e.Select(x => new GetIntentResponse
-            {
-                Region = x.Region.Name,
-                Kpi = x.Target.Kpi.ToString(),
-                TargetMode = x.Target.TargetMode.ToString(),
-                Value = x.Target.TargetValue
-            }).ToList()
+            Id = intent.Id,
+            Region = intent.Region.Name,
+            Kpi = intent.Target.Kpi.ToString(),
+            TargetMode = intent.Target.TargetMode.ToString(),
+            Value = intent.Target.TargetValue
         };
     }
 }

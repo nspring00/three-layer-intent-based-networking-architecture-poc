@@ -6,6 +6,7 @@ namespace Knowledge.API.Repository;
 public interface IIntentRepository
 {
     IList<Intent> GetAll();
-    Intent? Add(Intent intent);
     IList<Intent> GetForRegion(Region region);
+    Intent? GetById(int id);
+    Intent? Add(Intent intent);
 }

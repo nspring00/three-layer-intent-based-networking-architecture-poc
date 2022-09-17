@@ -10,8 +10,6 @@ public class CreateIntentMapper : Mapper<CreateIntentRequest, CreateIntentRespon
 {
     public override Intent ToEntity(CreateIntentRequest r)
     {
-        if (r is null) return null;
-        
         return new Intent(
             new Region(r.Region),
             new KpiTarget(
@@ -23,6 +21,9 @@ public class CreateIntentMapper : Mapper<CreateIntentRequest, CreateIntentRespon
 
     public override CreateIntentResponse FromEntity(Intent e)
     {
-        return new CreateIntentResponse();
+        return new CreateIntentResponse
+        {
+            Id = e.Id
+        };
     }
 }

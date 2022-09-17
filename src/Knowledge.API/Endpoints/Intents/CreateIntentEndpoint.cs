@@ -29,11 +29,11 @@ public class CreateIntentEndpoint : Endpoint<CreateIntentRequest, CreateIntentRe
         var result = _intentService.AddIntent(intent);
         if (result is null)
         {
-            await SendErrorsAsync(cancellation: ct);
+            await SendErrorsAsync();
             return;
         }
 
-        await SendAsync(Map.FromEntity(result), cancellation: ct);
+        await SendAsync(Map.FromEntity(result));
     }
 
 }

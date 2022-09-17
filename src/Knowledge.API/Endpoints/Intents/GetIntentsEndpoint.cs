@@ -9,7 +9,7 @@ namespace Knowledge.API.Endpoints.Intents;
 
 [AllowAnonymous]
 [HttpGet("/intents")]
-public class GetIntentsEndpoint : Endpoint<GetIntentsRequest, GetIntentsResponse, GetIntentsMapper>
+public class GetIntentsEndpoint : Endpoint<GetIntentsRequest, List<GetIntentResponse>, GetIntentsMapper>
 {
     private readonly IIntentService _intentService;
 

@@ -7,6 +7,7 @@
     <UserSecretsId>70ed5a2f-6354-4417-b4f6-385e64253f7a</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
+    <NoWarn>CA2016</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
