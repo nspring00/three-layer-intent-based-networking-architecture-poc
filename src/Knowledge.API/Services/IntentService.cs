@@ -13,6 +13,16 @@ public class IntentService : IIntentService
         _intentRepository = intentRepository;
     }
 
+    public IList<Intent> GetIntents(string? regionFilter)
+    {
+        if (string.IsNullOrWhiteSpace(regionFilter))
+        {
+            return _intentRepository.GetAll();
+        }
+
+        return _intentRepository.GetForRegion(new Region(regionFilter));
+    }
+
     public Intent? AddIntent(Intent intent)
     {
         return _intentRepository.Add(intent);
