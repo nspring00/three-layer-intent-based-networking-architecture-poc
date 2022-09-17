@@ -36,6 +36,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsDocker())
 
 //app.UseAuthorization();
 
+app.UseDefaultExceptionHandler();
 app.MapGet("/", () => "Hello from Knowledge");
 // TODO for some reason fastEndpoints delete does not bind
 app.MapDelete("/intents/{id:int}",

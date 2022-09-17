@@ -29,9 +29,5 @@
     <ProjectReference Include="..\Knowledge.API.Contracts\Knowledge.API.Contracts.csproj" />
     <ProjectReference Include="..\Knowledge.Grpc\Knowledge.Grpc.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Exceptions" />
-  </ItemGroup>
   
 </Project>
