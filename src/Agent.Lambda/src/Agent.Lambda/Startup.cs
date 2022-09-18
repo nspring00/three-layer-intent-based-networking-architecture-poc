@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Agent.Lambda;
 
+// https://medium.com/@piotrkarpaa/lambda-logging-in-asp-net-core-d6fe148c2760
 public class Startup
 {
     public IServiceProvider Setup()
