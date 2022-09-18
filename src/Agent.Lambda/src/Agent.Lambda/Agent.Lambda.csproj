@@ -12,7 +12,11 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
+        <PackageReference Include="Amazon.Lambda.Logging.AspNetCore" Version="3.1.0" />
         <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.3.0" />
         <PackageReference Include="Amazon.Lambda.SQSEvents" Version="2.1.0" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Agent.Core\Agent.Core.csproj" />
     </ItemGroup>
 </Project>

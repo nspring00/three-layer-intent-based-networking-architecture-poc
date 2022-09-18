@@ -12,6 +12,8 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Agent.API.Contracts\Agent.API.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\Agent.Core\Agent.Core.csproj" />
     <ProjectReference Include="..\..\src\Agent.Lambda\Agent.Lambda.csproj" />
   </ItemGroup>
 </Project>

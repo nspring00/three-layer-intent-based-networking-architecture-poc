@@ -7,7 +7,7 @@ namespace Agent.Lambda.Tests;
 public class FunctionTest
 {
     [Fact]
-    public void TestToUpperFunction()
+    public async Task TestToUpperFunction()
     {
 
         // Invoke the lambda function and confirm the string was upper cased.
@@ -23,7 +23,7 @@ public class FunctionTest
                 }
             }
         };
-        var casing = function.FunctionHandler(sqsEvent, context);
+        var casing = await function.FunctionHandler(sqsEvent, context);
 
         Assert.Single(casing);
         Assert.Equal("hello world", casing.First().Lower);
