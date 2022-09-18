@@ -2,7 +2,10 @@
 
 namespace Knowledge.API.Models;
 
-public record Intent(Region Region, KpiTarget Target);
+public record Intent(Region Region, KpiTarget Target)
+{
+    public int Id { get; set; }
+}
 
 public record KpiTarget(KeyPerformanceIndicator Kpi, TargetMode TargetMode, float TargetValue);
 
