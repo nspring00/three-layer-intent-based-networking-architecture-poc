@@ -64,6 +64,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utilities", "Utilities", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "src\Utilities\test\test.csproj", "{388F2500-F258-471C-AD4E-7E411D100979}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Datasets", "Datasets", "{E0A6BEF3-FE94-45F7-A42A-36452DBDD0B1}"
+	ProjectSection(SolutionItems) = preProject
+		Datasets\IncreasingWorkloadSameAvailability.csv = Datasets\IncreasingWorkloadSameAvailability.csv
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
