@@ -1,5 +1,6 @@
 ﻿using Common.Web.AspNetCore;
 using FastEndpoints;
+using FastEndpoints.Swagger;
 using Knowledge.API;
 using Knowledge.API.Services;
 
@@ -14,9 +15,7 @@ if (builder.Environment.IsDocker())
 builder.Services.AddGrpc();
 builder.Services.AddGrpcReflection();
 builder.Services.AddFastEndpoints();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerDoc();
 
 // Registration of custom services
 builder.Services.ConfigureServices(builder.Configuration);
@@ -26,19 +25,19 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment() || app.Environment.IsDocker())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseOpenApi();
+    app.UseSwaggerUi3(c => c.ConfigureDefaults());
 
     app.MapGrpcReflectionService();
 }
 
 //app.UseHttpsRedirection();
 
-//app.UseAuthorization();
+app.UseAuthorization();
 
 app.UseDefaultExceptionHandler();
 app.MapGet("/", () => "Hello from Knowledge");
-// TODO for some reason fastEndpoints delete does not bind
+// TODO find solution for fast endpoints error
 app.MapDelete("/intents/{id:int}",
     (int id, IIntentService intentService) => intentService.RemoveIntent(id) ? Results.Ok() : Results.NotFound());
 app.UseFastEndpoints();

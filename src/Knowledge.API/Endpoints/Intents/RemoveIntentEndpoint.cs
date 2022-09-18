@@ -5,18 +5,12 @@ using Microsoft.AspNetCore.Authorization;
 namespace Knowledge.API.Endpoints.Intents;
 
 [AllowAnonymous]
-[HttpDelete("/intents/{id:int}")]
-// TODO investigate why this is not working
-public class RemoveIntentEndpoint : Endpoint<RemoveIntentRequest, EmptyResponse>
+[HttpDelete("intents/{id}")]
+// TODO investigate why this is not working - due to grpc
+public class RemoveIntentEndpoint : Endpoint<RemoveIntentRequest>
 {
     private readonly IIntentService _intentService;
-
-    // public override void Configure()
-    // {
-    //     AllowAnonymous();
-    //     // Delete("/intents/{id}");
-    // }
-
+    
     public RemoveIntentEndpoint(IIntentService intentService)
     {
         _intentService = intentService;
@@ -37,6 +31,5 @@ public class RemoveIntentEndpoint : Endpoint<RemoveIntentRequest, EmptyResponse>
 
 public class RemoveIntentRequest // : Knowledge.API.Contracts.Requests.RemoveIntentRequest
 {
-    [Microsoft.AspNetCore.Mvc.FromRoute]
-    public new int Id { get; set; }
+    public int Id { get; set; }
 }
