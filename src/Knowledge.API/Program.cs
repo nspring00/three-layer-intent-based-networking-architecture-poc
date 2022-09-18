@@ -18,7 +18,7 @@ builder.Services.AddFastEndpoints();
 builder.Services.AddSwaggerDoc();
 
 // Registration of custom services
-builder.Services.ConfigureServices(builder.Configuration);
+builder.Services.ConfigureServices(builder.Configuration, builder.Environment);
 
 var app = builder.Build();
 
