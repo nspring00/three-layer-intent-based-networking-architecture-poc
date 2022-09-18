@@ -4,32 +4,34 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Knowledge.API.Endpoints.Intents;
 
-[AllowAnonymous]
-[HttpDelete("intents/{id}")]
-// TODO investigate why this is not working - due to grpc
-public class RemoveIntentEndpoint : Endpoint<RemoveIntentRequest>
-{
-    private readonly IIntentService _intentService;
-    
-    public RemoveIntentEndpoint(IIntentService intentService)
-    {
-        _intentService = intentService;
-    }
+// TODO uncomment if resolved
 
-    public override async Task HandleAsync(RemoveIntentRequest req, CancellationToken ct)
-    {
-        var success = _intentService.RemoveIntent(req.Id);
-        if (!success)
-        {
-            await SendNotFoundAsync();
-            return;
-        }
-
-        await SendOkAsync();
-    }
-}
-
-public class RemoveIntentRequest // : Knowledge.API.Contracts.Requests.RemoveIntentRequest
-{
-    public int Id { get; set; }
-}
+// [AllowAnonymous]
+// [HttpDelete("intents/{id}")]
+// // TODO investigate why this is not working - due to grpc
+// public class RemoveIntentEndpoint : Endpoint<RemoveIntentRequest>
+// {
+//     private readonly IIntentService _intentService;
+//     
+//     public RemoveIntentEndpoint(IIntentService intentService)
+//     {
+//         _intentService = intentService;
+//     }
+//
+//     public override async Task HandleAsync(RemoveIntentRequest req, CancellationToken ct)
+//     {
+//         var success = _intentService.RemoveIntent(req.Id);
+//         if (!success)
+//         {
+//             await SendNotFoundAsync();
+//             return;
+//         }
+//
+//         await SendOkAsync();
+//     }
+// }
+//
+// public class RemoveIntentRequest // : Knowledge.API.Contracts.Requests.RemoveIntentRequest
+// {
+//     public int Id { get; set; }
+// }
