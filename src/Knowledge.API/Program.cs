@@ -6,7 +6,7 @@ using Knowledge.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-if (builder.Environment.IsDocker())
+if (builder.Environment.IsDocker() || builder.Environment.IsProduction())
 {
     builder.ConfigurePortsForRestAndGrpcNoTls();
 }
@@ -23,13 +23,12 @@ builder.Services.ConfigureServices(builder.Configuration, builder.Environment);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment() || app.Environment.IsDocker())
-{
-    app.UseOpenApi();
-    app.UseSwaggerUi3(c => c.ConfigureDefaults());
 
-    app.MapGrpcReflectionService();
-}
+app.UseOpenApi();
+app.UseSwaggerUi3(c => c.ConfigureDefaults());
+
+app.MapGrpcReflectionService();
+
 
 //app.UseHttpsRedirection();
 
