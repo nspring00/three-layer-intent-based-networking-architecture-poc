@@ -52,10 +52,10 @@ public class Startup
 
         logging.SetMinimumLevel(LogLevel.Debug);
 
-        if (isDevelopment)
-        {
-            logging.AddConsole();
-        }
+        // if (isDevelopment)
+        // {
+        //     logging.AddConsole();
+        // }
     }
 
 }

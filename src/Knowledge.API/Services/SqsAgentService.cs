@@ -22,7 +22,7 @@ public class SqsAgentService : IAgentService
         var messages = regions.Select(x => new RegionActionRequiredRequest
         {
             Region = x.Name
-        });
+        }).ToList();
 
         return _publisher.PublishAsync(_queueName, messages);
     }
