@@ -1,0 +1,113 @@
+version: "3.9"
+services:
+  knowledge:
+    image: nsp00/ibsm-knowledge
+#    build:
+#      context: ../
+#      dockerfile: src/Knowledge.API/Dockerfile
+#    restart: on-failure
+    ports:
+      - "80:80"
+      - "8080:8080"
+#      - "11000:80"
+#      - "11001:8080"
+    
+    environment:
+#      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - SqsQueues__RegionActionRequiredRequestsQueue=region_action_required_requests
+      
+  data:
+    image: nsp00/ibsm-data
+#    build: 
+#      context: ../
+#      dockerfile: src/Data.API/Dockerfile
+#    restart: on-failure
+    ports:
+     - "80:80"
+     - "8080:8080"
+    environment:
+#      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ExternalServices__KnowledgeServiceUri=http://knowledge:8080
+      - NlManagers__0__Id=1
+      - NlManagers__0__Region=Vienna
+      - NlManagers__0__Uri=http://nl-vienna-1:8080
+      - NlManagers__0__Name=nl-vienna-1
+      - NlManagers__1__Id=2
+      - NlManagers__1__Region=Vienna
+      - NlManagers__1__Uri=http://nl-vienna-2:8080
+      - NlManagers__1__Name=nl-vienna-2
+      - NlManagers__2__Id=3
+      - NlManagers__2__Region=Linz
+      - NlManagers__2__Uri=http://nl-linz-1:8080
+      - NlManagers__2__Name=nl-linz-1
+  
+#  agent:
+#    image: nsp00/ibsm-agent
+#    build: 
+#      context: ../
+#      dockerfile: src/Agent.API/Dockerfile
+#    restart: on-failure
+#    environment:
+#      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+#      - RabbitMQ__HostName=rabbitmq
+#      - RabbitMQ__Port=5672
+#      - RabbitMQ__VHost=/
+#      - RabbitMQ__UserName=ibsm
+#      - RabbitMQ__Password=ibsm
+#      - RabbitQueues__RegionActionRequiredRequests__QueueName=region_action_required_requests
+#      - ExternalServices__ReasoningServiceUri=http://knowledge:8080
+#      - ExternalServices__TopologyServiceUri=http://data:8080
+     
+  nl-vienna-1:
+    image: nsp00/ibsm-networklayer
+#    build: 
+#      context: ../
+#      dockerfile: src/NetworkLayer.API/Dockerfile
+#    restart: on-failure
+    ports:
+     - "80:80"
+     - "8080:8080"
+    environment:
+#      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - NetworkObjects__0__Application=Application1
+      - NetworkObjects__1__Application=Application1
+      - NetworkObjects__2__Application=Application1
+      - NetworkObjects__3__Application=Application1
+      - NetworkObjects__4__Application=Application1
+     
+  nl-vienna-2:
+    image: nsp00/ibsm-networklayer
+#    build: 
+#      context: ../
+#      dockerfile: src/NetworkLayer.API/Dockerfile
+#    restart: on-failure
+    ports:
+     - "80:80"
+     - "8080:8080"
+    environment:
+#      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - NetworkObjects__0__Application=Application1
+      - NetworkObjects__1__Application=Application1
+      - NetworkObjects__2__Application=Application1
+     
+  nl-linz-1:
+    image: nsp00/ibsm-networklayer
+#    build: 
+#      context: ../
+#      dockerfile: src/NetworkLayer.API/Dockerfile
+#    restart: on-failure
+    ports:
+     - "80:80"
+     - "8080:8080"
+    environment:
+#      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - NetworkObjects__0__Application=Application2
+      - NetworkObjects__1__Application=Application2
+      - NetworkObjects__2__Application=Application2
+      - NetworkObjects__3__Application=Application2
+      - NetworkObjects__4__Application=Application2
+      - NetworkObjects__5__Application=Application2
+      
+networks:
+  default:
+    name: "ibsm"

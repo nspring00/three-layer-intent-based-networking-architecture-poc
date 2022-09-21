@@ -11,7 +11,7 @@ services:
       - "RABBITMQ_DEFAULT_PASS=ibsm"
 
   knowledge:
-    image: ibsm-knowledge
+    image: nsp00/ibsm-knowledge
     build:
       context: ../
       dockerfile: src/Knowledge.API/Dockerfile
@@ -31,14 +31,14 @@ services:
       - RabbitQueues__RegionActionRequiredRequests__QueueName=region_action_required_requests
       
   data:
-    image: ibsm-data
+    image: nsp00/ibsm-data
     build: 
       context: ../
       dockerfile: src/Data.API/Dockerfile
     restart: on-failure
     ports:
      - "11010:80"
-     - "11011:443"
+     - "11011:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
       - ExternalServices__KnowledgeServiceUri=http://knowledge:8080
@@ -56,7 +56,7 @@ services:
       - NlManagers__2__Name=nl-linz-1
   
   agent:
-    image: ibsm-agent
+    image: nsp00/ibsm-agent
     build: 
       context: ../
       dockerfile: src/Agent.API/Dockerfile
@@ -75,7 +75,7 @@ services:
       - ExternalServices__TopologyServiceUri=http://data:8080
      
   nl-vienna-1:
-    image: ibsm-networklayer
+    image: nsp00/ibsm-networklayer
     build: 
       context: ../
       dockerfile: src/NetworkLayer.API/Dockerfile
@@ -92,7 +92,7 @@ services:
       - NetworkObjects__4__Application=Application1
      
   nl-vienna-2:
-    image: ibsm-networklayer
+    image: nsp00/ibsm-networklayer
     build: 
       context: ../
       dockerfile: src/NetworkLayer.API/Dockerfile
@@ -107,7 +107,7 @@ services:
       - NetworkObjects__2__Application=Application1
      
   nl-linz-1:
-    image: ibsm-networklayer
+    image: nsp00/ibsm-networklayer
     build: 
       context: ../
       dockerfile: src/NetworkLayer.API/Dockerfile
