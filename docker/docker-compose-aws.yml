@@ -11,7 +11,13 @@ services:
 #      - "8080:8080"
 #      - "11000:80"
 #      - "11001:8080"
-    
+    x-aws-role:
+      Version: '2012-10-17'
+      Statement:
+        - Effect: Allow
+          Action: sqs:SendMessage
+          Resource: arn:aws:sqs:us-east-1:284766146002:region_action_required_requests
+
     environment:
 #      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
       - SqsQueues__RegionActionRequiredRequestsQueue=region_action_required_requests
@@ -27,9 +33,10 @@ services:
 #      context: ../
 #      dockerfile: src/Data.API/Dockerfile
 #    restart: on-failure
-#    ports:
+    ports:
 #     - "80:80"
-#     - "8080:8080"
+      - target: 8080
+        x-aws-protocol: http
     environment:
 #      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
       - ExternalServices__KnowledgeServiceUri=http://knowledge:8080
