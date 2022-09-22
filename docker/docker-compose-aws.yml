@@ -8,7 +8,7 @@ services:
 #    restart: on-failure
     ports:
       - "80:80"
-      - "8080:8080"
+#      - "8080:8080"
 #      - "11000:80"
 #      - "11001:8080"
     
@@ -18,13 +18,18 @@ services:
       
   data:
     image: nsp00/ibsm-data
+    depends_on:
+      - knowledge
+      - nl-vienna-1
+      - nl-vienna-2
+      - nl-linz-1
 #    build: 
 #      context: ../
 #      dockerfile: src/Data.API/Dockerfile
 #    restart: on-failure
-    ports:
-     - "80:80"
-     - "8080:8080"
+#    ports:
+#     - "80:80"
+#     - "8080:8080"
     environment:
 #      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
       - ExternalServices__KnowledgeServiceUri=http://knowledge:8080
@@ -64,9 +69,9 @@ services:
 #      context: ../
 #      dockerfile: src/NetworkLayer.API/Dockerfile
 #    restart: on-failure
-    ports:
-     - "80:80"
-     - "8080:8080"
+#    ports:
+#     - "80:80"
+#     - "8080:8080"
     environment:
 #      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
       - NetworkObjects__0__Application=Application1
@@ -81,9 +86,9 @@ services:
 #      context: ../
 #      dockerfile: src/NetworkLayer.API/Dockerfile
 #    restart: on-failure
-    ports:
-     - "80:80"
-     - "8080:8080"
+#    ports:
+#     - "80:80"
+#     - "8080:8080"
     environment:
 #      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
       - NetworkObjects__0__Application=Application1
@@ -96,9 +101,9 @@ services:
 #      context: ../
 #      dockerfile: src/NetworkLayer.API/Dockerfile
 #    restart: on-failure
-    ports:
-     - "80:80"
-     - "8080:8080"
+#    ports:
+#     - "80:80"
+#     - "8080:8080"
     environment:
 #      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
       - NetworkObjects__0__Application=Application2
