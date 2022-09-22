@@ -21,14 +21,14 @@ public class SqsPublisher
         where TMessage : IMessage
     {
         _logger.LogInformation("Publishing message to queue {QueueName}", queueName);
+        
+        var queueUrl = await GetQueueUrl(queueName);
 
-        var queueUrl = await _sqs.GetQueueUrlAsync(queueName);
-
-        _logger.LogInformation("Queue URL is {QueueUrl}", queueUrl.QueueUrl);
+        _logger.LogInformation("Queue URL is {QueueUrl}", queueUrl);
 
         var request = new SendMessageRequest
         {
-            QueueUrl = queueUrl.QueueUrl,
+            QueueUrl = queueUrl,
             MessageBody = JsonSerializer.Serialize(message),
             MessageAttributes = new Dictionary<string, MessageAttributeValue>
             {
@@ -48,14 +48,14 @@ public class SqsPublisher
         where TMessage : IMessage
     {
         _logger.LogInformation("Publishing {MessageCount} messages to queue {QueueName}", messages.Count, queueName);
+        
+        var queueUrl = await GetQueueUrl(queueName);
 
-        var queueUrl = await _sqs.GetQueueUrlAsync(queueName);
-
-        _logger.LogInformation("Queue URL is {QueueUrl}", queueUrl.QueueUrl);
+        _logger.LogInformation("Queue URL is {QueueUrl}", queueUrl);
 
         var request = new SendMessageBatchRequest
         {
-            QueueUrl = queueUrl.QueueUrl,
+            QueueUrl = queueUrl,
             Entries = messages.Select((message, index) => new SendMessageBatchRequestEntry
             {
                 Id = index.ToString(),
@@ -80,5 +80,18 @@ public class SqsPublisher
         });
 
         _logger.LogInformation("Published {MessageCount} messages to queue {QueueName}", messages.Count, queueName);
+    }
+
+    private async Task<string> GetQueueUrl(string queueName)
+    {
+        if (!queueName.StartsWith("https://sqs.", StringComparison.InvariantCultureIgnoreCase))
+        {
+            var result = await _sqs.GetQueueUrlAsync(queueName);
+            return result.QueueUrl;
+        }
+
+        _logger.LogInformation("QueueName {QueueName} is already QueueUrl", queueName);
+        return queueName;
+
     }
 }
