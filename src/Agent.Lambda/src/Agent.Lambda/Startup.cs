@@ -1,4 +1,7 @@
-﻿using Agent.Core.Handlers;
+﻿using Agent.Core.Clients;
+using Agent.Core.Handlers;
+using Agent.Core.Options;
+using Agent.Core.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -20,7 +23,15 @@ public class Startup
         var services = new ServiceCollection();
         services.AddScoped(_ => configuration);
         services.AddSingleton<ProgramEntryPoint>();
+        
+        services.Configure<ExternalServiceConfig>(configuration.GetSection("ExternalServices"));
         services.AddSingleton<RegionActionRequiredHandler>();
+        services.AddSingleton<IReasoningService, GrpcReasoningService>();
+        services.AddSingleton<KnowledgeGrpcClient>();
+        services.AddSingleton<ITopologyService, GrpcTopologyService>();
+        services.AddSingleton<DataGrpcClient>();
+        services.AddSingleton<INetworkLayerService, GrpcNetworkLayerService>();
+        services.AddSingleton<NetworkLayerGrpcClient>();
 
         services.AddLogging(SetupLogger);
 
