@@ -11,9 +11,4 @@
     <PackageReference Include="RabbitMQ.Client" Version="6.4.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Rabbit\Messages" />
-    <Folder Include="Sqs" />
-  </ItemGroup>
-
 </Project>
