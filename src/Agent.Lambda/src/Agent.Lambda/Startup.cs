@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Agent.Core.Handlers;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -19,18 +20,16 @@ public class Startup
         var services = new ServiceCollection();
         services.AddScoped(_ => configuration);
         services.AddSingleton<ProgramEntryPoint>();
+        services.AddSingleton<RegionActionRequiredHandler>();
 
-        // TODO register services here
-        
-        // TODO maybe set isDevelopment to false at some point
-        services.AddLogging(logging => SetupLogger(true, logging, configuration));
+        services.AddLogging(SetupLogger);
 
         IServiceProvider provider = services.BuildServiceProvider();
 
         return provider;
     }
 
-    public static void SetupLogger(bool isDevelopment, ILoggingBuilder logging, IConfiguration configuration)
+    public static void SetupLogger(ILoggingBuilder logging)
     {
         if (logging == null)
         {
@@ -51,11 +50,6 @@ public class Startup
         logging.AddLambdaLogger(loggerOptions);
 
         logging.SetMinimumLevel(LogLevel.Debug);
-
-        // if (isDevelopment)
-        // {
-        //     logging.AddConsole();
-        // }
     }
 
 }
