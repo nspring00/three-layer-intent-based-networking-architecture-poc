@@ -6,7 +6,7 @@ using NetworkLayer.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-if (builder.Environment.IsDocker() || builder.Environment.IsProduction())
+if (builder.Environment.IsDocker() || builder.Environment.IsEcs())
 {
     builder.ConfigurePortsForRestAndGrpcNoTls();
 }
