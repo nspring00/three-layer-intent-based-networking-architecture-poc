@@ -10,3 +10,5 @@ aws-up:
 	docker --context myecscontext compose -f docker/docker-compose-aws.yml up
 aws-down:
 	docker --context myecscontext compose -f docker/docker-compose-aws.yml down
+aws-convert:
+	docker --context myecscontext compose -f docker/docker-compose-aws.yml convert > docker-aws-convert.yml
