@@ -25,24 +25,8 @@ public class Function
     /// <param name="sqsEvent"></param>
     /// <param name="context"></param>
     /// <returns></returns>
-    public Task<List<Casing>> FunctionHandler(SQSEvent sqsEvent, ILambdaContext context)
+    public Task FunctionHandler(SQSEvent sqsEvent, ILambdaContext context)
     {
         return _programEntryPoint.HandleSqsEvent(sqsEvent, context);
-
-        // const string reasoningServiceUri = "todo";
-        // const string topologyServiceUri = "todo";
-        //
-        // var handler = new RegionActionRequiredHandler(
-        //     new LoggerWrapper<RegionActionRequiredHandler>(logger),
-        //     new GrpcReasoningService(
-        //         new LoggerWrapper<GrpcReasoningService>(logger),
-        //         new KnowledgeGrpcClient(new LoggerWrapper<KnowledgeGrpcClient>(logger)),
-        //         new OptionsWrapper<ExternalServiceConfig>(new ExternalServiceConfig()
-        //         {
-        //             ReasoningServiceUri = reasoningServiceUri, TopologyServiceUri = topologyServiceUri
-        //         })),
-        //     new GrpcTopologyService(),
-        //     new GrpcNetworkLayerService()
-        // );
     }
 }

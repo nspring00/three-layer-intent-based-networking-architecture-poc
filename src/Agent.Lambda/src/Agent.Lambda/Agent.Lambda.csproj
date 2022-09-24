@@ -17,6 +17,7 @@
         <PackageReference Include="Amazon.Lambda.SQSEvents" Version="2.1.0" />
     </ItemGroup>
     <ItemGroup>
+      <ProjectReference Include="..\..\..\Agent.API.Contracts\Agent.API.Contracts.csproj" />
       <ProjectReference Include="..\..\..\Agent.Core\Agent.Core.csproj" />
     </ItemGroup>
 </Project>

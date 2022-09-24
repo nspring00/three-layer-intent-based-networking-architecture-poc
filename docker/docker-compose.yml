@@ -44,16 +44,12 @@ services:
       - ExternalServices__KnowledgeServiceUri=http://knowledge:8080
       - NlManagers__0__Id=1
       - NlManagers__0__Region=Vienna
-      - NlManagers__0__Uri=http://nl-vienna-1:8080
+      - NlManagers__0__Host=nl-vienna-1
       - NlManagers__0__Name=nl-vienna-1
       - NlManagers__1__Id=2
-      - NlManagers__1__Region=Vienna
-      - NlManagers__1__Uri=http://nl-vienna-2:8080
-      - NlManagers__1__Name=nl-vienna-2
-      - NlManagers__2__Id=3
-      - NlManagers__2__Region=Linz
-      - NlManagers__2__Uri=http://nl-linz-1:8080
-      - NlManagers__2__Name=nl-linz-1
+      - NlManagers__1__Region=Linz
+      - NlManagers__1__Host=nl-linz-1
+      - NlManagers__1__Name=nl-linz-1
   
   agent:
     image: nsp00/ibsm-agent
