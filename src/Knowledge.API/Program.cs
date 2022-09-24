@@ -36,9 +36,6 @@ app.UseAuthorization();
 
 app.UseDefaultExceptionHandler();
 app.MapGet("/", () => "Hello from Knowledge");
-// TODO find solution for fast endpoints error
-app.MapDelete("/intents/{id:int}",
-    (int id, IIntentService intentService) => intentService.RemoveIntent(id) ? Results.Ok() : Results.NotFound());
 app.UseFastEndpoints();
 app.MapGrpcServices();
 
