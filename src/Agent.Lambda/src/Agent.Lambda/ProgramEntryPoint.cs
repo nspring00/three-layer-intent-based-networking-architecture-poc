@@ -36,12 +36,15 @@ public class ProgramEntryPoint
                     _logger.LogInformation("Record Body: {Body}", record.Body);
 
                     // Validation
-                    const string attributeName = nameof(RegionActionRequiredRequest.MessageTypeName);
-                    if (!record.Attributes.ContainsKey(attributeName))
-                    {
-                        _logger.LogError("Record does not contain attribute {AttributeName}", attributeName);
-                        continue;
-                    }
+                    // const string attributeName = nameof(RegionActionRequiredRequest.MessageTypeName);
+                    // if (!record.Attributes.ContainsKey(attributeName))
+                    // {
+                    //     _logger.LogError("Record does not contain attribute {AttributeName}", attributeName);
+                    //     continue;
+                    // }
+                    
+                    _logger.LogInformation("Attributes: {Attributes}", string.Join(", ", record.Attributes.Select(x => $"{x.Key}: {x.Value}")));
+                    record.MessageAttributes.Select(x => $"{x.Key}: {x.Value.StringValue}").ToList().ForEach(x => _logger.LogInformation("Message Attributes: {MessageAttributes}", x));
                     
                     var handleRequest = JsonSerializer.Deserialize<RegionActionRequiredRequest>(record.Body);
                     if (handleRequest is null)
@@ -50,11 +53,11 @@ public class ProgramEntryPoint
                         continue;
                     }
 
-                    if (record.Attributes[attributeName] != handleRequest.MessageTypeName)
-                    {
-                        _logger.LogError("Record attribute {AttributeName} does not match message type name {MessageTypeName}", attributeName, handleRequest.MessageTypeName);
-                        continue;
-                    }
+                    // if (record.Attributes[attributeName] != handleRequest.MessageTypeName)
+                    // {
+                    //     _logger.LogError("Record attribute {AttributeName} does not match message type name {MessageTypeName}", attributeName, handleRequest.MessageTypeName);
+                    //     continue;
+                    // }
 
                     // Handle
                     // var host = record.Body;
