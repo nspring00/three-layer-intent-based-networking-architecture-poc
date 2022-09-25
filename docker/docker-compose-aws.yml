@@ -34,13 +34,13 @@ services:
       - NlManagers__0__Id=1
       - NlManagers__0__Region=Vienna
       - NlManagers__0__Host=nl-vienna-1
-      - NlManagers__0__HostSuffix=.ibsm.local
+      - NlManagers__0__HostSuffix=.${COMPOSE_PROJECT_NAME}.local
       - NlManagers__0__Port=${ECS_NLVIENNA1_HTTP2_Port}
       - NlManagers__0__Name=nl-vienna-1
       - NlManagers__1__Id=2
       - NlManagers__1__Region=Linz
       - NlManagers__1__Host=nl-linz-1
-      - NlManagers__1__HostSuffix=.ibsm.local
+      - NlManagers__1__HostSuffix=.${COMPOSE_PROJECT_NAME}.local
       - NlManagers__1__Port=${ECS_NLLINZ1_HTTP2_Port}
       - NlManagers__1__Name=nl-linz-1
        
