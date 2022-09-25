@@ -70,6 +70,8 @@ services:
       - NetworkObjects__3__Application=Application2
       - NetworkObjects__4__Application=Application2
       - NetworkObjects__5__Application=Application2
+
+x-aws-logs_retention: 10
       
 networks:
   default:
