@@ -30,9 +30,11 @@ public class NetworkObjectUpdateService : NetworkObjectUpdater.NetworkObjectUpda
             Timestamp = Timestamp.FromDateTime(_dateTimeProvider.Now)
         };
 
+        var allNos = _networkObjectService.GetAll();
+        
         // TODO make this more refined
         response.CreatedObjects.AddRange(
-            _networkObjectService.GetAll().Select(x => new NewNetworkObject
+            allNos.Select(x => new NewNetworkObject
             {
                 Id = x.Id,
                 CreatedAt = Timestamp.FromDateTime(x.CreatedAt),
@@ -44,7 +46,7 @@ public class NetworkObjectUpdateService : NetworkObjectUpdater.NetworkObjectUpda
             })
         );
 
-        response.NetworkObjects.AddRange(_networkObjectService.GetAll()
+        response.NetworkObjects.AddRange(allNos
             .Select(NetworkObjectMapper.MapNetworkObjectToGrpc));
 
         _logger.LogInformation("Fetched update: New {NewCount} Total {TotalCount}", response.CreatedObjects.Count,
