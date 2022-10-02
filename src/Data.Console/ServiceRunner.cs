@@ -1,6 +1,6 @@
 ﻿using Common.Models;
 using Common.Services;
-using Data.Console.Services;
+using Data.Core.Services;
 using Microsoft.Extensions.Logging;
 
 namespace Data.Console;

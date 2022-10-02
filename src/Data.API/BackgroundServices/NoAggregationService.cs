@@ -1,6 +1,6 @@
 ﻿using Common.Services;
 using Data.API.Services;
-using Data.Console.Services;
+using Data.Core.Services;
 
 namespace Data.API.BackgroundServices;
 

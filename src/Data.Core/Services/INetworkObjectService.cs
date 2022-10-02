@@ -1,7 +1,7 @@
 ﻿using Common.Models;
-using Data.Console.Models;
+using Data.Core.Models;
 
-namespace Data.Console.Services;
+namespace Data.Core.Services;
 
 public interface INetworkObjectService
 {

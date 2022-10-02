@@ -1,7 +1,7 @@
 ﻿using Common.Models;
-using Data.Console.Models;
+using Data.Core.Models;
 
-namespace Data.Console.Repositories;
+namespace Data.Core.Repositories;
 
 // TODO make methods async
 public interface INetworkObjectRepository

@@ -1,4 +1,4 @@
-﻿namespace Data.Console.Models;
+﻿namespace Data.Core.Models;
 public record NetworkUpdate
 {
     public int DeviceCount { get; set; }

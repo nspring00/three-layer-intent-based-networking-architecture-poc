@@ -1,10 +1,10 @@
 ﻿using Common.Models;
-using Data.Console.Clients;
-using Data.Console.Models;
-using Data.Console.Options;
+using Data.Core.Clients;
+using Data.Core.Models;
+using Data.Core.Options;
 using Microsoft.Extensions.Options;
 
-namespace Data.Console.Services;
+namespace Data.Core.Services;
 
 public class KnowledgeService : IKnowledgeService
 {

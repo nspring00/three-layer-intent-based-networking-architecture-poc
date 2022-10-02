@@ -1,4 +1,4 @@
-﻿namespace Data.Console.Models;
+﻿namespace Data.Core.Models;
 public class NetworkObjectInfo
 {
     public Utilization Utilization { get; set; } = new();

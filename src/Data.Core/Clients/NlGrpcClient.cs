@@ -1,9 +1,8 @@
 ﻿using Common.Grpc;
 using Microsoft.Extensions.Logging;
-using NetworkLayer.Grpc;
 using NetworkLayer.Grpc.NetworkObjects;
 
-namespace Data.Console.Clients;
+namespace Data.Core.Clients;
 
 public class NlGrpcClient : CachedGrpcClient
 {

@@ -1,6 +1,6 @@
-﻿using Data.Console.Models;
+﻿using Data.Core.Models;
 
-namespace Data.Console.Services;
+namespace Data.Core.Services;
 
 public class EfficiencyService : IEfficiencyService
 {

@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common.Web\Common.Web.csproj" />
-    <ProjectReference Include="..\Data.Console\Data.Console.csproj" />
+    <ProjectReference Include="..\Data.Core\Data.Core.csproj" />
     <ProjectReference Include="..\Data.Grpc\Data.Grpc.csproj" />
   </ItemGroup>
 

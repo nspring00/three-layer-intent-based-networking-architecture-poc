@@ -1,10 +1,10 @@
 ﻿using System.Diagnostics;
 using Common.Models;
-using Data.Console.Models;
-using Data.Console.Repositories;
+using Data.Core.Models;
+using Data.Core.Repositories;
 using Microsoft.Extensions.Logging;
 
-namespace Data.Console.Services;
+namespace Data.Core.Services;
 public class NetworkObjectService : INetworkObjectService
 {
     private readonly ILogger<NetworkObjectService> _logger;

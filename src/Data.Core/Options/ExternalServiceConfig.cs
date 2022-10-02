@@ -1,4 +1,4 @@
-﻿namespace Data.Console.Options;
+﻿namespace Data.Core.Options;
 
 public class ExternalServiceConfig
 {

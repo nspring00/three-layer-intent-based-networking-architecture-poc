@@ -69,6 +69,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Datasets", "Datasets", "{E0
 		Datasets\IncreasingWorkloadSameAvailability.csv = Datasets\IncreasingWorkloadSameAvailability.csv
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data.Core", "src\Data.Core\Data.Core.csproj", "{11108602-47D1-4650-972E-1946F3EFC675}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -151,6 +153,10 @@ Global
 		{388F2500-F258-471C-AD4E-7E411D100979}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{388F2500-F258-471C-AD4E-7E411D100979}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{388F2500-F258-471C-AD4E-7E411D100979}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11108602-47D1-4650-972E-1946F3EFC675}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11108602-47D1-4650-972E-1946F3EFC675}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11108602-47D1-4650-972E-1946F3EFC675}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11108602-47D1-4650-972E-1946F3EFC675}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -182,6 +188,7 @@ Global
 		{47DC6D59-D29C-4ED4-B21F-3583AE5685D8} = {69023CA3-2474-4DAF-9B44-B0CC94A13620}
 		{3923C53B-B5CF-4EDF-861F-513FAB0BB36C} = {47DC6D59-D29C-4ED4-B21F-3583AE5685D8}
 		{388F2500-F258-471C-AD4E-7E411D100979} = {47DC6D59-D29C-4ED4-B21F-3583AE5685D8}
+		{11108602-47D1-4650-972E-1946F3EFC675} = {3179A662-C369-4D7D-A1BF-05AC2F90E8D1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B216C082-BB1D-42D3-81AD-D80D4FDC2AC5}

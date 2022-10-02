@@ -2,10 +2,10 @@
 using Data.API.BackgroundServices;
 using Data.API.Options;
 using Data.API.Services;
-using Data.Console.Clients;
-using Data.Console.Options;
-using Data.Console.Repositories;
-using Data.Console.Services;
+using Data.Core.Clients;
+using Data.Core.Options;
+using Data.Core.Repositories;
+using Data.Core.Services;
 
 namespace Data.API;
 

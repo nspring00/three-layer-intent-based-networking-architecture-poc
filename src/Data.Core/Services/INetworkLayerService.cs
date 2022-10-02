@@ -1,7 +1,6 @@
 ﻿using Common.Models;
-using Data.Console.Models;
 
-namespace Data.Console.Services;
+namespace Data.Core.Services;
 
 public interface INetworkLayerService
 {

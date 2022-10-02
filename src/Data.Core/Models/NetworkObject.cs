@@ -1,6 +1,6 @@
 ﻿using Common.Models;
 
-namespace Data.Console.Models;
+namespace Data.Core.Models;
 
 public class NetworkObject
 {

@@ -1,7 +1,7 @@
 ﻿using Common.Models;
-using Data.Console.Models;
-using Data.Console.Repositories;
-using Data.Console.Services;
+using Data.Core.Models;
+using Data.Core.Repositories;
+using Data.Core.Services;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;

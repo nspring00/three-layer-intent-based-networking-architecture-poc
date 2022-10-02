@@ -1,11 +1,11 @@
 ﻿using Common.Grpc;
 using Common.Models;
-using Data.Console.Models;
+using Data.Core.Models;
 using Google.Protobuf.WellKnownTypes;
 using Knowledge.Grpc.NetworkInfoUpdate;
 using Microsoft.Extensions.Logging;
 
-namespace Data.Console.Clients;
+namespace Data.Core.Clients;
 
 public class KnowledgeGrpcClient : CachedGrpcClient
 {

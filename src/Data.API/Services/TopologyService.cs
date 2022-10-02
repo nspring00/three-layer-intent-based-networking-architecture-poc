@@ -1,7 +1,7 @@
 ﻿using Common.Models;
 using Common.Services;
-using Data.Console.Models;
-using Data.Console.Repositories;
+using Data.Core.Models;
+using Data.Core.Repositories;
 using Data.Grpc.Topology;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;

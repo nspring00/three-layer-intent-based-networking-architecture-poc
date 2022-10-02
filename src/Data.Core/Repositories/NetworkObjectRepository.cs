@@ -1,8 +1,8 @@
 ﻿using Common.Models;
-using Data.Console.Models;
+using Data.Core.Models;
 using Microsoft.Extensions.Logging;
 
-namespace Data.Console.Repositories;
+namespace Data.Core.Repositories;
 
 public class NetworkObjectRepository : INetworkObjectRepository
 {

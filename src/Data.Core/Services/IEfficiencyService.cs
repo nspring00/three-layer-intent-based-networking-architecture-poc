@@ -1,6 +1,6 @@
-﻿using Data.Console.Models;
+﻿using Data.Core.Models;
 
-namespace Data.Console.Services;
+namespace Data.Core.Services;
 public interface IEfficiencyService
 {
     float ComputeAvgEfficiency(Utilization utilization);

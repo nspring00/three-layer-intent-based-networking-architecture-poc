@@ -1,9 +1,9 @@
 ﻿using Common.Models;
-using Data.Console.Clients;
-using Data.Console.Models;
+using Data.Core.Clients;
+using Data.Core.Models;
 using Microsoft.Extensions.Logging;
 
-namespace Data.Console.Services;
+namespace Data.Core.Services;
 
 public class NetworkLayerService : INetworkLayerService
 {
