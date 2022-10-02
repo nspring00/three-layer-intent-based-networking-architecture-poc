@@ -4,7 +4,7 @@ using Data.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-if (builder.Environment.IsDocker())
+if (builder.Environment.IsDocker() || builder.Environment.IsEcs())
 {
     builder.ConfigurePortsForRestAndGrpcNoTls();
 }
@@ -18,10 +18,7 @@ var app = builder.Build();
 app.MapGet("/", () => "Hello from Data");
 
 app.MapGrpcService<TopologyService>();
+app.MapGrpcReflectionService();
 
-if (app.Environment.IsDevelopment() || app.Environment.IsDocker())
-{
-    app.MapGrpcReflectionService();
-}
 
 app.Run();

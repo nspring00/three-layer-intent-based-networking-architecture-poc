@@ -33,7 +33,6 @@ namespace Agent.Core.Handlers
                 return;
             }
 
-
             var topologies = await _topologyService.GetTopologyForRegionsAsync(regions);
 
             foreach (var (region, action) in actions)

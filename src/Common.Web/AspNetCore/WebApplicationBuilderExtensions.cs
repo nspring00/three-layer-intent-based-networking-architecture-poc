@@ -5,6 +5,8 @@ namespace Common.Web.AspNetCore;
 public static class WebApplicationBuilderExtensions
 {
     private const string AppSettingsEnforceHttp2Flag = "ASPNETCORE_Kestrel:Enforce_HTTP2";
+    private const string AppSettingsHttp1Port = "ASPNETCORE_Kestrel:HTTP1_Port";
+    private const string AppSettingsHttp2Port = "ASPNETCORE_Kestrel:HTTP2_Port";
 
     public static WebApplicationBuilder CheckEnforceHttp2(this WebApplicationBuilder builder)
     {
@@ -21,13 +23,20 @@ public static class WebApplicationBuilderExtensions
         return builder;
     }
 
-    public static WebApplicationBuilder ConfigurePortsForRestAndGrpcNoTls(this WebApplicationBuilder builder, int http1Port = 80, int http2Port = 8080)
+    public static WebApplicationBuilder ConfigurePortsForRestAndGrpcNoTls(this WebApplicationBuilder builder, int? http1Port = null, int? http2Port = null)
     {
+        http1Port ??= builder.Configuration[AppSettingsHttp1Port] is not null
+            ? int.Parse(builder.Configuration[AppSettingsHttp1Port])
+            : 80;        
+        http2Port ??= builder.Configuration[AppSettingsHttp2Port] is not null
+            ? int.Parse(builder.Configuration[AppSettingsHttp2Port])
+            : 8080;
+            
         builder.WebHost.ConfigureKestrel(options =>
         {
-            options.ListenAnyIP(http1Port, listenOptions =>
+            options.ListenAnyIP(http1Port.Value, listenOptions =>
                 listenOptions.Protocols = HttpProtocols.Http1);
-            options.ListenAnyIP(http2Port, listenOptions =>
+            options.ListenAnyIP(http2Port.Value, listenOptions =>
                 listenOptions.Protocols = HttpProtocols.Http2);
         });
 

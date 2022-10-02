@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Reference Include="AWSSDK.SQS">
+        <HintPath>C:\Users\Niki\.nuget\packages\awssdk.sqs\3.7.2.103\lib\netcoreapp3.1\AWSSDK.SQS.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Common\Common.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AWSSDK.Core" Version="3.7.13.7" />
+      <PackageReference Include="AWSSDK.SQS" Version="3.7.2.106" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.0.3" />
+    </ItemGroup>
+
+</Project>

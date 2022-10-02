@@ -10,6 +10,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		docker\.env = docker\.env
 		docker\docker-compose.yml = docker\docker-compose.yml
+		docker\docker-compose-aws.yml = docker\docker-compose-aws.yml
+		Makefile = Makefile
+		docker-aws-convert.yml = docker-aws-convert.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Knowledge.Temp.Test", "test\Knowledge.Temp.Test\Knowledge.Temp.Test.csproj", "{90A4E51E-0093-4970-A910-5DB274BF1D67}"
@@ -63,6 +66,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utilities", "Utilities", "{47DC6D59-D29C-4ED4-B21F-3583AE5685D8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "src\Utilities\test\test.csproj", "{388F2500-F258-471C-AD4E-7E411D100979}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agent.Lambda", "src\Agent.Lambda\src\Agent.Lambda\Agent.Lambda.csproj", "{778CD5B2-B423-4701-A200-C27AC087E3A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agent.Lambda.Tests", "src\Agent.Lambda\test\Agent.Lambda.Tests\Agent.Lambda.Tests.csproj", "{242A094C-78C3-4E8E-AFC8-456A0B340A23}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Sqs", "src\Common.Sqs\Common.Sqs.csproj", "{F0831D6F-D070-4B8A-9347-BFE246576BCC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Datasets", "Datasets", "{E0A6BEF3-FE94-45F7-A42A-36452DBDD0B1}"
 	ProjectSection(SolutionItems) = preProject
@@ -157,6 +166,18 @@ Global
 		{11108602-47D1-4650-972E-1946F3EFC675}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11108602-47D1-4650-972E-1946F3EFC675}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11108602-47D1-4650-972E-1946F3EFC675}.Release|Any CPU.Build.0 = Release|Any CPU
+		{778CD5B2-B423-4701-A200-C27AC087E3A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{778CD5B2-B423-4701-A200-C27AC087E3A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{778CD5B2-B423-4701-A200-C27AC087E3A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{778CD5B2-B423-4701-A200-C27AC087E3A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{242A094C-78C3-4E8E-AFC8-456A0B340A23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{242A094C-78C3-4E8E-AFC8-456A0B340A23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{242A094C-78C3-4E8E-AFC8-456A0B340A23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{242A094C-78C3-4E8E-AFC8-456A0B340A23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0831D6F-D070-4B8A-9347-BFE246576BCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0831D6F-D070-4B8A-9347-BFE246576BCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0831D6F-D070-4B8A-9347-BFE246576BCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0831D6F-D070-4B8A-9347-BFE246576BCC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -189,6 +210,9 @@ Global
 		{3923C53B-B5CF-4EDF-861F-513FAB0BB36C} = {47DC6D59-D29C-4ED4-B21F-3583AE5685D8}
 		{388F2500-F258-471C-AD4E-7E411D100979} = {47DC6D59-D29C-4ED4-B21F-3583AE5685D8}
 		{11108602-47D1-4650-972E-1946F3EFC675} = {3179A662-C369-4D7D-A1BF-05AC2F90E8D1}
+		{778CD5B2-B423-4701-A200-C27AC087E3A8} = {4E6C6147-5DDD-4F96-B578-0205F5C56F19}
+		{242A094C-78C3-4E8E-AFC8-456A0B340A23} = {4E6C6147-5DDD-4F96-B578-0205F5C56F19}
+		{F0831D6F-D070-4B8A-9347-BFE246576BCC} = {D24B04A7-CB9A-4243-8B35-9140C88A3D0A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B216C082-BB1D-42D3-81AD-D80D4FDC2AC5}
