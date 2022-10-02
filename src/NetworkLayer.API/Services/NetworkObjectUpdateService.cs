@@ -25,24 +25,19 @@ public class NetworkObjectUpdateService : NetworkObjectUpdater.NetworkObjectUpda
     {
         _logger.LogInformation("Update requested");
 
+        var now = _dateTimeProvider.Now;
         var response = new NetworkObjectUpdateResponse
         {
-            Timestamp = Timestamp.FromDateTime(_dateTimeProvider.Now)
+            Timestamp = Timestamp.FromDateTime(now)
         };
 
-        var allNos = _networkObjectService.GetAll();
+        var (allNos, newNos) = _networkObjectService.GetAllWithNew();
         
-        // TODO make this more refined
         response.CreatedObjects.AddRange(
-            allNos.Select(x => new NewNetworkObject
+            newNos.Select(x => new NewNetworkObject
             {
                 Id = x.Id,
-                CreatedAt = Timestamp.FromDateTime(x.CreatedAt),
-                Application = x.Application,
-                Groups =
-                {
-                    x.Groups
-                }
+                CreatedAt = Timestamp.FromDateTime(x.CreatedAt)
             })
         );
 

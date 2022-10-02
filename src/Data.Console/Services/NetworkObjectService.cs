@@ -144,12 +144,12 @@ public class NetworkObjectService : INetworkObjectService
         {
             if (info.Key < start)
             {
-                _logger.LogError($"Unexpected timestamp before aggregation: {info.Key}");
+                _logger.LogError("Unexpected timestamp before aggregation: {InfoKey}", info.Key);
             }
             
             if (info.Key > end)
             {
-                _logger.LogError($"Unexpected timestamp in the future {info.Key}");
+                _logger.LogError("Unexpected timestamp in the future {InfoKey}", info.Key);
                 continue;
             }
 
