@@ -8,11 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A0EE42A7-8F20-4DC6-B04C-F13CE595B92B}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		docker\.env = docker\.env
-		docker\docker-compose.yml = docker\docker-compose.yml
-		docker\docker-compose-aws.yml = docker\docker-compose-aws.yml
 		Makefile = Makefile
-		docker-aws-convert.yml = docker-aws-convert.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Knowledge.Temp.Test", "test\Knowledge.Temp.Test\Knowledge.Temp.Test.csproj", "{90A4E51E-0093-4970-A910-5DB274BF1D67}"
@@ -79,6 +75,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Datasets", "Datasets", "{E0
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data.Core", "src\Data.Core\Data.Core.csproj", "{11108602-47D1-4650-972E-1946F3EFC675}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{8FC2265B-E438-4CA9-B050-534F8D7350FD}"
+	ProjectSection(SolutionItems) = preProject
+		docker\docker-compose-aws.yml = docker\docker-compose-aws.yml
+		docker\docker-compose.yml = docker\docker-compose.yml
+		docker\.env = docker\.env
+		docker-aws-convert.yml = docker-aws-convert.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
