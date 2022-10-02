@@ -4,6 +4,7 @@ using Data.Console.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Data.Console.Services;
+
 public class NetworkLayerService : INetworkLayerService
 {
     private readonly ILogger<NetworkLayerService> _logger;
@@ -25,6 +26,10 @@ public class NetworkLayerService : INetworkLayerService
         var response = await _nlGrpcClient.FetchUpdates(uri);
 
         var updateTime = response.Timestamp.ToDateTime();
+
+        _logger.LogInformation("Received {Count} updates from {NlId} at {UpdateTime}", response.NetworkObjects.Count,
+            nlId, updateTime);
+        
         foreach (var newNo in response.CreatedObjects)
         {
             if (newNo is null) continue;
@@ -40,7 +45,6 @@ public class NetworkLayerService : INetworkLayerService
                 Region = region,
                 Id = newNo.Id,
                 Created = newNo.CreatedAt.ToDateTime(),
-                Application = newNo.Application
             });
         }
 
@@ -52,8 +56,7 @@ public class NetworkLayerService : INetworkLayerService
             {
                 Utilization = new Utilization
                 {
-                    CpuUtilization = no.Utilization.CpuUsage,
-                    MemoryUtilization = no.Utilization.MemoryUsage
+                    CpuUtilization = no.Utilization.CpuUsage, MemoryUtilization = no.Utilization.MemoryUsage
                 },
                 Availability = no.Availability
             });

@@ -85,11 +85,6 @@ services:
      - "11021:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
-      - NetworkObjects__0__Application=Application1
-      - NetworkObjects__1__Application=Application1
-      - NetworkObjects__2__Application=Application1
-      - NetworkObjects__3__Application=Application1
-      - NetworkObjects__4__Application=Application1
      
   nl-vienna-2:
     image: ibsm-networklayer
@@ -102,9 +97,6 @@ services:
      - "11023:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
-      - NetworkObjects__0__Application=Application1
-      - NetworkObjects__1__Application=Application1
-      - NetworkObjects__2__Application=Application1
      
   nl-linz-1:
     image: ibsm-networklayer
@@ -117,12 +109,6 @@ services:
      - "11025:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
-      - NetworkObjects__0__Application=Application2
-      - NetworkObjects__1__Application=Application2
-      - NetworkObjects__2__Application=Application2
-      - NetworkObjects__3__Application=Application2
-      - NetworkObjects__4__Application=Application2
-      - NetworkObjects__5__Application=Application2
       
 networks:
   default:

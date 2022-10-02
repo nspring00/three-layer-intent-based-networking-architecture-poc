@@ -6,4 +6,4 @@ public record NetworkUpdate
     public float AvgAvailability { get; set; }
 }
 
-public record AddedNetworkObject(int Id, string Application);
+public record AddedNetworkObject(int Id);

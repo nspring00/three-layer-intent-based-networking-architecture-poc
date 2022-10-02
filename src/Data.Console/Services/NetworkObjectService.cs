@@ -28,7 +28,7 @@ public class NetworkObjectService : INetworkObjectService
     {
         if (!_added.ContainsKey(networkObject.Region))
         {
-            _added.Add(networkObject.Region, new List<AddedNetworkObject> { new(networkObject.Id, networkObject.Application) });
+            _added.Add(networkObject.Region, new List<AddedNetworkObject> { new(networkObject.Id) });
         }
         else
         {
@@ -37,7 +37,7 @@ public class NetworkObjectService : INetworkObjectService
                 _logger.LogWarning("NetworkObject already exists: {Id}", networkObject.Id);
                 return;
             }
-            _added[networkObject.Region].Add(new (networkObject.Id, networkObject.Application));
+            _added[networkObject.Region].Add(new AddedNetworkObject(networkObject.Id));
         }
         
         _networkObjectRepository.Create(networkObject);

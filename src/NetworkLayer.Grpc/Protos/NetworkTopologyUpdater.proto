@@ -14,8 +14,6 @@ message ScaleUpRequest {
 }
 
 message NewNetworkObject {
-    string application = 1;
-    repeated string groups = 2;
 }
 
 message ScaleUpResponse {

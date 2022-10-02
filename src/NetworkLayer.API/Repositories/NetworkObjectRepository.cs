@@ -26,57 +26,7 @@ public class NetworkObjectRepository : INetworkObjectRepository
             {
                 Id = _idGenerator.Next(),
                 CreatedAt = now,
-                Application = x.Application,
-                Groups = x.Groups,
-                Ip = "TODO"
             }).ToList();
-
-
-        /*_networkObjects = new List<NetworkObject>
-        {
-            new()
-            {
-                Id = _idGenerator.Next(),
-                Application = "Application1",
-                Groups = { "Group1" },
-                CreatedAt = DateTime.UtcNow
-            },
-            new()
-            {
-                Id = _idGenerator.Next(),
-                Application = "Application1",
-                Groups = { "Group1" },
-                CreatedAt = DateTime.UtcNow
-            },
-            new()
-            {
-                Id = _idGenerator.Next(),
-                Application = "Application2",
-                Groups = { "Group2" },
-                CreatedAt = DateTime.UtcNow
-            },
-            new()
-            {
-                Id = _idGenerator.Next(),
-                Application = "Application1",
-                Groups = { "Group2" },
-                CreatedAt = DateTime.UtcNow
-            },
-            new()
-            {
-                Id = _idGenerator.Next(),
-                Application = "Application2",
-                Groups = { "Group1", "Group2" },
-                CreatedAt = DateTime.UtcNow
-            },
-            new()
-            {
-                Id = _idGenerator.Next(),
-                Application = "Application2",
-                Groups = { "Group1", "Group2" },
-                CreatedAt = DateTime.UtcNow
-            }
-        };*/
     }
 
     public IList<NetworkObject> GetAll()

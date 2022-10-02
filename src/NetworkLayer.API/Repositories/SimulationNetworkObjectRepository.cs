@@ -42,9 +42,7 @@ namespace NetworkLayer.API.Repositories
             return _nos.Select(x => new NetworkObject
                 {
                     Id = x.Item1,
-                    Application = string.Empty,
                     CreatedAt = x.Item2,
-                    Ip = string.Empty,
                     Utilization = new Utilization
                     {
                         CpuUtilization = avgCpu, // TODO jitter values

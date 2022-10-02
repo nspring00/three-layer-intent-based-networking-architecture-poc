@@ -15,11 +15,9 @@ if (builder.Environment.IsDocker())
 builder.Services.AddGrpc();
 builder.Services.AddGrpcReflection();
 
-// builder.Services.Configure<List<ExistingNoConfig>>(builder.Configuration.GetSection("NetworkObjects"));
 builder.Services.Configure<SimulationConfig>(builder.Configuration.GetSection("Simulation"));
 
 builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-// builder.Services.AddSingleton<INetworkObjectRepository, NetworkObjectRepository>();
 builder.Services.AddSingleton<INetworkObjectRepository, SimulationNetworkObjectRepository>();
 builder.Services.AddSingleton<SimulationDataSet>();
 builder.Services.AddSingleton<INetworkObjectService, NetworkObjectService>();
