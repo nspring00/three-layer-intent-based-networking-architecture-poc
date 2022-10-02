@@ -81,19 +81,10 @@ services:
      - "11021:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
-     
-  nl-vienna-2:
-    image: nsp00/ibsm-networklayer
-    build: 
-      context: ../
-      dockerfile: src/NetworkLayer.API/Dockerfile
-    restart: on-failure
-    ports:
-     - "11022:80"
-     - "11023:8080"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
-     
+      - Simulation__InitialCount=15
+    volumes:
+      - ../Datasets/IncreasingWorkloadSameAvailability.csv:/app/dataset.csv
+  
   nl-linz-1:
     image: nsp00/ibsm-networklayer
     build: 
@@ -105,6 +96,9 @@ services:
      - "11025:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - Simulation__InitialCount=15
+    volumes:
+      - ../Datasets/IncreasingWorkloadSameAvailability.csv:/app/dataset.csv
       
 networks:
   default:
