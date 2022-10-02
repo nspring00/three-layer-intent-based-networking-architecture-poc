@@ -1,4 +1,8 @@
-﻿using Common.Services;
+﻿using Amazon;
+using Amazon.SQS;
+using Common.Services;
+using Common.Sqs;
+using Common.Web.AspNetCore;
 using Common.Web.Rabbit;
 using Knowledge.API.Configs;
 using Knowledge.API.Repository;
@@ -9,7 +13,7 @@ namespace Knowledge.API;
 
 public static class ServiceConfiguration
 {
-    public static void ConfigureServices(this IServiceCollection services, IConfiguration configuration)
+    public static void ConfigureServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
     {
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddSingleton<IIntentRepository, CachedIntentRepository>();
@@ -17,14 +21,23 @@ public static class ServiceConfiguration
         services.AddSingleton<IReasoningService, ReasoningService>(); // TODO maybe scoped?
         services.AddSingleton<IIntentService, IntentService>();
 
-
-        services.Configure<RabbitQueues>(configuration.GetSection("RabbitQueues")); // TODO fix config loading
-        services.AddRabbitMq(configuration);
-        //services.AddHostedService<ReasoningRequestConsumerService>();
-
-        // TODO only for local, not cloud
-        services.AddSingleton<IAgentService, RabbitAgentService>();
-
+        if (environment.IsDevelopment() || environment.IsDocker())
+        {
+            // Local dev and Docker
+            services.Configure<RabbitQueues>(configuration.GetSection("RabbitQueues")); // TODO fix config loading
+            services.AddRabbitMq(configuration);
+            //services.AddHostedService<ReasoningRequestConsumerService>();
+            services.AddSingleton<IAgentService, RabbitAgentService>();
+        }
+        else
+        {
+            // AWS cloud deployment
+            services.AddSingleton<IAmazonSQS>(_ => new AmazonSQSClient(RegionEndpoint.USEast1));
+            services.AddSingleton<SqsPublisher>();
+            services.Configure<SqsQueues>(configuration.GetSection("SqsQueues"));
+            services.AddSingleton<IAgentService, SqsAgentService>();
+        }
+        
         services.ConfigureMediatR();
     }
 

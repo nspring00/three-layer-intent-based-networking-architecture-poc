@@ -1,0 +1,838 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  CloudMap:
+    Properties:
+      Description: Service Map for Docker Compose project ibsm
+      Name: ibsm.local
+      Vpc: vpc-0dcd851c4be1653e1
+    Type: AWS::ServiceDiscovery::PrivateDnsNamespace
+  Cluster:
+    Properties:
+      ClusterName: ibsm
+      Tags:
+      - Key: com.docker.compose.project
+        Value: ibsm
+    Type: AWS::ECS::Cluster
+  DataService:
+    DependsOn:
+    - DataTCP8081Listener
+    - Nlvienna1Service
+    - Nllinz1Service
+    - KnowledgeService
+    Properties:
+      Cluster:
+        Fn::GetAtt:
+        - Cluster
+        - Arn
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DeploymentController:
+        Type: ECS
+      DesiredCount: 1
+      LaunchType: FARGATE
+      LoadBalancers:
+      - ContainerName: data
+        ContainerPort: 8081
+        TargetGroupArn:
+          Ref: DataTCP8081TargetGroup
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+          - Ref: DefaultNetwork
+          Subnets:
+          - subnet-0cab003735d5febe5
+          - subnet-08c8f1a06ce072433
+          - subnet-0590c807b9fb12b6e
+          - subnet-09ca53ea16c6cc640
+          - subnet-0a6c70c7fa326d662
+          - subnet-03b29c4d3decbdeff
+      PlatformVersion: 1.4.0
+      PropagateTags: SERVICE
+      SchedulingStrategy: REPLICA
+      ServiceRegistries:
+      - RegistryArn:
+          Fn::GetAtt:
+          - DataServiceDiscoveryEntry
+          - Arn
+      Tags:
+      - Key: com.docker.compose.project
+        Value: ibsm
+      - Key: com.docker.compose.service
+        Value: data
+      TaskDefinition:
+        Ref: DataTaskDefinition
+    Type: AWS::ECS::Service
+  DataServiceDiscoveryEntry:
+    Properties:
+      Description: '"data" service discovery entry in Cloud Map'
+      DnsConfig:
+        DnsRecords:
+        - TTL: 60
+          Type: A
+        RoutingPolicy: MULTIVALUE
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+      Name: data
+      NamespaceId:
+        Ref: CloudMap
+    Type: AWS::ServiceDiscovery::Service
+  DataTCP8081Listener:
+    Properties:
+      DefaultActions:
+      - ForwardConfig:
+          TargetGroups:
+          - TargetGroupArn:
+              Ref: DataTCP8081TargetGroup
+        Type: forward
+      LoadBalancerArn:
+        Ref: LoadBalancer
+      Port: 8081
+      Protocol: TCP
+    Type: AWS::ElasticLoadBalancingV2::Listener
+  DataTCP8081TargetGroup:
+    Properties:
+      Port: 8081
+      Protocol: TCP
+      Tags:
+      - Key: com.docker.compose.project
+        Value: ibsm
+      TargetType: ip
+      VpcId: vpc-0dcd851c4be1653e1
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+  DataTaskDefinition:
+    Properties:
+      ContainerDefinitions:
+      - Command:
+        - us-east-1.compute.internal
+        - ibsm.local
+        Essential: false
+        Image: docker/ecs-searchdomain-sidecar:1.0
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group:
+              Ref: LogGroup
+            awslogs-region:
+              Ref: AWS::Region
+            awslogs-stream-prefix: ibsm
+        Name: Data_ResolvConf_InitContainer
+      - DependsOn:
+        - Condition: SUCCESS
+          ContainerName: Data_ResolvConf_InitContainer
+        Environment:
+        - Name: ASPNETCORE_ENVIRONMENT
+          Value: ECS
+        - Name: ASPNETCORE_Kestrel:HTTP2_Port
+          Value: "8081"
+        - Name: ExternalServices__KnowledgeServiceUri
+          Value: http://knowledge:8080
+        - Name: NlManagers__0__Host
+          Value: nl-vienna-1
+        - Name: NlManagers__0__HostSuffix
+          Value: .ibsm.local
+        - Name: NlManagers__0__Id
+          Value: "1"
+        - Name: NlManagers__0__Name
+          Value: nl-vienna-1
+        - Name: NlManagers__0__Port
+          Value: "8082"
+        - Name: NlManagers__0__Region
+          Value: Vienna
+        - Name: NlManagers__1__Host
+          Value: nl-linz-1
+        - Name: NlManagers__1__HostSuffix
+          Value: .ibsm.local
+        - Name: NlManagers__1__Id
+          Value: "2"
+        - Name: NlManagers__1__Name
+          Value: nl-linz-1
+        - Name: NlManagers__1__Port
+          Value: "8083"
+        - Name: NlManagers__1__Region
+          Value: Linz
+        Essential: true
+        Image: docker.io/nsp00/ibsm-data:latest@sha256:02886c424832b80a865d1b607de59c6dee2e2f8aa0db53ecad93ee758db446b2
+        LinuxParameters: {}
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group:
+              Ref: LogGroup
+            awslogs-region:
+              Ref: AWS::Region
+            awslogs-stream-prefix: ibsm
+        Name: data
+        PortMappings:
+        - ContainerPort: 8081
+          HostPort: 8081
+          Protocol: tcp
+      Cpu: "256"
+      ExecutionRoleArn:
+        Ref: DataTaskExecutionRole
+      Family: ibsm-data
+      Memory: "512"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+      - FARGATE
+    Type: AWS::ECS::TaskDefinition
+  DataTaskExecutionRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action:
+          - sts:AssumeRole
+          Condition: {}
+          Effect: Allow
+          Principal:
+            Service: ecs-tasks.amazonaws.com
+        Version: 2012-10-17
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+      Tags:
+      - Key: com.docker.compose.project
+        Value: ibsm
+      - Key: com.docker.compose.service
+        Value: data
+    Type: AWS::IAM::Role
+  Default8080Ingress:
+    Properties:
+      CidrIp: 0.0.0.0/0
+      Description: knowledge:8080/tcp on default network
+      FromPort: 8080
+      GroupId:
+        Ref: DefaultNetwork
+      IpProtocol: TCP
+      ToPort: 8080
+    Type: AWS::EC2::SecurityGroupIngress
+  Default8081Ingress:
+    Properties:
+      CidrIp: 0.0.0.0/0
+      Description: data:8081/tcp on default network
+      FromPort: 8081
+      GroupId:
+        Ref: DefaultNetwork
+      IpProtocol: TCP
+      ToPort: 8081
+    Type: AWS::EC2::SecurityGroupIngress
+  Default8082Ingress:
+    Properties:
+      CidrIp: 0.0.0.0/0
+      Description: nl-vienna-1:8082/tcp on default network
+      FromPort: 8082
+      GroupId:
+        Ref: DefaultNetwork
+      IpProtocol: TCP
+      ToPort: 8082
+    Type: AWS::EC2::SecurityGroupIngress
+  Default8083Ingress:
+    Properties:
+      CidrIp: 0.0.0.0/0
+      Description: nl-linz-1:8083/tcp on default network
+      FromPort: 8083
+      GroupId:
+        Ref: DefaultNetwork
+      IpProtocol: TCP
+      ToPort: 8083
+    Type: AWS::EC2::SecurityGroupIngress
+  Default80Ingress:
+    Properties:
+      CidrIp: 0.0.0.0/0
+      Description: knowledge:80/tcp on default network
+      FromPort: 80
+      GroupId:
+        Ref: DefaultNetwork
+      IpProtocol: TCP
+      ToPort: 80
+    Type: AWS::EC2::SecurityGroupIngress
+  DefaultNetwork:
+    Properties:
+      GroupDescription: ibsm Security Group for default network
+      Tags:
+      - Key: com.docker.compose.project
+        Value: ibsm
+      - Key: com.docker.compose.network
+        Value: ibsm
+      VpcId: vpc-0dcd851c4be1653e1
+    Type: AWS::EC2::SecurityGroup
+  DefaultNetworkIngress:
+    Properties:
+      Description: Allow communication within network default
+      GroupId:
+        Ref: DefaultNetwork
+      IpProtocol: "-1"
+      SourceSecurityGroupId:
+        Ref: DefaultNetwork
+    Type: AWS::EC2::SecurityGroupIngress
+  KnowledgeService:
+    DependsOn:
+    - KnowledgeTCP80Listener
+    - KnowledgeTCP8080Listener
+    Properties:
+      Cluster:
+        Fn::GetAtt:
+        - Cluster
+        - Arn
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DeploymentController:
+        Type: ECS
+      DesiredCount: 1
+      LaunchType: FARGATE
+      LoadBalancers:
+      - ContainerName: knowledge
+        ContainerPort: 80
+        TargetGroupArn:
+          Ref: KnowledgeTCP80TargetGroup
+      - ContainerName: knowledge
+        ContainerPort: 8080
+        TargetGroupArn:
+          Ref: KnowledgeTCP8080TargetGroup
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+          - Ref: DefaultNetwork
+          Subnets:
+          - subnet-0cab003735d5febe5
+          - subnet-08c8f1a06ce072433
+          - subnet-0590c807b9fb12b6e
+          - subnet-09ca53ea16c6cc640
+          - subnet-0a6c70c7fa326d662
+          - subnet-03b29c4d3decbdeff
+      PlatformVersion: 1.4.0
+      PropagateTags: SERVICE
+      SchedulingStrategy: REPLICA
+      ServiceRegistries:
+      - RegistryArn:
+          Fn::GetAtt:
+          - KnowledgeServiceDiscoveryEntry
+          - Arn
+      Tags:
+      - Key: com.docker.compose.project
+        Value: ibsm
+      - Key: com.docker.compose.service
+        Value: knowledge
+      TaskDefinition:
+        Ref: KnowledgeTaskDefinition
+    Type: AWS::ECS::Service
+  KnowledgeServiceDiscoveryEntry:
+    Properties:
+      Description: '"knowledge" service discovery entry in Cloud Map'
+      DnsConfig:
+        DnsRecords:
+        - TTL: 60
+          Type: A
+        RoutingPolicy: MULTIVALUE
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+      Name: knowledge
+      NamespaceId:
+        Ref: CloudMap
+    Type: AWS::ServiceDiscovery::Service
+  KnowledgeTCP8080Listener:
+    Properties:
+      DefaultActions:
+      - ForwardConfig:
+          TargetGroups:
+          - TargetGroupArn:
+              Ref: KnowledgeTCP8080TargetGroup
+        Type: forward
+      LoadBalancerArn:
+        Ref: LoadBalancer
+      Port: 8080
+      Protocol: TCP
+    Type: AWS::ElasticLoadBalancingV2::Listener
+  KnowledgeTCP8080TargetGroup:
+    Properties:
+      Port: 8080
+      Protocol: TCP
+      Tags:
+      - Key: com.docker.compose.project
+        Value: ibsm
+      TargetType: ip
+      VpcId: vpc-0dcd851c4be1653e1
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+  KnowledgeTCP80Listener:
+    Properties:
+      DefaultActions:
+      - ForwardConfig:
+          TargetGroups:
+          - TargetGroupArn:
+              Ref: KnowledgeTCP80TargetGroup
+        Type: forward
+      LoadBalancerArn:
+        Ref: LoadBalancer
+      Port: 80
+      Protocol: TCP
+    Type: AWS::ElasticLoadBalancingV2::Listener
+  KnowledgeTCP80TargetGroup:
+    Properties:
+      Port: 80
+      Protocol: TCP
+      Tags:
+      - Key: com.docker.compose.project
+        Value: ibsm
+      TargetType: ip
+      VpcId: vpc-0dcd851c4be1653e1
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+  KnowledgeTaskDefinition:
+    Properties:
+      ContainerDefinitions:
+      - Command:
+        - us-east-1.compute.internal
+        - ibsm.local
+        Essential: false
+        Image: docker/ecs-searchdomain-sidecar:1.0
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group:
+              Ref: LogGroup
+            awslogs-region:
+              Ref: AWS::Region
+            awslogs-stream-prefix: ibsm
+        Name: Knowledge_ResolvConf_InitContainer
+      - DependsOn:
+        - Condition: SUCCESS
+          ContainerName: Knowledge_ResolvConf_InitContainer
+        Environment:
+        - Name: ASPNETCORE_ENVIRONMENT
+          Value: ECS
+        - Name: ASPNETCORE_Kestrel:HTTP2_Port
+          Value: "8080"
+        - Name: SqsQueues__RegionActionRequiredRequestsQueue
+          Value: https://sqs.us-east-1.amazonaws.com/284766146002/region_action_required_requests
+        Essential: true
+        Image: docker.io/nsp00/ibsm-knowledge:latest@sha256:846449b7c01bb3fa88b0ccb8cad6274551a3255ea8e4ca5ffcc7dbd36b7b2669
+        LinuxParameters: {}
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group:
+              Ref: LogGroup
+            awslogs-region:
+              Ref: AWS::Region
+            awslogs-stream-prefix: ibsm
+        Name: knowledge
+        PortMappings:
+        - ContainerPort: 80
+          HostPort: 80
+          Protocol: tcp
+        - ContainerPort: 8080
+          HostPort: 8080
+          Protocol: tcp
+      Cpu: "256"
+      ExecutionRoleArn:
+        Ref: KnowledgeTaskExecutionRole
+      Family: ibsm-knowledge
+      Memory: "512"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+      - FARGATE
+      TaskRoleArn:
+        Ref: KnowledgeTaskRole
+    Type: AWS::ECS::TaskDefinition
+  KnowledgeTaskExecutionRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action:
+          - sts:AssumeRole
+          Condition: {}
+          Effect: Allow
+          Principal:
+            Service: ecs-tasks.amazonaws.com
+        Version: 2012-10-17
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+      Tags:
+      - Key: com.docker.compose.project
+        Value: ibsm
+      - Key: com.docker.compose.service
+        Value: knowledge
+    Type: AWS::IAM::Role
+  KnowledgeTaskRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action:
+          - sts:AssumeRole
+          Condition: {}
+          Effect: Allow
+          Principal:
+            Service: ecs-tasks.amazonaws.com
+        Version: 2012-10-17
+      Policies:
+      - PolicyDocument:
+          Statement:
+          - Action: sqs:SendMessage
+            Effect: Allow
+            Resource: arn:aws:sqs:us-east-1:284766146002:region_action_required_requests
+          Version: 2012-10-17
+        PolicyName: KnowledgePolicy
+      Tags:
+      - Key: com.docker.compose.project
+        Value: ibsm
+      - Key: com.docker.compose.service
+        Value: knowledge
+    Type: AWS::IAM::Role
+  LoadBalancer:
+    Properties:
+      LoadBalancerAttributes:
+      - Key: load_balancing.cross_zone.enabled
+        Value: "true"
+      Scheme: internet-facing
+      Subnets:
+      - subnet-0cab003735d5febe5
+      - subnet-08c8f1a06ce072433
+      - subnet-0590c807b9fb12b6e
+      - subnet-09ca53ea16c6cc640
+      - subnet-0a6c70c7fa326d662
+      - subnet-03b29c4d3decbdeff
+      Tags:
+      - Key: com.docker.compose.project
+        Value: ibsm
+      Type: network
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+  LogGroup:
+    Properties:
+      LogGroupName: /docker-compose/ibsm
+      RetentionInDays: 3
+    Type: AWS::Logs::LogGroup
+  Nllinz1Service:
+    DependsOn:
+    - Nllinz1TCP8083Listener
+    Properties:
+      Cluster:
+        Fn::GetAtt:
+        - Cluster
+        - Arn
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DeploymentController:
+        Type: ECS
+      DesiredCount: 1
+      LaunchType: FARGATE
+      LoadBalancers:
+      - ContainerName: nl-linz-1
+        ContainerPort: 8083
+        TargetGroupArn:
+          Ref: Nllinz1TCP8083TargetGroup
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+          - Ref: DefaultNetwork
+          Subnets:
+          - subnet-0cab003735d5febe5
+          - subnet-08c8f1a06ce072433
+          - subnet-0590c807b9fb12b6e
+          - subnet-09ca53ea16c6cc640
+          - subnet-0a6c70c7fa326d662
+          - subnet-03b29c4d3decbdeff
+      PlatformVersion: 1.4.0
+      PropagateTags: SERVICE
+      SchedulingStrategy: REPLICA
+      ServiceRegistries:
+      - RegistryArn:
+          Fn::GetAtt:
+          - Nllinz1ServiceDiscoveryEntry
+          - Arn
+      Tags:
+      - Key: com.docker.compose.project
+        Value: ibsm
+      - Key: com.docker.compose.service
+        Value: nl-linz-1
+      TaskDefinition:
+        Ref: Nllinz1TaskDefinition
+    Type: AWS::ECS::Service
+  Nllinz1ServiceDiscoveryEntry:
+    Properties:
+      Description: '"nl-linz-1" service discovery entry in Cloud Map'
+      DnsConfig:
+        DnsRecords:
+        - TTL: 60
+          Type: A
+        RoutingPolicy: MULTIVALUE
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+      Name: nl-linz-1
+      NamespaceId:
+        Ref: CloudMap
+    Type: AWS::ServiceDiscovery::Service
+  Nllinz1TCP8083Listener:
+    Properties:
+      DefaultActions:
+      - ForwardConfig:
+          TargetGroups:
+          - TargetGroupArn:
+              Ref: Nllinz1TCP8083TargetGroup
+        Type: forward
+      LoadBalancerArn:
+        Ref: LoadBalancer
+      Port: 8083
+      Protocol: TCP
+    Type: AWS::ElasticLoadBalancingV2::Listener
+  Nllinz1TCP8083TargetGroup:
+    Properties:
+      Port: 8083
+      Protocol: TCP
+      Tags:
+      - Key: com.docker.compose.project
+        Value: ibsm
+      TargetType: ip
+      VpcId: vpc-0dcd851c4be1653e1
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+  Nllinz1TaskDefinition:
+    Properties:
+      ContainerDefinitions:
+      - Command:
+        - us-east-1.compute.internal
+        - ibsm.local
+        Essential: false
+        Image: docker/ecs-searchdomain-sidecar:1.0
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group:
+              Ref: LogGroup
+            awslogs-region:
+              Ref: AWS::Region
+            awslogs-stream-prefix: ibsm
+        Name: Nllinz1_ResolvConf_InitContainer
+      - DependsOn:
+        - Condition: SUCCESS
+          ContainerName: Nllinz1_ResolvConf_InitContainer
+        Environment:
+        - Name: ASPNETCORE_ENVIRONMENT
+          Value: ECS
+        - Name: ASPNETCORE_Kestrel:HTTP2_Port
+          Value: "8083"
+        - Name: NetworkObjects__0__Application
+          Value: Application2
+        - Name: NetworkObjects__1__Application
+          Value: Application2
+        - Name: NetworkObjects__2__Application
+          Value: Application2
+        - Name: NetworkObjects__3__Application
+          Value: Application2
+        - Name: NetworkObjects__4__Application
+          Value: Application2
+        - Name: NetworkObjects__5__Application
+          Value: Application2
+        Essential: true
+        Image: docker.io/nsp00/ibsm-networklayer:latest@sha256:4f6b03d230243c4bda2aa65668799e329700a7cb8ca0d6da5a42b1081576b35f
+        LinuxParameters: {}
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group:
+              Ref: LogGroup
+            awslogs-region:
+              Ref: AWS::Region
+            awslogs-stream-prefix: ibsm
+        Name: nl-linz-1
+        PortMappings:
+        - ContainerPort: 8083
+          HostPort: 8083
+          Protocol: tcp
+      Cpu: "256"
+      ExecutionRoleArn:
+        Ref: Nllinz1TaskExecutionRole
+      Family: ibsm-nl-linz-1
+      Memory: "512"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+      - FARGATE
+    Type: AWS::ECS::TaskDefinition
+  Nllinz1TaskExecutionRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action:
+          - sts:AssumeRole
+          Condition: {}
+          Effect: Allow
+          Principal:
+            Service: ecs-tasks.amazonaws.com
+        Version: 2012-10-17
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+      Tags:
+      - Key: com.docker.compose.project
+        Value: ibsm
+      - Key: com.docker.compose.service
+        Value: nl-linz-1
+    Type: AWS::IAM::Role
+  Nlvienna1Service:
+    DependsOn:
+    - Nlvienna1TCP8082Listener
+    Properties:
+      Cluster:
+        Fn::GetAtt:
+        - Cluster
+        - Arn
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DeploymentController:
+        Type: ECS
+      DesiredCount: 1
+      LaunchType: FARGATE
+      LoadBalancers:
+      - ContainerName: nl-vienna-1
+        ContainerPort: 8082
+        TargetGroupArn:
+          Ref: Nlvienna1TCP8082TargetGroup
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+          - Ref: DefaultNetwork
+          Subnets:
+          - subnet-0cab003735d5febe5
+          - subnet-08c8f1a06ce072433
+          - subnet-0590c807b9fb12b6e
+          - subnet-09ca53ea16c6cc640
+          - subnet-0a6c70c7fa326d662
+          - subnet-03b29c4d3decbdeff
+      PlatformVersion: 1.4.0
+      PropagateTags: SERVICE
+      SchedulingStrategy: REPLICA
+      ServiceRegistries:
+      - RegistryArn:
+          Fn::GetAtt:
+          - Nlvienna1ServiceDiscoveryEntry
+          - Arn
+      Tags:
+      - Key: com.docker.compose.project
+        Value: ibsm
+      - Key: com.docker.compose.service
+        Value: nl-vienna-1
+      TaskDefinition:
+        Ref: Nlvienna1TaskDefinition
+    Type: AWS::ECS::Service
+  Nlvienna1ServiceDiscoveryEntry:
+    Properties:
+      Description: '"nl-vienna-1" service discovery entry in Cloud Map'
+      DnsConfig:
+        DnsRecords:
+        - TTL: 60
+          Type: A
+        RoutingPolicy: MULTIVALUE
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+      Name: nl-vienna-1
+      NamespaceId:
+        Ref: CloudMap
+    Type: AWS::ServiceDiscovery::Service
+  Nlvienna1TCP8082Listener:
+    Properties:
+      DefaultActions:
+      - ForwardConfig:
+          TargetGroups:
+          - TargetGroupArn:
+              Ref: Nlvienna1TCP8082TargetGroup
+        Type: forward
+      LoadBalancerArn:
+        Ref: LoadBalancer
+      Port: 8082
+      Protocol: TCP
+    Type: AWS::ElasticLoadBalancingV2::Listener
+  Nlvienna1TCP8082TargetGroup:
+    Properties:
+      Port: 8082
+      Protocol: TCP
+      Tags:
+      - Key: com.docker.compose.project
+        Value: ibsm
+      TargetType: ip
+      VpcId: vpc-0dcd851c4be1653e1
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+  Nlvienna1TaskDefinition:
+    Properties:
+      ContainerDefinitions:
+      - Command:
+        - us-east-1.compute.internal
+        - ibsm.local
+        Essential: false
+        Image: docker/ecs-searchdomain-sidecar:1.0
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group:
+              Ref: LogGroup
+            awslogs-region:
+              Ref: AWS::Region
+            awslogs-stream-prefix: ibsm
+        Name: Nlvienna1_ResolvConf_InitContainer
+      - DependsOn:
+        - Condition: SUCCESS
+          ContainerName: Nlvienna1_ResolvConf_InitContainer
+        Environment:
+        - Name: ASPNETCORE_ENVIRONMENT
+          Value: ECS
+        - Name: ASPNETCORE_Kestrel:HTTP2_Port
+          Value: "8082"
+        - Name: NetworkObjects__0__Application
+          Value: Application1
+        - Name: NetworkObjects__1__Application
+          Value: Application1
+        - Name: NetworkObjects__2__Application
+          Value: Application1
+        - Name: NetworkObjects__3__Application
+          Value: Application1
+        - Name: NetworkObjects__4__Application
+          Value: Application1
+        Essential: true
+        Image: docker.io/nsp00/ibsm-networklayer:latest@sha256:4f6b03d230243c4bda2aa65668799e329700a7cb8ca0d6da5a42b1081576b35f
+        LinuxParameters: {}
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group:
+              Ref: LogGroup
+            awslogs-region:
+              Ref: AWS::Region
+            awslogs-stream-prefix: ibsm
+        Name: nl-vienna-1
+        PortMappings:
+        - ContainerPort: 8082
+          HostPort: 8082
+          Protocol: tcp
+      Cpu: "256"
+      ExecutionRoleArn:
+        Ref: Nlvienna1TaskExecutionRole
+      Family: ibsm-nl-vienna-1
+      Memory: "512"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+      - FARGATE
+    Type: AWS::ECS::TaskDefinition
+  Nlvienna1TaskExecutionRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action:
+          - sts:AssumeRole
+          Condition: {}
+          Effect: Allow
+          Principal:
+            Service: ecs-tasks.amazonaws.com
+        Version: 2012-10-17
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+      Tags:
+      - Key: com.docker.compose.project
+        Value: ibsm
+      - Key: com.docker.compose.service
+        Value: nl-vienna-1
+    Type: AWS::IAM::Role

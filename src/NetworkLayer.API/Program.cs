@@ -6,7 +6,7 @@ using NetworkLayer.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-if (builder.Environment.IsDocker())
+if (builder.Environment.IsDocker() || builder.Environment.IsEcs())
 {
     builder.ConfigurePortsForRestAndGrpcNoTls();
 }
@@ -22,10 +22,7 @@ builder.Services.AddSingleton<INetworkObjectService, NetworkObjectService>();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment() || app.Environment.IsDocker())
-{
-    app.MapGrpcReflectionService();
-}
+app.MapGrpcReflectionService();
 
 // Configure the HTTP request pipeline.
 app.MapGet("/", () => "Hello from NetworkLayer");

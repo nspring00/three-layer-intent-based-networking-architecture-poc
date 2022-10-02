@@ -33,7 +33,7 @@ public class RabbitAgentService : IAgentService
         // Use batch publish to publish all messages at once
         var publishBatch = channel.CreateBasicPublishBatch();
 
-        _logger.LogInformation($"Notifying {regions.Count} regions via RabbitMQ");
+        _logger.LogInformation("Notifying {RegionsCount} regions via RabbitMQ", regions.Count);
         foreach (var region in regions)
         {
             var message = new RegionActionRequiredRequest

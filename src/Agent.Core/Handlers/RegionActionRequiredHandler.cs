@@ -33,14 +33,13 @@ namespace Agent.Core.Handlers
                 return;
             }
 
-
             var topologies = await _topologyService.GetTopologyForRegionsAsync(regions);
 
             foreach (var (region, action) in actions)
             {
                 if (!topologies.ContainsKey(region))
                 {
-                    _logger.LogError($"No topology found for region {region}");
+                    _logger.LogError("No topology found for region {Region}", region);
                     continue;
                 }
 

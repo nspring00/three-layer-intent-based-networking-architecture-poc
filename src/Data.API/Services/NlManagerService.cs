@@ -37,8 +37,10 @@ public class NlManagerService : INlManagerService
         return _nlManagers.Values.ToList();
     }
 
-    private static NlManagerInfo MapNlManagerInfo(NlManagerInfoOptions options)
+    private NlManagerInfo MapNlManagerInfo(NlManagerInfoOptions options)
     {
-        return new NlManagerInfo(options.Id, options.Name, new Uri(options.Uri), new Region(options.Region));
+        var uri = new Uri($"{options.Protocol}://{options.Host}{options.HostSuffix}:{options.Port}");
+        _logger.LogInformation("Mapped NL manager {NlManagerName} to {NlManagerUri}", options.Name, uri);
+        return new NlManagerInfo(options.Id, options.Name, uri, new Region(options.Region));
     }
 }

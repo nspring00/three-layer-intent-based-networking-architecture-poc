@@ -1,4 +1,4 @@
-﻿namespace Common.Web.Rabbit.Messages;
+﻿namespace Common.Messages;
 
 public interface IMessage
 {

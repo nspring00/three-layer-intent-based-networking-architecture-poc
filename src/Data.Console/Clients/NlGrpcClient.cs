@@ -7,13 +7,6 @@ namespace Data.Console.Clients;
 
 public class NlGrpcClient : CachedGrpcClient
 {
-    private readonly ILogger<NlGrpcClient> _logger;
-
-    public NlGrpcClient(ILogger<NlGrpcClient> logger)
-    {
-        _logger = logger;
-    }
-
     public async Task<NetworkObjectUpdateResponse> FetchUpdates(Uri uri)
     {
         var channel = GetChannel(uri);
