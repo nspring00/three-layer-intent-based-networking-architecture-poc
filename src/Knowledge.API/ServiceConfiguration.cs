@@ -20,7 +20,9 @@ public static class ServiceConfiguration
         services.AddSingleton<IWorkloadRepository, CachedWorkloadRepository>();
         services.AddSingleton<IReasoningService, ReasoningService>(); // TODO maybe scoped?
         services.AddSingleton<IIntentService, IntentService>();
-
+        
+        services.Configure<List<InitialIntent>>(configuration.GetSection("InitialIntents"));
+        
         if (environment.IsDevelopment() || environment.IsDocker())
         {
             // Local dev and Docker
