@@ -1,0 +1,94 @@
+version: "3.9"
+services:
+  rabbitmq:
+    image: "rabbitmq:3.9.13-management-alpine"
+    hostname: "rabbit"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - "RABBITMQ_DEFAULT_USER=ibsm"
+      - "RABBITMQ_DEFAULT_PASS=ibsm"
+
+  knowledge:
+    image: nsp00/ibsm-knowledge
+    build:
+      context: ../
+      dockerfile: src/Knowledge.API/Dockerfile
+    restart: on-failure
+    depends_on: 
+      - rabbitmq
+    ports:
+      - "11000:80"
+      - "11001:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__VHost=/
+      - RabbitMQ__UserName=ibsm
+      - RabbitMQ__Password=ibsm
+      - RabbitQueues__RegionActionRequiredRequests__QueueName=region_action_required_requests
+      - InitialIntents__0__Kpi=Efficiency
+      - InitialIntents__0__Region=Vienna
+      - InitialIntents__0__TargetMode=Min
+      - InitialIntents__0__TargetValue=0.5
+      - InitialIntents__1__Kpi=Efficiency
+      - InitialIntents__1__Region=Vienna
+      - InitialIntents__1__TargetMode=Max
+      - InitialIntents__1__TargetValue=0.8
+      
+  data:
+    image: nsp00/ibsm-data
+    build: 
+      context: ../
+      dockerfile: src/Data.API/Dockerfile
+    restart: on-failure
+    ports:
+     - "11010:80"
+     - "11011:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ExternalServices__KnowledgeServiceUri=http://knowledge:8080
+      - NlManagers__0__Id=1
+      - NlManagers__0__Region=Vienna
+      - NlManagers__0__Host=nl-vienna-1
+      - NlManagers__0__Name=nl-vienna-1
+  
+  agent:
+    image: nsp00/ibsm-agent
+    build: 
+      context: ../
+      dockerfile: src/Agent.API/Dockerfile
+    restart: on-failure
+    depends_on:
+     - rabbitmq
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__VHost=/
+      - RabbitMQ__UserName=ibsm
+      - RabbitMQ__Password=ibsm
+      - RabbitQueues__RegionActionRequiredRequests__QueueName=region_action_required_requests
+      - ExternalServices__ReasoningServiceUri=http://knowledge:8080
+      - ExternalServices__TopologyServiceUri=http://data:8080
+     
+  nl-vienna-1:
+    image: nsp00/ibsm-networklayer
+    build: 
+      context: ../
+      dockerfile: src/NetworkLayer.API/Dockerfile
+    restart: on-failure
+    ports:
+     - "11020:80"
+     - "11021:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - Simulation__InitialCount=15
+    volumes:
+      - ../Datasets/IncreasingWorkloadSameAvailability.csv:/app/dataset.csv
+        
+networks:
+  default:
+    name: "ibsm"
