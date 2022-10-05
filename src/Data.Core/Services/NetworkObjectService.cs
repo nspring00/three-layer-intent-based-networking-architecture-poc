@@ -12,7 +12,6 @@ public class NetworkObjectService : INetworkObjectService
     private readonly IEfficiencyService _efficiencyService;
 
     private readonly Dictionary<Region, List<AddedNetworkObject>> _added = new();
-    private readonly Dictionary<Region, List<int>> _removed = new();
 
     public NetworkObjectService(
         ILogger<NetworkObjectService> logger, 
@@ -26,6 +25,7 @@ public class NetworkObjectService : INetworkObjectService
 
     public void Create(NetworkObject networkObject)
     {
+        // TODO is _added actually necessary???
         if (!_added.ContainsKey(networkObject.Region))
         {
             _added.Add(networkObject.Region, new List<AddedNetworkObject> { new(networkObject.Id) });
@@ -55,18 +55,9 @@ public class NetworkObjectService : INetworkObjectService
         no.Infos.Add(updateTime, info);
     }
 
-    public void Remove(NOId id)
+    public bool Remove(NOId id)
     {
-        if (!_removed.ContainsKey(id.Region))
-        {
-            _removed.Add(id.Region, new List<int>(id.Id));
-        }
-        else
-        {
-            _removed[id.Region].Add(id.Id);
-        }
-
-        _networkObjectRepository.Remove(id);
+        return _networkObjectRepository.Remove(id);
     }
 
     public IDictionary<Region, NetworkUpdate> AggregateUpdates(DateTime from, DateTime to)
@@ -75,7 +66,7 @@ public class NetworkObjectService : INetworkObjectService
         
         var totalTime = to - from;
         var nos = _networkObjectRepository.GetAll();
-        var regions = nos.Keys.Union(_added.Keys).Union(_removed.Keys).ToList();
+        var regions = nos.Keys.Union(_added.Keys).ToList();
         var updates = new Dictionary<Region, NetworkUpdate>(regions.Count);
         
         foreach (var region in regions)
@@ -175,7 +166,6 @@ public class NetworkObjectService : INetworkObjectService
     public void Reset()
     {
         _added.Clear();
-        _removed.Clear();
     }
 
     public bool Exists(NOId id)

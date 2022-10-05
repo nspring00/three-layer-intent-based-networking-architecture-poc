@@ -13,6 +13,9 @@ namespace NetworkLayer.API.Repositories
         private readonly SimulationDataSet _dataset;
         private readonly List<(int, DateTime)> _nos;
 
+        private readonly List<NetworkObject> _recentlyCreated;
+        private readonly List<(NetworkObject, DateTime)> _recentlyRemoved = new();
+
         private int _newId;
 
         public SimulationNetworkObjectRepository(ILogger<SimulationNetworkObjectRepository> logger,
@@ -26,6 +29,9 @@ namespace NetworkLayer.API.Repositories
             _nos = Enumerable.Range(1, config.Value.InitialCount)
                 .Select(x => (x, now))
                 .ToList();
+            
+            _recentlyCreated = _nos.Select(x => CreateFromSimulation(x)).ToList();
+            
             _newId = config.Value.InitialCount + 1;
             _logger.LogInformation("Initialized with {Count} objects", config.Value.InitialCount);
         }
@@ -39,18 +45,17 @@ namespace NetworkLayer.API.Repositories
             var avgCpu = cpuWorkload / _nos.Count;
             var avgMem = memoryWorkload / _nos.Count;
 
-            return _nos.Select(x => new NetworkObject
-                {
-                    Id = x.Item1,
-                    CreatedAt = x.Item2,
-                    Utilization = new Utilization
-                    {
-                        CpuUtilization = avgCpu, // TODO jitter values
-                        MemoryUtilization = avgMem,
-                    },
-                    Availability = avgAvail
-                })
-                .ToList();
+            return _nos.Select(x => CreateFromSimulation(x, avgCpu, avgMem, avgAvail)).ToList();
+        }
+
+        public IList<NetworkObject> GetCreated()
+        {
+            return new List<NetworkObject>(_recentlyCreated);
+        }
+
+        public IList<(NetworkObject, DateTime)> GetRemoved()
+        {
+            return new List<(NetworkObject, DateTime)>(_recentlyRemoved);
         }
 
         public void Create(NetworkObject networkObject)
@@ -58,11 +63,57 @@ namespace NetworkLayer.API.Repositories
             networkObject.Id = _newId++;
             networkObject.CreatedAt = _dateTimeProvider.Now;
             _nos.Add((networkObject.Id, networkObject.CreatedAt));
+            _recentlyCreated.Add(networkObject);
         }
 
         public bool Delete(int id)
         {
-            return _nos.RemoveAll(x => x.Item1 == id) > 0;
+            var toRemove = _nos.Where(x => x.Item1 == id).ToList();
+            if (toRemove.Count == 0)
+            {
+                return false;
+            }
+
+            var now = _dateTimeProvider.Now;
+            _recentlyRemoved.AddRange(toRemove.Select(x => (new NetworkObject
+            {
+                Id = x.Item1, CreatedAt = x.Item2
+            }, now)));
+
+            _nos.RemoveAll(x => x.Item1 == id);
+            return true;
+        }
+
+        public void ResetCreateDelete()
+        {
+            _recentlyCreated.Clear();
+            _recentlyRemoved.Clear();
+        }
+
+        private static NetworkObject CreateFromSimulation((int, DateTime) no, float? avgCpu = null, float? avgMem = null,
+            float? avgAvail = null)
+        {
+            var (id, createdAt) = no;
+
+            if (avgCpu is null || avgMem is null || avgAvail is null)
+            {
+                return new NetworkObject
+                {
+                    Id = id, CreatedAt = createdAt
+                };
+            }
+            
+            return new NetworkObject
+            {
+                Id = id,
+                CreatedAt = createdAt,
+                Utilization = new Utilization
+                {
+                    CpuUtilization = avgCpu.Value, // TODO jitter values
+                    MemoryUtilization = avgMem.Value,
+                },
+                Availability = avgAvail.Value
+            };
         }
     }
 }

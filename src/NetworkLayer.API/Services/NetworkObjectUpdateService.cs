@@ -31,7 +31,8 @@ public class NetworkObjectUpdateService : NetworkObjectUpdater.NetworkObjectUpda
             Timestamp = Timestamp.FromDateTime(now)
         };
 
-        var (allNos, newNos) = _networkObjectService.GetAllWithNew();
+        var allNos = _networkObjectService.GetAll();
+        var (newNos, removedNos) = _networkObjectService.GetChanges();
         
         response.CreatedObjects.AddRange(
             newNos.Select(x => new NewNetworkObject
@@ -40,6 +41,12 @@ public class NetworkObjectUpdateService : NetworkObjectUpdater.NetworkObjectUpda
                 CreatedAt = Timestamp.FromDateTime(x.CreatedAt)
             })
         );
+        response.RemovedObjects.AddRange(
+            removedNos.Select(x => new RemovedNetworkObject
+            {
+                Id = x.Item1.Id,
+                RemovedAt = Timestamp.FromDateTime(x.Item2)
+            }));
 
         response.NetworkObjects.AddRange(allNos
             .Select(NetworkObjectMapper.MapNetworkObjectToGrpc));

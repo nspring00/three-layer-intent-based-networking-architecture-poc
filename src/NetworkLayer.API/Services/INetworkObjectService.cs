@@ -5,5 +5,5 @@ namespace NetworkLayer.API.Services;
 public interface INetworkObjectService
 {
     IList<NetworkObject> GetAll();
-    (IList<NetworkObject>, IList<NetworkObject>) GetAllWithNew();
+    (IList<NetworkObject>, IList<(NetworkObject, DateTime)>) GetChanges();
 }

@@ -48,6 +48,21 @@ public class NetworkLayerService : INetworkLayerService
             });
         }
 
+        foreach (var removedNo in response.RemovedObjects)
+        {
+            if (removedNo is null) continue;
+
+            var result = _networkObjectService.Remove(new NOId(region, removedNo.Id));
+            if (result)
+            {
+                _logger.LogInformation("Removed {NoId} from {NlId}", removedNo.Id, nlId);
+            }
+            else
+            {
+                _logger.LogWarning("Failed to remove {NoId} from {NlId}", removedNo.Id, nlId);
+            }
+        }
+
         foreach (var no in response.NetworkObjects)
         {
             if (no is null) continue;
