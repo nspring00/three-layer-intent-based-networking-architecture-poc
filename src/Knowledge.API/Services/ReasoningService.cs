@@ -55,7 +55,7 @@ public class ReasoningService : IReasoningService
     {
         return kpi switch
         {
-            KeyPerformanceIndicator.Efficiency => info.AvgEfficiency,
+            KeyPerformanceIndicator.Efficiency => info.AvgEfficiency * info.DeviceCount,
             KeyPerformanceIndicator.Availability => info.AvgAvailability,
             _ => throw new Exception($"Unknown KPI {kpi.ToString()}")
         };
@@ -68,13 +68,15 @@ public class ReasoningService : IReasoningService
         {
             return new Dictionary<KeyPerformanceIndicator, float>();
         }
-
+        
         return kpis.ToDictionary(
             kpi => kpi,
             kpi =>
             {
                 // Use linear regression to calculate the trend
+
                 var data = infos.Select(x => new Tuple<double, double>(x.Id, GetKpiValue(x, kpi))).ToList();
+
                 if (data.Count == 1)
                 {
                     return (float)data.First().Item2;
@@ -82,6 +84,14 @@ public class ReasoningService : IReasoningService
 
                 var (a, b) = SimpleRegression.Fit(data);
                 var trend = a + b * (infos.MaxBy(x => x.Id)!.Id + 1);
+
+                // when using efficiency, this value is actually the workload trend which needs to be transformed 
+                // into efficiency trend
+                if (kpi == KeyPerformanceIndicator.Efficiency)
+                {
+                    return (float)trend / infos.MaxBy(x => x.Id)!.DeviceCount;
+                }
+                
                 return (float)trend;
             });
     }
