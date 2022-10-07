@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using System.Globalization;
+using Microsoft.Extensions.Options;
 using NetworkLayer.API.Options;
 
 namespace NetworkLayer.API.Simulation;
@@ -34,9 +35,9 @@ public class SimulationDataSet
         _logger.LogInformation("Returning line {Line}", int.Parse(line[0]));
         return new DataSetLine(
             int.Parse(line[0]),
-            float.Parse(line[1]),
-            float.Parse(line[2]),
-            float.Parse(line[3])
+            float.Parse(line[1], CultureInfo.InvariantCulture),
+            float.Parse(line[2], CultureInfo.InvariantCulture),
+            float.Parse(line[3], CultureInfo.InvariantCulture)
         );
     }
 }
