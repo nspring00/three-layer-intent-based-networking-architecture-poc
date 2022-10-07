@@ -15,6 +15,7 @@ public static class ServiceConfiguration
     {
         services.Configure<List<NlManagerInfoOptions>>(configuration.GetSection("NlManagers"));
         services.Configure<ExternalServiceConfig>(configuration.GetSection("ExternalServices"));
+        services.Configure<AggregationConfig>(configuration.GetSection("Aggregation"));
 
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddSingleton<INlManagerService, NlManagerService>();

@@ -1,6 +1,8 @@
 ﻿using Common.Services;
+using Data.API.Options;
 using Data.API.Services;
 using Data.Core.Services;
+using Microsoft.Extensions.Options;
 
 namespace Data.API.BackgroundServices;
 
@@ -12,6 +14,7 @@ public class NoAggregationService : BackgroundService
     private readonly IKnowledgeService _knowledgeService;
     private readonly INlManagerService _nlManagerService;
     private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly AggregationConfig _aggregationConfig;
 
     public NoAggregationService(
         ILogger<NoAggregationService> logger,
@@ -19,7 +22,8 @@ public class NoAggregationService : BackgroundService
         INetworkObjectService networkObjectService,
         IKnowledgeService knowledgeService,
         INlManagerService nlManagerService,
-        IDateTimeProvider dateTimeProvider)
+        IDateTimeProvider dateTimeProvider,
+        IOptions<AggregationConfig> aggregationConfig)
     {
         _logger = logger;
         _networkLayerService = networkLayerService;
@@ -27,6 +31,11 @@ public class NoAggregationService : BackgroundService
         _knowledgeService = knowledgeService;
         _nlManagerService = nlManagerService;
         _dateTimeProvider = dateTimeProvider;
+        _aggregationConfig = aggregationConfig.Value;
+        
+        _logger.LogInformation(
+            "AggregationService configured with UpdateInterval: {UpdateInterval} and AfterKnowledgeUpdateTimeout: {AfterKnowledgeUpdateTimeout}", 
+            _aggregationConfig.UpdateInterval, _aggregationConfig.AfterKnowledgeUpdateTimeout);
     }
 
     protected override async Task ExecuteAsync(CancellationToken ct)
@@ -37,7 +46,7 @@ public class NoAggregationService : BackgroundService
         {
             for (var i = 0; i < 4; i++)
             {
-                ct.WaitHandle.WaitOne(2500);
+                ct.WaitHandle.WaitOne(_aggregationConfig.UpdateInterval);
                 if (ct.IsCancellationRequested)
                 {
                     return;
@@ -57,6 +66,9 @@ public class NoAggregationService : BackgroundService
             
             _networkObjectService.Reset();
             await _knowledgeService.UpdateKnowledgeNOs(endTime, updates);
+        
+            ct.WaitHandle.WaitOne(_aggregationConfig.AfterKnowledgeUpdateTimeout);
+
             startTime = endTime;
         }
     }
@@ -64,7 +76,7 @@ public class NoAggregationService : BackgroundService
     private async Task FetchAllUpdates()
     {
         var nlInfos = _nlManagerService.GetAll();
-        _logger.LogInformation($"Fetching updates for {nlInfos.Count} network layers");
+        _logger.LogInformation("Fetching updates for {NlInfosCount} network layers", nlInfos.Count);
 
         foreach (var nlInfo in nlInfos)
         {
