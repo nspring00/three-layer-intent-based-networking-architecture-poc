@@ -17,6 +17,7 @@ public class SimulationDataSet
         _logger.LogInformation("Loading dataset from {DataSetPath}", config.Value.DataSetPath);
         
         _dataset = File.ReadAllLines(config.Value.DataSetPath)
+            .Where(x => !string.IsNullOrEmpty(x))
             .Select(x => x.Split(";".ToArray()))
             .ToArray();
 
