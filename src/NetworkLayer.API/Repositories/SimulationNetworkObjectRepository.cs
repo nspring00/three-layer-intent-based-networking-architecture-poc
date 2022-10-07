@@ -8,6 +8,8 @@ namespace NetworkLayer.API.Repositories
 {
     public class SimulationNetworkObjectRepository : INetworkObjectRepository
     {
+        private const string OutputFileName = "output.csv";
+        
         private readonly ILogger<SimulationNetworkObjectRepository> _logger;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly SimulationDataSet _dataset;
@@ -34,6 +36,8 @@ namespace NetworkLayer.API.Repositories
             
             _newId = config.Value.InitialCount + 1;
             _logger.LogInformation("Initialized with {Count} objects", config.Value.InitialCount);
+            
+            File.WriteAllText(OutputFileName, "Id;DeviceCount;CpuWorkload;CpuEfficiency;MemoryWorkload;MemoryEfficiency;AverageAvailability\n");
         }
 
         public IList<NetworkObject> GetAll()
@@ -44,6 +48,10 @@ namespace NetworkLayer.API.Repositories
 
             var avgCpu = Math.Clamp(cpuWorkload / _nos.Count, 0, 1);
             var avgMem = Math.Clamp(memoryWorkload / _nos.Count, 0, 1);
+            
+            // Output for graph
+            File.AppendAllText("output.csv", $"{id};{_nos.Count};{cpuWorkload};" +
+                                             $"{avgCpu};{memoryWorkload};{avgMem};{avgAvail}\n");
 
             return _nos.Select(x => CreateFromSimulation(x, avgCpu, avgMem, avgAvail)).ToList();
         }
