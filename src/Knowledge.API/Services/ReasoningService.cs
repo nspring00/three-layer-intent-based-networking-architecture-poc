@@ -9,6 +9,8 @@ namespace Knowledge.API.Services;
 public class ReasoningService : IReasoningService
 {
     public const int MaxInfosForReasoning = 5;
+    private const string OutputFileName = "output.csv";
+    private int _outputId = 1;
 
     private readonly ILogger<ReasoningService> _logger;
     private readonly IWorkloadRepository _workloadRepository;
@@ -22,6 +24,8 @@ public class ReasoningService : IReasoningService
         _logger = logger;
         _workloadRepository = workloadRepository;
         _intentService = intentService;
+        
+        File.WriteAllText(OutputFileName, "Id;DeviceCount;EffTrend;AvailTrend\n");
     }
 
     public IDictionary<Region, bool> QuickReasoningForRegions(IList<Region> regions)
@@ -124,6 +128,9 @@ public class ReasoningService : IReasoningService
             KeyPerformanceIndicator.Availability
         };
         var trends = GenerateKpiTrends(infos, kpis);
+        
+        // Output for plotting
+        File.AppendAllText(OutputFileName, $"{_outputId++};{infos.MaxBy(x => x.Id)!.DeviceCount};{trends[KeyPerformanceIndicator.Efficiency]};{trends[KeyPerformanceIndicator.Availability]}\n");
 
         _logger.LogInformation("Trends: {Trends}", trends);
 
