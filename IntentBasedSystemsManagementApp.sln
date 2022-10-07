@@ -72,6 +72,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Datasets", "Datasets", "{E0A6BEF3-FE94-45F7-A42A-36452DBDD0B1}"
 	ProjectSection(SolutionItems) = preProject
 		Datasets\IncreasingWorkloadSameAvailability.csv = Datasets\IncreasingWorkloadSameAvailability.csv
+		Datasets\SameAll.csv = Datasets\SameAll.csv
+		Datasets\SinEfficiency.csv = Datasets\SinEfficiency.csv
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data.Core", "src\Data.Core\Data.Core.csproj", "{11108602-47D1-4650-972E-1946F3EFC675}"
@@ -83,7 +85,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{8FC226
 		docker\.env = docker\.env
 		docker-aws-convert.yml = docker-aws-convert.yml
 		docker\docker-compose-simulate-efficiency.yml = docker\docker-compose-simulate-efficiency.yml
+		docker\docker-compose-simulate-efficiency-same-all.yml = docker\docker-compose-simulate-efficiency-same-all.yml
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatasetGenerator", "src\Utilities\DatasetGenerator\DatasetGenerator.csproj", "{9A6878DA-519F-497B-8A68-676A84AF9753}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -183,6 +188,10 @@ Global
 		{F0831D6F-D070-4B8A-9347-BFE246576BCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0831D6F-D070-4B8A-9347-BFE246576BCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F0831D6F-D070-4B8A-9347-BFE246576BCC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A6878DA-519F-497B-8A68-676A84AF9753}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A6878DA-519F-497B-8A68-676A84AF9753}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A6878DA-519F-497B-8A68-676A84AF9753}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A6878DA-519F-497B-8A68-676A84AF9753}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -218,6 +227,7 @@ Global
 		{778CD5B2-B423-4701-A200-C27AC087E3A8} = {4E6C6147-5DDD-4F96-B578-0205F5C56F19}
 		{242A094C-78C3-4E8E-AFC8-456A0B340A23} = {4E6C6147-5DDD-4F96-B578-0205F5C56F19}
 		{F0831D6F-D070-4B8A-9347-BFE246576BCC} = {D24B04A7-CB9A-4243-8B35-9140C88A3D0A}
+		{9A6878DA-519F-497B-8A68-676A84AF9753} = {47DC6D59-D29C-4ED4-B21F-3583AE5685D8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B216C082-BB1D-42D3-81AD-D80D4FDC2AC5}
