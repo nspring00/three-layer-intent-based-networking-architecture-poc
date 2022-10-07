@@ -42,8 +42,8 @@ namespace NetworkLayer.API.Repositories
             _logger.LogInformation("Loaded dataset line {Id} with {CpuWorkload} {MemoryWorkload} {AvgAvail}", id,
                 cpuWorkload, memoryWorkload, avgAvail);
 
-            var avgCpu = cpuWorkload / _nos.Count;
-            var avgMem = memoryWorkload / _nos.Count;
+            var avgCpu = Math.Clamp(cpuWorkload / _nos.Count, 0, 1);
+            var avgMem = Math.Clamp(memoryWorkload / _nos.Count, 0, 1);
 
             return _nos.Select(x => CreateFromSimulation(x, avgCpu, avgMem, avgAvail)).ToList();
         }
