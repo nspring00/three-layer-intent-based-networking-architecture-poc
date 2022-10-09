@@ -72,6 +72,8 @@ public class ReasoningService : IReasoningService
         {
             return new Dictionary<KeyPerformanceIndicator, float>();
         }
+
+        var dc = infos.MaxBy(x => x.Id)?.DeviceCount;
         
         return kpis.ToDictionary(
             kpi => kpi,
@@ -83,6 +85,11 @@ public class ReasoningService : IReasoningService
 
                 if (data.Count == 1)
                 {
+                    if (kpi == KeyPerformanceIndicator.Efficiency)
+                    {
+                        return (float) (data.First().Item2 / dc!);
+                    }
+
                     return (float)data.First().Item2;
                 }
 
@@ -93,7 +100,7 @@ public class ReasoningService : IReasoningService
                 // into efficiency trend
                 if (kpi == KeyPerformanceIndicator.Efficiency)
                 {
-                    return (float)trend / infos.MaxBy(x => x.Id)!.DeviceCount;
+                    return (float)(trend / dc!);
                 }
                 
                 return (float)trend;
