@@ -14,12 +14,12 @@ File.WriteAllLines(datasetFileName, lines);
 
 List<DatasetLine> GenerateOscillatingEffDataset()
 {
-    const int minWorkload = 50;
+    const int minWorkload = 450;
     const float avail = 0.8f;
 
-    const int steps = 200;
-    const double stepSize = Math.PI / steps;
-    const int factor = 200;
+    const int steps = 400;
+    const double stepSize = 2 * Math.PI / steps;
+    const int factor = 300;
 
     var localData = new List<DatasetLine>();
 
