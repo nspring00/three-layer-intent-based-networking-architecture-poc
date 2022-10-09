@@ -32,11 +32,13 @@ services:
       - InitialIntents__0__Kpi=Efficiency
       - InitialIntents__0__Region=Vienna
       - InitialIntents__0__TargetMode=Min
-      - InitialIntents__0__TargetValue=0.5
+      - InitialIntents__0__TargetValue=0.85
       - InitialIntents__1__Kpi=Efficiency
       - InitialIntents__1__Region=Vienna
       - InitialIntents__1__TargetMode=Max
-      - InitialIntents__1__TargetValue=0.8
+      - InitialIntents__1__TargetValue=0.9
+    volumes:
+      - ./trends-output.csv:/app/output.csv
       
   data:
     image: nsp00/ibsm-data
@@ -54,6 +56,8 @@ services:
       - NlManagers__0__Region=Vienna
       - NlManagers__0__Host=nl-vienna-1
       - NlManagers__0__Name=nl-vienna-1
+      - Aggregation__UpdateInterval=50
+      - Aggregation__AfterKnowledgeUpdateTimeout=250
   
   agent:
     image: nsp00/ibsm-agent
@@ -85,9 +89,10 @@ services:
      - "11021:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
-      - Simulation__InitialCount=15
+      - Simulation__InitialCount=500
     volumes:
-      - ../Datasets/IncreasingWorkloadSameAvailability.csv:/app/dataset.csv
+      - ../Datasets/SinEfficiency.csv:/app/dataset.csv
+      - ./nl-output.csv:/app/output.csv
         
 networks:
   default:
