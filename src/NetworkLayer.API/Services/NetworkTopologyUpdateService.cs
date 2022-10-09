@@ -30,9 +30,7 @@ public class NetworkTopologyUpdateService : NetworkTopologyUpdater.NetworkTopolo
             ids.Add(no.Id);
         }
 
-        _logger.LogInformation("Scaling up by {ScaleUpCount}. Ids {Ids}", newNOs.Count,
-            string.Join(", ", ids));
-
+        _logger.LogInformation("Scaling up by {ScaleUpCount}", newNOs.Count);
 
         var response = new ScaleUpResponse
         {
