@@ -1,4 +1,5 @@
-﻿using Common.Services;
+﻿using System.Globalization;
+using Common.Services;
 using Microsoft.Extensions.Options;
 using NetworkLayer.API.Models;
 using NetworkLayer.API.Options;
@@ -50,8 +51,10 @@ namespace NetworkLayer.API.Repositories
             var avgMem = Math.Clamp(memoryWorkload / _nos.Count, 0, 1);
             
             // Output for graph
-            File.AppendAllText("output.csv", $"{id};{_nos.Count};{cpuWorkload};" +
-                                             $"{avgCpu};{memoryWorkload};{avgMem};{avgAvail}\n");
+            var culture = CultureInfo.GetCultureInfo("de");
+            File.AppendAllText("output.csv", $"{id};{_nos.Count};{cpuWorkload.ToString(culture)};" +
+                                             $"{avgCpu.ToString(culture)};{memoryWorkload.ToString(culture)};" +
+                                             $"{avgMem.ToString(culture)};{avgAvail.ToString(culture)}\n");
 
             return _nos.Select(x => CreateFromSimulation(x, avgCpu, avgMem, avgAvail)).ToList();
         }
