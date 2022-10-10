@@ -19,7 +19,7 @@ List<DatasetLine> GenerateOscillatingEffDataset()
 
     const int steps = 400;
     const double stepSize = 2 * Math.PI / steps;
-    const int factor = 300;
+    const int factor = 200;
 
     var localData = new List<DatasetLine>();
 
