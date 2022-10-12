@@ -3,6 +3,7 @@ using FluentAssertions;
 using Knowledge.API.Models;
 using Knowledge.API.Repository;
 using Knowledge.API.Services;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 
@@ -17,9 +18,12 @@ public class ReasoningServiceTests
     public ReasoningServiceTests()
     {
         var logger = Substitute.For<ILogger<ReasoningService>>();
+        var hostEnvironment = Substitute.For<IHostEnvironment>();
+        hostEnvironment.EnvironmentName.Returns("test");
+        
         _workloadRepository = Substitute.For<IWorkloadRepository>();
         _intentService = Substitute.For<IIntentService>();
-        _sut = new ReasoningService(logger, _workloadRepository, _intentService);
+        _sut = new ReasoningService(logger, hostEnvironment, _workloadRepository, _intentService);
     }
 
     [Fact]
@@ -126,7 +130,7 @@ public class ReasoningServiceTests
         };
 
         // Act
-        var trends = ReasoningService.GenerateKpiTrends(infos, kpis);
+        var trends = _sut.GenerateKpiTrends(infos, kpis);
 
         // Assert
         trends.Should().HaveCount(2);
@@ -171,7 +175,7 @@ public class ReasoningServiceTests
         };
 
         // Act
-        var trends = ReasoningService.GenerateKpiTrends(infos, kpis);
+        var trends = _sut.GenerateKpiTrends(infos, kpis);
 
         // Assert
         trends.Should().HaveCount(2);
