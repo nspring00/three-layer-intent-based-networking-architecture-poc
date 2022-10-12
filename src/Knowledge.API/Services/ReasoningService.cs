@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
 using Common.Models;
+using Common.Web.AspNetCore;
 using Knowledge.API.Models;
 using Knowledge.API.Repository;
 using MathNet.Numerics;
@@ -13,19 +15,32 @@ public class ReasoningService : IReasoningService
     private int _outputId = 1;
 
     private readonly ILogger<ReasoningService> _logger;
+    private readonly IHostEnvironment _hostEnvironment;
     private readonly IWorkloadRepository _workloadRepository;
     private readonly IIntentService _intentService;
 
     public ReasoningService(
         ILogger<ReasoningService> logger,
+        IHostEnvironment hostEnvironment,
         IWorkloadRepository workloadRepository,
         IIntentService intentService)
     {
         _logger = logger;
+        _hostEnvironment = hostEnvironment;
         _workloadRepository = workloadRepository;
         _intentService = intentService;
-        
+
+        if (!_hostEnvironment.IsDocker())
+        {
+            return;
+        }
+
         File.WriteAllText(OutputFileName, "Id;DeviceCount;EffTrend;AvailTrend\n");
+        // Knowledge is first notified on 4th check of the NL
+        for (var i = 0; i < 4; i++)
+        {
+            File.AppendAllText(OutputFileName, $"{_outputId++};0;0;0\n");
+        }
     }
 
     public IDictionary<Region, bool> QuickReasoningForRegions(IList<Region> regions)
@@ -45,7 +60,7 @@ public class ReasoningService : IReasoningService
                     var value = GetKpiValue(info, kpi);
 
                     const float increasingFactor = 0.1f;
-                    
+
                     if (minMaxTarget.HasMin && value < minMaxTarget.Min * (1 + increasingFactor))
                         return true;
 
@@ -66,7 +81,7 @@ public class ReasoningService : IReasoningService
             _ => throw new Exception($"Unknown KPI {kpi.ToString()}")
         };
     }
-    
+
     public Dictionary<KeyPerformanceIndicator, float> GenerateKpiTrends(IList<WorkloadInfo> infos,
         IList<KeyPerformanceIndicator> kpis)
     {
@@ -76,7 +91,7 @@ public class ReasoningService : IReasoningService
         }
 
         var dc = infos.MaxBy(x => x.Id)?.DeviceCount;
-        
+
         return kpis.ToDictionary(
             kpi => kpi,
             kpi =>
@@ -84,10 +99,10 @@ public class ReasoningService : IReasoningService
                 // Use linear regression to calculate the trend
 
                 // var data = infos.Select(x => new Tuple<double, double>(x.Id, GetKpiValue(x, kpi))).ToList();
-                
-                var xValues = infos.Select(x => (double) x.Id).ToArray();
-                var yValues = infos.Select(x => (double) GetKpiValue(x, kpi)).ToArray();
-                
+
+                var xValues = infos.Select(x => (double)x.Id).ToArray();
+                var yValues = infos.Select(x => (double)GetKpiValue(x, kpi)).ToArray();
+
                 Debug.Assert(xValues.Length == yValues.Length);
 
                 // Square polynomial regression requires at least 3 data points
@@ -95,10 +110,10 @@ public class ReasoningService : IReasoningService
                 {
                     if (kpi == KeyPerformanceIndicator.Efficiency)
                     {
-                        return (float) (yValues.First() / dc!);
+                        return (float)(yValues.First() / dc!);
                     }
 
-                    return (float) yValues.First();
+                    return (float)yValues.First();
                 }
 
                 // Execute polynomial regression with order 2
@@ -110,27 +125,28 @@ public class ReasoningService : IReasoningService
                 // var data = xValues.Zip(yValues, (x, y) => new Tuple<double, double>(x, y));
                 // var (a, b) = SimpleRegression.Fit(data);
                 // var trend = a + b * (infos.MaxBy(x => x.Id)!.Id + 2);
-                
-                
+
+
                 // when using efficiency, this value is actually the workload trend which needs to be transformed 
                 // into efficiency trend
                 if (kpi == KeyPerformanceIndicator.Efficiency)
                 {
                     trend = (double)(trend / dc)!;
                 }
-                
+
                 // Clamp the trend to the min/max values (should not occur)
                 if (trend < 0)
                 {
                     _logger.LogWarning("Negative trend for {Kpi}", kpi);
                     trend = 0;
                 }
+
                 if (trend > 1)
                 {
                     _logger.LogWarning("Trend > 1 for {Kpi}", kpi);
                     trend = 1;
                 }
-                
+
                 return (float)trend;
             });
     }
@@ -163,14 +179,18 @@ public class ReasoningService : IReasoningService
             KeyPerformanceIndicator.Availability
         };
         var trends = GenerateKpiTrends(infos, kpis);
-        
+
         // Output for plotting
-        // TODO this wont work locally
-        // TODO do this 4 times because data collects 4 times per update
-        for (var i = 0; i < 4; i++)
+        if (_hostEnvironment.IsDocker())
         {
-            File.AppendAllText(OutputFileName,
-                $"{_outputId++};{infos.MaxBy(x => x.Id)!.DeviceCount};{trends[KeyPerformanceIndicator.Efficiency]};{trends[KeyPerformanceIndicator.Availability]}\n");
+            var culture = CultureInfo.GetCultureInfo("de");
+            // do this 4 times because data collects 4 times per update
+            for (var i = 0; i < 4; i++)
+            {
+                File.AppendAllText(OutputFileName, $"{_outputId++};{infos.MaxBy(x => x.Id)!.DeviceCount};" +
+                                                   $"{trends[KeyPerformanceIndicator.Efficiency].ToString(culture)};" +
+                                                   $"{trends[KeyPerformanceIndicator.Availability].ToString(culture)}\n");
+            }
         }
 
         _logger.LogInformation("Trends: {Trends}", trends);
@@ -184,7 +204,7 @@ public class ReasoningService : IReasoningService
 
         var deviceCount = infos.MaxBy(x => x.Id)!.DeviceCount;
         _logger.LogInformation("Device count {Region}: {DeviceCount}", region.Name, deviceCount);
-        
+
         // Currently only efficiency and availability supported
         bool effOk = true;
         bool availOk = true;
@@ -287,7 +307,7 @@ public class ReasoningService : IReasoningService
 
         var result = Enumerable.Range(lowestMin, highestMax - lowestMin + 1)
             .MinBy(count => ComputeError(count, bounds));
-        
+
         return result - deviceCount;
     }
 
