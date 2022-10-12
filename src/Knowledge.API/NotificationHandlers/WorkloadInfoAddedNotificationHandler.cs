@@ -29,6 +29,11 @@ public class WorkloadInfoAddedNotificationHandler : INotificationHandler<Workloa
             .Select(x => x.Key)
             .ToList();
 
+        if (agentsToNotify.Count == 0)
+        {
+            _logger.LogInformation("No agents need to be notified");
+        }
+        
         _logger.LogInformation("Notifying agents for {RegionCount} out of {MaxRegionCount} regions", agentsToNotify.Count, allAgents.Count);
 
         return _agentService.NotifyAgents(agentsToNotify);
