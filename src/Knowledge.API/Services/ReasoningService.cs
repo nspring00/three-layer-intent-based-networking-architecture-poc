@@ -287,26 +287,7 @@ public class ReasoningService : IReasoningService
 
         var result = Enumerable.Range(lowestMin, highestMax - lowestMin + 1)
             .MinBy(count => ComputeError(count, bounds));
-
-        var best = lowestMin;
-        var bestError = int.MaxValue;
-        for (var i = lowestMin; i <= highestMax; i++)
-        {
-            // Generate error value for each possible device count and choose the one with the lowest error
-            var error = ComputeError(i, bounds);
-            if (error >= bestError)
-            {
-                continue;
-            }
-
-            best = i;
-            bestError = error;
-        }
-
-        // Currently computing this twice
-        // TODO remove one
-        Debug.Assert(result == best);
-
+        
         return result - deviceCount;
     }
 
