@@ -39,7 +39,7 @@ public class ReasoningService : IReasoningService
         // Knowledge is first notified on 4th check of the NL
         for (var i = 0; i < 4; i++)
         {
-            File.AppendAllText(OutputFileName, $"{_outputId++};0;0;0\n");
+            File.AppendAllText(OutputFileName, $"{_outputId++};;;\n");
         }
     }
 
