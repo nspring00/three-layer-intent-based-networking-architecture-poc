@@ -16,6 +16,7 @@ namespace NetworkLayer.API.Repositories
         private readonly SimulationDataSet _dataset;
         private readonly List<(int, DateTime)> _nos;
 
+        private readonly Random _random = new();
         private readonly List<NetworkObject> _recentlyCreated;
         private readonly List<(NetworkObject, DateTime)> _recentlyRemoved = new();
 
@@ -58,7 +59,7 @@ namespace NetworkLayer.API.Repositories
 
             return _nos.Select(x => CreateFromSimulation(x, avgCpu, avgMem, avgAvail)).ToList();
         }
-
+        
         public IList<NetworkObject> GetCreated()
         {
             return new List<NetworkObject>(_recentlyCreated);
@@ -101,7 +102,7 @@ namespace NetworkLayer.API.Repositories
             _recentlyRemoved.Clear();
         }
 
-        private static NetworkObject CreateFromSimulation((int, DateTime) no, float? avgCpu = null, float? avgMem = null,
+        private NetworkObject CreateFromSimulation((int, DateTime) no, float? avgCpu = null, float? avgMem = null,
             float? avgAvail = null)
         {
             var (id, createdAt) = no;
@@ -120,11 +121,18 @@ namespace NetworkLayer.API.Repositories
                 CreatedAt = createdAt,
                 Utilization = new Utilization
                 {
-                    CpuUtilization = avgCpu.Value, // TODO jitter values
-                    MemoryUtilization = avgMem.Value,
+                    CpuUtilization = Math.Clamp(JitterValue(avgCpu.Value), 0, 1),
+                    MemoryUtilization = Math.Clamp(JitterValue(avgMem.Value), 0, 1),
                 },
-                Availability = avgAvail.Value
+                Availability = Math.Clamp(JitterValue(avgAvail.Value), 0, 1)
             };
+        }
+        
+        private float JitterValue(float value, float jitter = 0.05f)
+        {
+            // Jitter value by +- jitter randomly
+            var factor = 1 + (float) (2 * jitter * _random.NextDouble() - jitter);
+            return value * factor;
         }
     }
 }
