@@ -2,14 +2,16 @@
 
 using System.Globalization;
 
-var data = GenerateOscillatingEffDataset();
+Create(GenerateOscillatingEffDataset(), "SinEfficiency.csv");
+Create(GenerateOscillatingAvailDataset(), "SinAvailability.csv");
 
-var lines = data.Select(x => x.ToString()).ToList();
-lines.Insert(0, GetHeader());
-
-const string datasetFileName = "SinEfficiency.csv";
-
-File.WriteAllLines(datasetFileName, lines);
+void Create(IEnumerable<DatasetLine> data, string filename)
+{
+    var lines = data.Select(x => x.ToString()).ToList();
+    lines.Insert(0, GetHeader());
+    
+    File.WriteAllLines(filename, lines);
+}
 
 
 List<DatasetLine> GenerateOscillatingEffDataset()
@@ -26,6 +28,31 @@ List<DatasetLine> GenerateOscillatingEffDataset()
     for (var i = 0; i < steps; i++)
     {
         var workload = minWorkload + (float)Math.Sin(i * stepSize) * factor;
+        localData.Add(new DatasetLine(
+            i + 1,
+            workload,
+            workload,
+            avail
+        ));
+    }
+
+    return localData;
+}
+
+List<DatasetLine> GenerateOscillatingAvailDataset()
+{
+    const int workload = 100;
+    const float minAvail = 0.7f;
+    
+    const int steps = 400;
+    const double stepSize = 2 * Math.PI / steps;
+    const float factor = 0.1f;
+    
+    var localData = new List<DatasetLine>();
+
+    for (var i = 0; i < steps; i++)
+    {
+        var avail = minAvail + (float)Math.Sin(i * stepSize) * factor;
         localData.Add(new DatasetLine(
             i + 1,
             workload,
