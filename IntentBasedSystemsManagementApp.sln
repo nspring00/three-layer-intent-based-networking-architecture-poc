@@ -74,6 +74,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Datasets", "Datasets", "{E0
 		Datasets\IncreasingWorkloadSameAvailability.csv = Datasets\IncreasingWorkloadSameAvailability.csv
 		Datasets\SameAll.csv = Datasets\SameAll.csv
 		Datasets\SinEfficiency.csv = Datasets\SinEfficiency.csv
+		Datasets\SinAvailability.csv = Datasets\SinAvailability.csv
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data.Core", "src\Data.Core\Data.Core.csproj", "{11108602-47D1-4650-972E-1946F3EFC675}"
