@@ -44,11 +44,11 @@ public class ReasoningServiceTests
     }
 
     [Theory]
-    [InlineData(10, 0.7f, 0.7f, 0.5f, 0.9f, 0.5f, 0.9f, false)] // OK
-    [InlineData(10, 0.4f, 0.7f, 0.5f, 0.9f, 0.5f, 0.9f, true)] // eff too low
-    [InlineData(10, 1f, 0.7f, 0.5f, 0.9f, 0.5f, 0.9f, true)] // eff too high
-    [InlineData(10, 0.7f, 0.4f, 0.5f, 0.9f, 0.5f, 0.9f, true)] // avail too low
-    [InlineData(10, 0.7f, 1f, 0.5f, 0.9f, 0.5f, 0.9f, true)] // avail too high
+    [InlineData(10, 0.7f, 0.3f, 0.5f, 0.9f, 0.9f, 0.99f, false)] // OK
+    [InlineData(10, 0.4f, 0.3f, 0.5f, 0.9f, 0.9f, 0.99f, true)] // eff too low
+    [InlineData(10, 1f, 0.3f, 0.5f, 0.9f, 0.9f, 0.99f, true)] // eff too high
+    [InlineData(10, 0.7f, 0.1f, 0.5f, 0.9f, 0.9f, 0.99f, true)] // avail too low
+    [InlineData(10, 0.7f, 1f, 0.6f, 0.9f, 0.9f, 0.99f, true)] // avail too high
     public void QuickReasoning_WithGivenParams_ShouldReturnGivenResult(
         int deviceCount,
         float avgEfficiency,
@@ -180,9 +180,9 @@ public class ReasoningServiceTests
         // Assert
         trends.Should().HaveCount(2);
         trends.Should().ContainKey(KeyPerformanceIndicator.Efficiency).WhoseValue.Should()
-            .BeApproximately(0.2f, 0.0001f);
+            .BeApproximately(0.1f, 0.0001f);
         trends.Should().ContainKey(KeyPerformanceIndicator.Availability).WhoseValue.Should()
-            .BeApproximately(0.7f, 0.0001f);
+            .BeApproximately(0.8f, 0.0001f);
     }
 
     [Theory]
@@ -200,12 +200,15 @@ public class ReasoningServiceTests
         // Assert
         var expectedResult = (minResult, maxResult);
         result.Should().Be(expectedResult);
-    }    
-    
+    }
+
     [Theory]
     [InlineData(0.8f, 0.7f, 0.9f, 1, 1)]
     [InlineData(0.3f, 0.7f, 0.9f, 4, 6)]
     [InlineData(0.3f, 0.99f, 0.999f, 13, 19)]
+    [InlineData(0.2f, 0.999f, 0.999999f, 31, 61)]
+    [InlineData(0.3f, 0.999f, 0.999999f, 20, 38)]
+    [InlineData(0.4f, 0.999f, 0.999999f, 14, 27)]
     public void GetAvailabilityDeviceCountBounds_ReturnsCorrectValue(float avgAvailability,
         float minAvailability, float maxAvailability, int minResult, int maxResult)
     {
