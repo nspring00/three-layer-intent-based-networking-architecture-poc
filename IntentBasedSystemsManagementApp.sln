@@ -86,7 +86,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{8FC226
 		docker\.env = docker\.env
 		docker-aws-convert.yml = docker-aws-convert.yml
 		docker\docker-compose-simulate-efficiency.yml = docker\docker-compose-simulate-efficiency.yml
-		docker\docker-compose-simulate-efficiency-same-all.yml = docker\docker-compose-simulate-efficiency-same-all.yml
 		docker\docker-compose-simulate-availability.yml = docker\docker-compose-simulate-availability.yml
 	EndProjectSection
 EndProject
