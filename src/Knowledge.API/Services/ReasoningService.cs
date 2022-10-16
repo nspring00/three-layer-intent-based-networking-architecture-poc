@@ -57,27 +57,57 @@ public class ReasoningService : IReasoningService
                 {
                     Debug.Assert(minMaxTarget.HasMin || minMaxTarget.HasMax);
 
-                    var value = GetKpiValue(info, kpi);
+                    var value = GetKpiComputedValue(info, kpi);
 
                     const float increasingFactor = 0.1f;
 
-                    if (minMaxTarget.HasMin && value < minMaxTarget.Min * (1 + increasingFactor))
-                        return true;
+                    if (minMaxTarget.HasMin)
+                    {
+                        // For availability, increase by raising (value is <1, therefore 1-increasingFactor)
+                        // Else scale by 10%
+                        var minThreshold = kpi == KeyPerformanceIndicator.Availability 
+                            ? Math.Pow(minMaxTarget.Min!.Value, 1 - increasingFactor)
+                            : minMaxTarget.Min!.Value * (1 + increasingFactor);
+                        
+                        if (minThreshold > value)
+                        {
+                            return true;
+                        }
+                    }
 
-                    if (minMaxTarget.HasMax && value > minMaxTarget.Max * (1 - increasingFactor))
-                        return true;
+                    if (minMaxTarget.HasMax)
+                    {
+                        var maxThreshold = kpi == KeyPerformanceIndicator.Availability
+                            ? Math.Pow(minMaxTarget.Max!.Value, 1 + increasingFactor)
+                            : minMaxTarget.Max!.Value * (1 - increasingFactor);
+
+                        if (maxThreshold < value)
+                        {
+                            return true;
+                        }
+                    }
                 }
 
                 return false;
             });
     }
 
-    private static float GetKpiValue(WorkloadInfo info, KeyPerformanceIndicator kpi)
+    private static float GetKpiRawValue(WorkloadInfo info, KeyPerformanceIndicator kpi)
     {
         return kpi switch
         {
             KeyPerformanceIndicator.Efficiency => info.AvgEfficiency * info.DeviceCount,
             KeyPerformanceIndicator.Availability => info.AvgAvailability,
+            _ => throw new Exception($"Unknown KPI {kpi.ToString()}")
+        };
+    }
+    
+    private static float GetKpiComputedValue(WorkloadInfo info, KeyPerformanceIndicator kpi)
+    {
+        return kpi switch
+        {
+            KeyPerformanceIndicator.Efficiency => info.AvgEfficiency,
+            KeyPerformanceIndicator.Availability => 1 - (float) Math.Pow(1 - info.AvgAvailability, info.DeviceCount),
             _ => throw new Exception($"Unknown KPI {kpi.ToString()}")
         };
     }
@@ -101,7 +131,7 @@ public class ReasoningService : IReasoningService
                 // var data = infos.Select(x => new Tuple<double, double>(x.Id, GetKpiValue(x, kpi))).ToList();
 
                 var xValues = infos.Select(x => (double)x.Id).ToArray();
-                var yValues = infos.Select(x => (double)GetKpiValue(x, kpi)).ToArray();
+                var yValues = infos.Select(x => (double)GetKpiRawValue(x, kpi)).ToArray();
 
                 Debug.Assert(xValues.Length == yValues.Length);
 
