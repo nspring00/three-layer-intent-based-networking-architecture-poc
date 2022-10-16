@@ -10,6 +10,11 @@ public static class HostEnvironmentExtensions
         return environment.IsEnvironment(DockerEnvironmentName);
     }
 
+    public static bool IsDockerSimulation(this IHostEnvironment environment)
+    {
+        return environment.IsEnvironment(DockerEnvironmentName); // TODO change this
+    }
+
     public static bool IsEcs(this IHostEnvironment environment)
     {
         return environment.IsEnvironment(EcsEnvironmentName);

@@ -1,7 +1,5 @@
 ﻿using System.Diagnostics;
-using System.Globalization;
 using Common.Models;
-using Common.Web.AspNetCore;
 using Knowledge.API.Models;
 using Knowledge.API.Repository;
 using MathNet.Numerics;
@@ -10,39 +8,22 @@ namespace Knowledge.API.Services;
 
 public class ReasoningService : IReasoningService
 {
-    public const int MaxInfosForReasoning = 5;
-    private const string OutputFileName = "output.csv";
-    private int _outputId = 1;
+    public int MaxInfosForReasoning => 5;
 
     private readonly ILogger<ReasoningService> _logger;
-    private readonly IHostEnvironment _hostEnvironment;
     private readonly IWorkloadRepository _workloadRepository;
     private readonly IIntentService _intentService;
 
     public ReasoningService(
         ILogger<ReasoningService> logger,
-        IHostEnvironment hostEnvironment,
         IWorkloadRepository workloadRepository,
         IIntentService intentService)
     {
         _logger = logger;
-        _hostEnvironment = hostEnvironment;
         _workloadRepository = workloadRepository;
         _intentService = intentService;
-
-        if (!_hostEnvironment.IsDocker())
-        {
-            return;
-        }
-
-        File.WriteAllText(OutputFileName, "Id;DeviceCount;EffTrend;AvailTrend\n");
-        // Knowledge is first notified on 4th check of the NL
-        for (var i = 0; i < 4; i++)
-        {
-            File.AppendAllText(OutputFileName, $"{_outputId++};;;\n");
-        }
     }
-
+    
     public IDictionary<Region, bool> QuickReasoningForRegions(IList<Region> regions)
     {
         _logger.LogInformation("Quick reasoning for {RegionCount} regions", regions.Count);
@@ -209,20 +190,7 @@ public class ReasoningService : IReasoningService
             KeyPerformanceIndicator.Availability
         };
         var trends = GenerateKpiTrends(infos, kpis);
-
-        // Output for plotting
-        if (_hostEnvironment.IsDocker())
-        {
-            var culture = CultureInfo.GetCultureInfo("de");
-            // do this 4 times because data collects 4 times per update
-            for (var i = 0; i < 4; i++)
-            {
-                File.AppendAllText(OutputFileName, $"{_outputId++};{infos.MaxBy(x => x.Id)!.DeviceCount};" +
-                                                   $"{trends[KeyPerformanceIndicator.Efficiency].ToString(culture)};" +
-                                                   $"{trends[KeyPerformanceIndicator.Availability].ToString(culture)}\n");
-            }
-        }
-
+        
         _logger.LogInformation("Trends: {Trends}", trends);
 
         if (!kpiTargets.ContainsKey(KeyPerformanceIndicator.Efficiency) &&

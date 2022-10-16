@@ -23,7 +23,7 @@ public class ReasoningServiceTests
         
         _workloadRepository = Substitute.For<IWorkloadRepository>();
         _intentService = Substitute.For<IIntentService>();
-        _sut = new ReasoningService(logger, hostEnvironment, _workloadRepository, _intentService);
+        _sut = new ReasoningService(logger, _workloadRepository, _intentService);
     }
 
     [Fact]
@@ -227,7 +227,7 @@ public class ReasoningServiceTests
     public void ReasonForRegion_WhenWorkloadIsNotAvailable_ShouldReturnFalse()
     {
         var region = new Region("Vienna");
-        _workloadRepository.GetForRegion(region, ReasoningService.MaxInfosForReasoning)
+        _workloadRepository.GetForRegion(region, _sut.MaxInfosForReasoning)
             .Returns(new List<WorkloadInfo>());
 
         // Act
