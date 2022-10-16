@@ -32,11 +32,11 @@ services:
       - InitialIntents__0__Kpi=Availability
       - InitialIntents__0__Region=Vienna
       - InitialIntents__0__TargetMode=Min
-      - InitialIntents__0__TargetValue=0.99
+      - InitialIntents__0__TargetValue=0.9999
       - InitialIntents__1__Kpi=Availability
       - InitialIntents__1__Region=Vienna
       - InitialIntents__1__TargetMode=Max
-      - InitialIntents__1__TargetValue=0.99999
+      - InitialIntents__1__TargetValue=0.999999
     volumes:
       - ./trends-avail-output.csv:/app/output.csv
       
@@ -89,7 +89,7 @@ services:
      - "11021:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
-      - Simulation__InitialCount=500
+      - Simulation__InitialCount=35
     volumes:
       - ../Datasets/SinAvailability.csv:/app/dataset.csv
       - ./nl-avail-output.csv:/app/output.csv
