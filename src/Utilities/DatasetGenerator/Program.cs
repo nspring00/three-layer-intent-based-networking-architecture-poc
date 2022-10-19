@@ -41,7 +41,7 @@ List<DatasetLine> GenerateOscillatingEffDataset()
 
 List<DatasetLine> GenerateOscillatingAvailDataset()
 {
-    const int workload = 100;
+    const int workload = 20;
     const float minAvail = 0.3f;
     
     const int steps = 400;
