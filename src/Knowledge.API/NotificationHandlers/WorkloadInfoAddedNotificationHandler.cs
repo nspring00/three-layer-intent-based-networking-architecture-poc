@@ -53,10 +53,16 @@ public class WorkloadInfoAddedNotificationHandler : INotificationHandler<Workloa
 
     public async Task Handle(WorkloadInfoAddedNotification notification, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Handling WorkloadInfoAddedNotification for regions {Regions}", notification.Regions);
+        if (notification.Regions.Count == 0)
+        {
+            _logger.LogWarning("No regions found in notification");
+            return;
+        }
         
         if (_hostEnvironment.IsDockerSimulation())
         {
+            _logger.LogInformation("Outputting simulation data for region {Region}", notification.Regions.First());
+            
             var kpis = new[]
             {
                 KeyPerformanceIndicator.Efficiency,
@@ -75,8 +81,12 @@ public class WorkloadInfoAddedNotificationHandler : INotificationHandler<Workloa
                                                               $"{trends[KeyPerformanceIndicator.Availability].ToString(culture)}\n", cancellationToken);
             }
         }
+        
+        _logger.LogInformation("Handling WorkloadInfoAddedNotification for regions {Regions}", notification.Regions);
 
         var allAgents = _reasoningService.QuickReasoningForRegions(notification.Regions);
+        
+        _logger.LogInformation("Found {AgentCount} agents for regions {Regions}", allAgents.Count, notification.Regions);
 
         var agentsToNotify = allAgents
             .Where(x => x.Value)
@@ -89,8 +99,8 @@ public class WorkloadInfoAddedNotificationHandler : INotificationHandler<Workloa
             return;
         }
 
-        _logger.LogInformation("Notifying agents for {RegionCount} out of {MaxRegionCount} regions",
-            agentsToNotify.Count, allAgents.Count);
+        _logger.LogInformation("Notifying agents for {RegionCount} out of {MaxRegionCount} regions: {Region}",
+            agentsToNotify.Count, allAgents.Count, agentsToNotify.Select(x => x.Name));
 
         await _agentService.NotifyAgents(agentsToNotify);
     }

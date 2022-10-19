@@ -71,10 +71,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Sqs", "src\Common.Sq
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Datasets", "Datasets", "{E0A6BEF3-FE94-45F7-A42A-36452DBDD0B1}"
 	ProjectSection(SolutionItems) = preProject
-		Datasets\IncreasingWorkloadSameAvailability.csv = Datasets\IncreasingWorkloadSameAvailability.csv
-		Datasets\SameAll.csv = Datasets\SameAll.csv
 		Datasets\SinEfficiency.csv = Datasets\SinEfficiency.csv
 		Datasets\SinAvailability.csv = Datasets\SinAvailability.csv
+		Datasets\SinBoth.csv = Datasets\SinBoth.csv
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data.Core", "src\Data.Core\Data.Core.csproj", "{11108602-47D1-4650-972E-1946F3EFC675}"
@@ -87,6 +86,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{8FC226
 		docker-aws-convert.yml = docker-aws-convert.yml
 		docker\docker-compose-simulate-efficiency.yml = docker\docker-compose-simulate-efficiency.yml
 		docker\docker-compose-simulate-availability.yml = docker\docker-compose-simulate-availability.yml
+		docker\docker-compose-simulate-both.yml = docker\docker-compose-simulate-both.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatasetGenerator", "src\Utilities\DatasetGenerator\DatasetGenerator.csproj", "{9A6878DA-519F-497B-8A68-676A84AF9753}"

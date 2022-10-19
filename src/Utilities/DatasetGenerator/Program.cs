@@ -4,6 +4,7 @@ using System.Globalization;
 
 Create(GenerateOscillatingEffDataset(), "SinEfficiency.csv");
 Create(GenerateOscillatingAvailDataset(), "SinAvailability.csv");
+Create(GenerateOscillatingDataset(), "SinBoth.csv");
 
 void Create(IEnumerable<DatasetLine> data, string filename)
 {
@@ -63,6 +64,36 @@ List<DatasetLine> GenerateOscillatingAvailDataset()
 
     return localData;
 }
+
+List<DatasetLine> GenerateOscillatingDataset()
+{
+    // const int workload = 20;
+    const int minWorkload = 30;
+    const float minAvail = 0.3f;
+    
+    const int steps = 400;
+    const double stepSize = 2 * Math.PI / steps;
+    const float availFactor = 0.1f;
+    const float workloadFactor = 20;
+    
+    var localData = new List<DatasetLine>();
+
+    for (var i = 0; i < steps; i++)
+    {
+        var avail = minAvail + (float)Math.Sin(i * stepSize) * availFactor;
+        var workload = minWorkload + (float)Math.Cos(2 * i * stepSize) * workloadFactor;
+        localData.Add(new DatasetLine(
+            i + 1,
+            workload,
+            workload,
+            avail
+        ));
+    }
+
+    return localData;
+}
+
+
 
 string GetHeader()
 {
