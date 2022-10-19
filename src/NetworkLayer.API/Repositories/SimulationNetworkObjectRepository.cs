@@ -15,6 +15,7 @@ namespace NetworkLayer.API.Repositories
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly SimulationDataSet _dataset;
         private readonly List<(int, DateTime)> _nos;
+        private readonly float _jitter;
 
         private readonly Random _random = new();
         private readonly List<NetworkObject> _recentlyCreated;
@@ -28,6 +29,7 @@ namespace NetworkLayer.API.Repositories
             _logger = logger;
             _dateTimeProvider = dateTimeProvider;
             _dataset = dataset;
+            _jitter = config.Value.Jitter;
 
             var now = _dateTimeProvider.Now;
             _nos = Enumerable.Range(1, config.Value.InitialCount)
@@ -128,10 +130,10 @@ namespace NetworkLayer.API.Repositories
             };
         }
         
-        private float JitterValue(float value, float jitter = 0.05f)
+        private float JitterValue(float value)
         {
             // Jitter value by +- jitter randomly
-            var factor = 1 + (float) (2 * jitter * _random.NextDouble() - jitter);
+            var factor = 1 + (float) (2 * _jitter * _random.NextDouble() - _jitter);
             return value * factor;
         }
     }
