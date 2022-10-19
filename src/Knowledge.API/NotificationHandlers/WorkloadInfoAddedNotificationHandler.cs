@@ -16,7 +16,8 @@ public class WorkloadInfoAddedNotificationHandler : INotificationHandler<Workloa
     private readonly IWorkloadRepository _workloadRepository;
 
     private const string OutputFileName = "output.csv";
-    private int _outputId = 1;
+    private static bool _isInitialized;
+    private static int _outputId;
 
     public WorkloadInfoAddedNotificationHandler(
         ILogger<WorkloadInfoAddedNotificationHandler> logger,
@@ -31,23 +32,29 @@ public class WorkloadInfoAddedNotificationHandler : INotificationHandler<Workloa
         _agentService = agentService;
         _workloadRepository = workloadRepository;
 
-        Init();
+        if (!_hostEnvironment.IsDockerSimulation() || _isInitialized)
+        {
+            return;
+        }
+
+        _isInitialized = true;
+        InitSimulation();
     }
 
-    private void Init()
+    private static void InitSimulation()
     {
-        if (!_hostEnvironment.IsDockerSimulation()) return;
-
         File.WriteAllText(OutputFileName, "Id;DeviceCount;EffTrend;AvailTrend\n");
         // Knowledge is first notified on 4th check of the NL
         for (var i = 0; i < 4; i++)
         {
-            File.AppendAllText(OutputFileName, $"{_outputId++};;;\n");
+            File.AppendAllText(OutputFileName, $"{Interlocked.Increment(ref _outputId)};;;\n");
         }
     }
 
     public async Task Handle(WorkloadInfoAddedNotification notification, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling WorkloadInfoAddedNotification for regions {Regions}", notification.Regions);
+        
         if (_hostEnvironment.IsDockerSimulation())
         {
             var kpis = new[]
@@ -63,7 +70,7 @@ public class WorkloadInfoAddedNotificationHandler : INotificationHandler<Workloa
             // do this 4 times because data collects 4 times per update
             for (var i = 0; i < 4; i++)
             {
-                await File.AppendAllTextAsync(OutputFileName, $"{_outputId++};{infos.MaxBy(x => x.Id)!.DeviceCount};" +
+                await File.AppendAllTextAsync(OutputFileName, $"{Interlocked.Increment(ref _outputId)};{infos.MaxBy(x => x.Id)!.DeviceCount};" +
                                                               $"{trends[KeyPerformanceIndicator.Efficiency].ToString(culture)};" +
                                                               $"{trends[KeyPerformanceIndicator.Availability].ToString(culture)}\n", cancellationToken);
             }

@@ -121,7 +121,8 @@ public class ReasoningService : IReasoningService
                 {
                     if (kpi == KeyPerformanceIndicator.Efficiency)
                     {
-                        return (float)(yValues.First() / dc!);
+
+                        return dc! == 0 ? 0 : (float)(yValues.First() / dc!);
                     }
 
                     return (float)yValues.First();
