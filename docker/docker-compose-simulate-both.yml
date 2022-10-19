@@ -99,7 +99,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
       - Simulation__InitialCount=30
     volumes:
-      - ../Datasets/SinBoth.csv:/app/dataset.csv
+      - ../Datasets/SinBoth_2.csv:/app/dataset.csv
       - ./nl-both-output.csv:/app/output.csv
         
 networks:
