@@ -32,11 +32,11 @@ services:
       - InitialIntents__0__Kpi=Efficiency
       - InitialIntents__0__Region=Vienna
       - InitialIntents__0__TargetMode=Min
-      - InitialIntents__0__TargetValue=0.85
+      - InitialIntents__0__TargetValue=0.75
       - InitialIntents__1__Kpi=Efficiency
       - InitialIntents__1__Region=Vienna
       - InitialIntents__1__TargetMode=Max
-      - InitialIntents__1__TargetValue=0.9
+      - InitialIntents__1__TargetValue=0.95
       - InitialIntents__2__Kpi=Availability
       - InitialIntents__2__Region=Vienna
       - InitialIntents__2__TargetMode=Min

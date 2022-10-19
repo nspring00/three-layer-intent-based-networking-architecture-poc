@@ -81,7 +81,7 @@ List<DatasetLine> GenerateOscillatingDataset()
     for (var i = 0; i < steps; i++)
     {
         var avail = minAvail + (float)Math.Sin(i * stepSize) * availFactor;
-        var workload = minWorkload + (float)Math.Cos(2 * i * stepSize) * workloadFactor;
+        var workload = minWorkload + (float)Math.Sin(Math.PI + i * stepSize) * workloadFactor;
         localData.Add(new DatasetLine(
             i + 1,
             workload,
