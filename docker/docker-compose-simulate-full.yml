@@ -46,7 +46,7 @@ services:
       - InitialIntents__3__TargetMode=Max
       - InitialIntents__3__TargetValue=0.999999
     volumes:
-      - ./trends-both-output.csv:/app/output.csv
+      - ./trends-full-output.csv:/app/output.csv
       
   data:
     image: nsp00/ibsm-data
@@ -99,8 +99,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
       - Simulation__InitialCount=30
     volumes:
-      - ../Datasets/SinBoth_2.csv:/app/dataset.csv
-      - ./nl-both-output.csv:/app/output.csv
+      - ../Datasets/SinFull_1.csv:/app/dataset.csv
+      - ./nl-full-output.csv:/app/output.csv
         
 networks:
   default:
