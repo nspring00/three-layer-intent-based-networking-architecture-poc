@@ -51,8 +51,8 @@ namespace NetworkLayer.API.Repositories
             _logger.LogInformation("Loaded dataset line {Id} with {CpuWorkload} {MemoryWorkload} {AvgAvail}", id,
                 cpuWorkload, memoryWorkload, avgAvail);
 
-            var avgCpu = Math.Clamp(cpuWorkload / _nos.Count, 0, 1);
-            var avgMem = Math.Clamp(memoryWorkload / _nos.Count, 0, 1);
+            var avgCpu = cpuWorkload / _nos.Count;
+            var avgMem = memoryWorkload / _nos.Count;
             
             // Output for graph
             var culture = CultureInfo.GetCultureInfo("de");
@@ -124,8 +124,8 @@ namespace NetworkLayer.API.Repositories
                 CreatedAt = createdAt,
                 Utilization = new Utilization
                 {
-                    CpuUtilization = Math.Clamp(JitterValue(avgCpu.Value), 0, 1),
-                    MemoryUtilization = Math.Clamp(JitterValue(avgMem.Value), 0, 1),
+                    CpuUtilization = Math.Max(JitterValue(avgCpu.Value), 0),
+                    MemoryUtilization = Math.Max(JitterValue(avgMem.Value), 0),
                 },
                 Availability = Math.Clamp(JitterValue(avgAvail.Value), 0, 1)
             };

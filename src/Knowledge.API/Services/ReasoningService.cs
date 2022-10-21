@@ -152,8 +152,8 @@ public class ReasoningService : IReasoningService
                     _logger.LogWarning("Negative trend for {Kpi}", kpi);
                     trend = 0;
                 }
-
-                if (trend > 1)
+                // Trend may be >1 for efficiency
+                if (trend > 1 && kpi != KeyPerformanceIndicator.Efficiency)
                 {
                     _logger.LogWarning("Trend > 1 for {Kpi}", kpi);
                     trend = 1;
