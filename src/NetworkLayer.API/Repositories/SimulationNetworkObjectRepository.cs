@@ -17,7 +17,7 @@ namespace NetworkLayer.API.Repositories
         private readonly List<(int, DateTime)> _nos;
         private readonly float _jitter;
 
-        private readonly Random _random = new();
+        private readonly Random _random;
         private readonly List<NetworkObject> _recentlyCreated;
         private readonly List<(NetworkObject, DateTime)> _recentlyRemoved = new();
 
@@ -30,6 +30,7 @@ namespace NetworkLayer.API.Repositories
             _dateTimeProvider = dateTimeProvider;
             _dataset = dataset;
             _jitter = config.Value.Jitter;
+            _random = new Random(config.Value.JitterSeed);
 
             var now = _dateTimeProvider.Now;
             _nos = Enumerable.Range(1, config.Value.InitialCount)
