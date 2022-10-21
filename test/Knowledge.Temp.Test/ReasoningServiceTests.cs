@@ -247,9 +247,10 @@ public class ReasoningServiceTests
     [InlineData(79, 1, 80, 120)] // Compatible bounds
     [InlineData(63, 17, 80, 120, 70, 100)] // Compatible bounds
     [InlineData(134, -34, 80, 120, 70, 100)] // Compatible bounds
-    [InlineData(83, 0, 80, 82, 84, 89)] // Conflicting intents
-    [InlineData(89, 0, 80, 89, 80, 89, 90, 100)] // Conflicting intents
-    [InlineData(210, 0, 100, 120, 90, 110, 400, 410)] // Conflicting intents
+    [InlineData(83, 1, 80, 82, 84, 89)] // Conflicting intents
+    [InlineData(100, -16, 80, 82, 84, 89)] // Conflicting intents
+    [InlineData(89, 1, 80, 89, 80, 89, 90, 100)] // Conflicting intents
+    [InlineData(210, 190, 100, 120, 90, 110, 400, 410)] // Conflicting intents
     public void ComputeScalingDelta_WhenGivenInput_ThenGivenOutput(int deviceCount, int expectedResult, params int[] boundValues)
     {
         // Arrange

@@ -294,6 +294,21 @@ public class ReasoningService : IReasoningService
 
     private int ComputeScalingDeltaForConflicts(int deviceCount, IList<(int, int)> bounds)
     {
+        // Scale to to highest min
+        var highestMin = bounds.MaxBy(x => x.Item1).Item1;
+        var lowestMax = bounds.MinBy(x => x.Item2).Item2;
+
+        if (lowestMax > highestMin)
+        {
+            _logger.LogError("Can not compute scaling delta for conflicting bounds. There is no conflict!");
+            return 0;
+        }
+
+        return highestMin - deviceCount;
+    }
+
+    private int ComputeScalingDeltaForConflictsOld(int deviceCount, IList<(int, int)> bounds)
+    {
         var lowestMin = bounds.MinBy(x => x.Item1).Item1;
         var highestMax = bounds.MaxBy(x => x.Item2).Item2;
 
