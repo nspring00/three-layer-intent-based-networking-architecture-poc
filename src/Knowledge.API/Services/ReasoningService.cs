@@ -307,6 +307,7 @@ public class ReasoningService : IReasoningService
         return highestMin - deviceCount;
     }
 
+    // ReSharper disable once UnusedMember.Local
     private int ComputeScalingDeltaForConflictsOld(int deviceCount, IList<(int, int)> bounds)
     {
         var lowestMin = bounds.MinBy(x => x.Item1).Item1;
