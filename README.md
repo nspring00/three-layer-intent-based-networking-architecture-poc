@@ -24,6 +24,8 @@ For more info on the functionality, see the Bachelor Thesis.
 
 Note, that the dataset is also mapped via volume and that there exist two different datasets for the full simulation.
 
+The Knowledge's REST API is located by default at `localhost:11000`.
+
 ## Running the simulation on AWS
 
 By default, the images provided by me `nsp00` on Docker Hub will be used.
@@ -36,3 +38,8 @@ To change this behavior, change the image names in the respective `docker-compos
 
 Also note, that currently there is no way of running the same simulation setup that is possible locally on AWS.
 All output values are random.
+
+To locate and access the Knowledge's REST API, you need to find the DNS address of the load balancer.
+Search for EC2 Load Balancer and find the one with the prefix `ibsm-LoadBa-`. 
+When you access this address, you should be greeted by the Knowledge automatically. 
+The Swagger UI is located at `<DNS>/swagger`, which can be used to test the API.
