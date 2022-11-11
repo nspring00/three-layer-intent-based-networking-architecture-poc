@@ -50,7 +50,6 @@ namespace Agent.Core.Handlers
 
         private async Task HandleScaling(Region region, int scale, IDictionary<int, NlManagerTopology> topology)
         {
-            const string application = "Application1";
             _logger.LogInformation("Scaling {Region} by {Scale}", region.Name, scale);
 
             if (scale > 0)
@@ -58,7 +57,7 @@ namespace Agent.Core.Handlers
                 // Choose NL with least devices when scaling up
                 var (_, nlManagerInfo) = topology.MinBy(x => x.Value.Devices.Count);
 
-                var newNOs = Enumerable.Repeat(new NetworkObjectCreateInfo(application), scale).ToList();
+                var newNOs = Enumerable.Repeat(new NetworkObjectCreateInfo(), scale).ToList();
                 var newIds = await _networkLayerService.CreateNOsAsync(nlManagerInfo.Uri, newNOs);
 
                 // TODO update cache?

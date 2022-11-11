@@ -3,6 +3,7 @@ using FluentAssertions;
 using Knowledge.API.Models;
 using Knowledge.API.Repository;
 using Knowledge.API.Services;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 
@@ -17,6 +18,9 @@ public class ReasoningServiceTests
     public ReasoningServiceTests()
     {
         var logger = Substitute.For<ILogger<ReasoningService>>();
+        var hostEnvironment = Substitute.For<IHostEnvironment>();
+        hostEnvironment.EnvironmentName.Returns("test");
+        
         _workloadRepository = Substitute.For<IWorkloadRepository>();
         _intentService = Substitute.For<IIntentService>();
         _sut = new ReasoningService(logger, _workloadRepository, _intentService);
@@ -40,11 +44,11 @@ public class ReasoningServiceTests
     }
 
     [Theory]
-    [InlineData(10, 0.7f, 0.7f, 0.5f, 0.9f, 0.5f, 0.9f, false)] // OK
-    [InlineData(10, 0.4f, 0.7f, 0.5f, 0.9f, 0.5f, 0.9f, true)] // eff too low
-    [InlineData(10, 1f, 0.7f, 0.5f, 0.9f, 0.5f, 0.9f, true)] // eff too high
-    [InlineData(10, 0.7f, 0.4f, 0.5f, 0.9f, 0.5f, 0.9f, true)] // avail too low
-    [InlineData(10, 0.7f, 1f, 0.5f, 0.9f, 0.5f, 0.9f, true)] // avail too high
+    [InlineData(10, 0.7f, 0.3f, 0.5f, 0.9f, 0.9f, 0.99f, false)] // OK
+    [InlineData(10, 0.4f, 0.3f, 0.5f, 0.9f, 0.9f, 0.99f, true)] // eff too low
+    [InlineData(10, 1f, 0.3f, 0.5f, 0.9f, 0.9f, 0.99f, true)] // eff too high
+    [InlineData(10, 0.7f, 0.1f, 0.5f, 0.9f, 0.9f, 0.99f, true)] // avail too low
+    [InlineData(10, 0.7f, 1f, 0.6f, 0.9f, 0.9f, 0.99f, true)] // avail too high
     public void QuickReasoning_WithGivenParams_ShouldReturnGivenResult(
         int deviceCount,
         float avgEfficiency,
@@ -126,7 +130,7 @@ public class ReasoningServiceTests
         };
 
         // Act
-        var trends = ReasoningService.GenerateKpiTrends(infos, kpis);
+        var trends = _sut.GenerateKpiTrends(infos, kpis);
 
         // Assert
         trends.Should().HaveCount(2);
@@ -171,14 +175,14 @@ public class ReasoningServiceTests
         };
 
         // Act
-        var trends = ReasoningService.GenerateKpiTrends(infos, kpis);
+        var trends = _sut.GenerateKpiTrends(infos, kpis);
 
         // Assert
         trends.Should().HaveCount(2);
         trends.Should().ContainKey(KeyPerformanceIndicator.Efficiency).WhoseValue.Should()
-            .BeApproximately(0.2f, 0.0001f);
+            .BeApproximately(0.1f, 0.0001f);
         trends.Should().ContainKey(KeyPerformanceIndicator.Availability).WhoseValue.Should()
-            .BeApproximately(0.7f, 0.0001f);
+            .BeApproximately(0.8f, 0.0001f);
     }
 
     [Theory]
@@ -196,12 +200,15 @@ public class ReasoningServiceTests
         // Assert
         var expectedResult = (minResult, maxResult);
         result.Should().Be(expectedResult);
-    }    
-    
+    }
+
     [Theory]
     [InlineData(0.8f, 0.7f, 0.9f, 1, 1)]
     [InlineData(0.3f, 0.7f, 0.9f, 4, 6)]
     [InlineData(0.3f, 0.99f, 0.999f, 13, 19)]
+    [InlineData(0.2f, 0.999f, 0.999999f, 31, 61)]
+    [InlineData(0.3f, 0.999f, 0.999999f, 20, 38)]
+    [InlineData(0.4f, 0.999f, 0.999999f, 14, 27)]
     public void GetAvailabilityDeviceCountBounds_ReturnsCorrectValue(float avgAvailability,
         float minAvailability, float maxAvailability, int minResult, int maxResult)
     {
@@ -220,7 +227,7 @@ public class ReasoningServiceTests
     public void ReasonForRegion_WhenWorkloadIsNotAvailable_ShouldReturnFalse()
     {
         var region = new Region("Vienna");
-        _workloadRepository.GetForRegion(region, ReasoningService.MaxInfosForReasoning)
+        _workloadRepository.GetForRegion(region, _sut.MaxInfosForReasoning)
             .Returns(new List<WorkloadInfo>());
 
         // Act
@@ -240,9 +247,10 @@ public class ReasoningServiceTests
     [InlineData(79, 1, 80, 120)] // Compatible bounds
     [InlineData(63, 17, 80, 120, 70, 100)] // Compatible bounds
     [InlineData(134, -34, 80, 120, 70, 100)] // Compatible bounds
-    [InlineData(83, 0, 80, 82, 84, 89)] // Conflicting intents
-    [InlineData(89, 0, 80, 89, 80, 89, 90, 100)] // Conflicting intents
-    [InlineData(210, 0, 100, 120, 90, 110, 400, 410)] // Conflicting intents
+    [InlineData(83, 1, 80, 82, 84, 89)] // Conflicting intents
+    [InlineData(100, -16, 80, 82, 84, 89)] // Conflicting intents
+    [InlineData(89, 1, 80, 89, 80, 89, 90, 100)] // Conflicting intents
+    [InlineData(210, 190, 100, 120, 90, 110, 400, 410)] // Conflicting intents
     public void ComputeScalingDelta_WhenGivenInput_ThenGivenOutput(int deviceCount, int expectedResult, params int[] boundValues)
     {
         // Arrange

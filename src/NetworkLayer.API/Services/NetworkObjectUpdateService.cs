@@ -25,26 +25,30 @@ public class NetworkObjectUpdateService : NetworkObjectUpdater.NetworkObjectUpda
     {
         _logger.LogInformation("Update requested");
 
+        var now = _dateTimeProvider.Now;
         var response = new NetworkObjectUpdateResponse
         {
-            Timestamp = Timestamp.FromDateTime(_dateTimeProvider.Now)
+            Timestamp = Timestamp.FromDateTime(now)
         };
 
-        // TODO make this more refined
+        var allNos = _networkObjectService.GetAll();
+        var (newNos, removedNos) = _networkObjectService.GetChanges();
+        
         response.CreatedObjects.AddRange(
-            _networkObjectService.GetAll().Select(x => new NewNetworkObject
+            newNos.Select(x => new NewNetworkObject
             {
                 Id = x.Id,
-                CreatedAt = Timestamp.FromDateTime(x.CreatedAt),
-                Application = x.Application,
-                Groups =
-                {
-                    x.Groups
-                }
+                CreatedAt = Timestamp.FromDateTime(x.CreatedAt)
             })
         );
+        response.RemovedObjects.AddRange(
+            removedNos.Select(x => new RemovedNetworkObject
+            {
+                Id = x.Item1.Id,
+                RemovedAt = Timestamp.FromDateTime(x.Item2)
+            }));
 
-        response.NetworkObjects.AddRange(_networkObjectService.GetAll()
+        response.NetworkObjects.AddRange(allNos
             .Select(NetworkObjectMapper.MapNetworkObjectToGrpc));
 
         _logger.LogInformation("Fetched update: New {NewCount} Total {TotalCount}", response.CreatedObjects.Count,

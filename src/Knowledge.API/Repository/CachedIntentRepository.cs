@@ -1,5 +1,7 @@
 ﻿using Common.Models;
+using Knowledge.API.Configs;
 using Knowledge.API.Models;
+using Microsoft.Extensions.Options;
 
 namespace Knowledge.API.Repository;
 
@@ -9,24 +11,29 @@ public class CachedIntentRepository : IIntentRepository
     private readonly List<Intent> _intents = new();
     private readonly IdGenerator _idGenerator = new();
 
-    public CachedIntentRepository(ILogger<CachedIntentRepository> logger)
+    public CachedIntentRepository(ILogger<CachedIntentRepository> logger, IOptions<List<InitialIntent>> initialIntents)
     {
         _logger = logger;
-        // TODO remove after testing
-        _intents.Add(
-            new Intent(
-                new Region("Vienna"), new KpiTarget(KeyPerformanceIndicator.Efficiency, TargetMode.Max, 0.7f))
-            {
-                Id = _idGenerator.Next()
-            }
-        );
-        _intents.Add(
-            new Intent(
-                new Region("Linz"), new KpiTarget(KeyPerformanceIndicator.Efficiency, TargetMode.Min, 0.8f))
-            {
-                Id = _idGenerator.Next()
-            }
-        );
+
+        if (initialIntents.Value.Count == 0)
+        {
+            _logger.LogInformation("No initial intents found");
+            return;
+        }
+        
+        _intents = initialIntents.Value.Select(x => new Intent(
+            new Region(x.Region),
+            new KpiTarget(
+                Enum.Parse<KeyPerformanceIndicator>(x.Kpi, true),
+                Enum.Parse<TargetMode>(x.TargetMode, true),
+                x.TargetValue
+            )
+        )
+        {
+            Id = _idGenerator.Next(),
+        }).ToList();
+        
+        _logger.LogInformation("Loaded {Count} initial intents", _intents.Count);
     }
 
     public IList<Intent> GetAll()
@@ -79,7 +86,9 @@ public class CachedIntentRepository : IIntentRepository
                 return null;
         }
 
-        if (_intents.Any(x => x.Region == intent.Region && x.Target.Kpi == intent.Target.Kpi && x.Target.TargetMode == intent.Target.TargetMode))
+        if (_intents.Any(x =>
+                x.Region == intent.Region && x.Target.Kpi == intent.Target.Kpi &&
+                x.Target.TargetMode == intent.Target.TargetMode))
         {
             _logger.LogError("Intent already exists for region {Region} and kpi {Kpi} and target mode {TargetMode}",
                 intent.Region.Name, intent.Target.Kpi, intent.Target.TargetMode);
@@ -109,7 +118,7 @@ public class CachedIntentRepository : IIntentRepository
             _logger.LogError("Intent with id {Id} does not exist", intent.Id);
             return false;
         }
-        
+
         if (_intents.Any(x => x.Region == intent.Region && x.Target.Kpi == intent.Target.Kpi &&
                               x.Target.TargetMode == intent.Target.TargetMode && x.Id != intent.Id))
         {
@@ -117,7 +126,7 @@ public class CachedIntentRepository : IIntentRepository
                 intent.Region.Name, intent.Target.Kpi, intent.Target.TargetMode);
             return false;
         }
-        
+
         switch (intent.Target.TargetMode)
         {
             // Check there is no max < min for the same region and kpi
@@ -137,7 +146,7 @@ public class CachedIntentRepository : IIntentRepository
                     intent.Target.TargetMode, intent.Region.Name, intent.Target.Kpi);
                 return false;
         }
-        
+
         var existingIntent = _intents.First(x => x.Id == intent.Id);
         _intents.Remove(existingIntent);
         _intents.Add(intent);

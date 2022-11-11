@@ -18,6 +18,14 @@ services:
       - ASPNETCORE_ENVIRONMENT=ECS
       - ASPNETCORE_Kestrel:HTTP2_Port=${ECS_KNOWLEDGE_HTTP2_Port}
       - "SqsQueues__RegionActionRequiredRequestsQueue=https://sqs.us-east-1.amazonaws.com/284766146002/region_action_required_requests"
+      - InitialIntents__0__Kpi=Efficiency
+      - InitialIntents__0__Region=Vienna
+      - InitialIntents__0__TargetMode=Min
+      - InitialIntents__0__TargetValue=0.5
+      - InitialIntents__1__Kpi=Efficiency
+      - InitialIntents__1__Region=Linz
+      - InitialIntents__1__TargetMode=Max
+      - InitialIntents__1__TargetValue=0.75
       
   data:
     image: nsp00/ibsm-data
@@ -51,11 +59,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=ECS
       - ASPNETCORE_Kestrel:HTTP2_Port=${ECS_NLVIENNA1_HTTP2_Port}
-      - NetworkObjects__0__Application=Application1
-      - NetworkObjects__1__Application=Application1
-      - NetworkObjects__2__Application=Application1
-      - NetworkObjects__3__Application=Application1
-      - NetworkObjects__4__Application=Application1
+      - Simulation__InitialCount=50
           
   nl-linz-1:
     image: nsp00/ibsm-networklayer
@@ -64,12 +68,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=ECS
       - ASPNETCORE_Kestrel:HTTP2_Port=${ECS_NLLINZ1_HTTP2_Port}
-      - NetworkObjects__0__Application=Application2
-      - NetworkObjects__1__Application=Application2
-      - NetworkObjects__2__Application=Application2
-      - NetworkObjects__3__Application=Application2
-      - NetworkObjects__4__Application=Application2
-      - NetworkObjects__5__Application=Application2
+      - Simulation__InitialCount=300
 
 x-aws-logs_retention: 3
       

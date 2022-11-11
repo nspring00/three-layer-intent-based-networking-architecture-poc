@@ -17,14 +17,18 @@ message NetworkObjectUpdateRequest {
 message NetworkObjectUpdateResponse {
     google.protobuf.Timestamp timestamp = 1;
     repeated NewNetworkObject created_objects = 2;
-    repeated NetworkObject network_objects = 3;
+    repeated RemovedNetworkObject removed_objects = 3;
+    repeated NetworkObject network_objects = 4;
 }
 
 message NewNetworkObject {
     int32 id = 1;
     google.protobuf.Timestamp created_at = 2;
-    string application = 3;
-    repeated string groups = 4;
+}
+
+message RemovedNetworkObject {
+  int32 id = 1;
+  google.protobuf.Timestamp removed_at = 2;
 }
 
 message NetworkObject {

@@ -7,7 +7,6 @@ public class NetworkObjectService : INetworkObjectService
 {
     private readonly INetworkObjectRepository _networkObjectRepository;
 
-
     public NetworkObjectService(INetworkObjectRepository networkObjectRepository)
     {
         _networkObjectRepository = networkObjectRepository;
@@ -16,5 +15,13 @@ public class NetworkObjectService : INetworkObjectService
     public IList<NetworkObject> GetAll()
     {
         return _networkObjectRepository.GetAll();
+    }
+
+    public (IList<NetworkObject>, IList<(NetworkObject, DateTime)>) GetChanges()
+    {
+        var created = _networkObjectRepository.GetCreated();
+        var removed = _networkObjectRepository.GetRemoved();
+        _networkObjectRepository.ResetCreateDelete();
+        return (created, removed);
     }
 }

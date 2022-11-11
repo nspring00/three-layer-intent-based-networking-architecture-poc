@@ -1,7 +1,7 @@
 ﻿using Common.Services;
-using Data.Console.Clients;
-using Data.Console.Repositories;
-using Data.Console.Services;
+using Data.Core.Clients;
+using Data.Core.Repositories;
+using Data.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Data.Console;
