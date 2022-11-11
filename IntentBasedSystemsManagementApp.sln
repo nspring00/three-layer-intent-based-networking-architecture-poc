@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		Makefile = Makefile
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Knowledge.Temp.Test", "test\Knowledge.Temp.Test\Knowledge.Temp.Test.csproj", "{90A4E51E-0093-4970-A910-5DB274BF1D67}"
