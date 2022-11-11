@@ -18,8 +18,17 @@ builder.Services.AddGrpcReflection();
 builder.Services.Configure<SimulationConfig>(builder.Configuration.GetSection("Simulation"));
 
 builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-builder.Services.AddSingleton<INetworkObjectRepository, SimulationNetworkObjectRepository>();
-builder.Services.AddSingleton<SimulationDataSet>();
+
+if (builder.Environment.IsEcs())
+{
+    builder.Services.AddSingleton<INetworkObjectRepository, RandomNetworkObjectRepository>();
+}
+else
+{
+    builder.Services.AddSingleton<INetworkObjectRepository, SimulationNetworkObjectRepository>();
+    builder.Services.AddSingleton<SimulationDataSet>();
+}
+
 builder.Services.AddSingleton<INetworkObjectService, NetworkObjectService>();
 
 var app = builder.Build();
