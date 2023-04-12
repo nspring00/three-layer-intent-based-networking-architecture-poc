@@ -1,6 +1,10 @@
-# Bachelor Thesis Prototype "Intent-based Systems Management"
+# "Three-layer Intent-based Networking" Architecture Proof-of-Concept 
 
 For more info on the functionality, see the Bachelor Thesis.
+
+## Datasets
+
+The datasets in the _Datasets_ directory are used to determine, which load there will be on the system at a given point in time. Further information can be found [here](Datasets/README.md).
 
 ## Prerequisites
 
