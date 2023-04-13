@@ -2,6 +2,8 @@
 
 The files in this directory are used to determine, which load will be simulated on the managed devices at a given point in time. This load will then be distributed over the amount of devices that are currently active, which is the central variable of the system, because it basically is the only variable adjusted by the system.
 
+EACH dataset correspondes to its own experiment, every dataset creates its own individual scenario.
+
 Each line in every dataset has the following structure:
 - `id`: The timestamp of the data point. Timestamps do not represent seconds, they are just a number that is incremented by one for each data point. This is done to make the data more readable and the simulation easier reproduceable.
 - `CPU`: The total CPU workload on the system. This total CPU workload is then distributed over the amount of devices that are currently active. Every device can handle up to 1 CPU workload, which means that 5 CPU workload distributed across 10 devices means that every device has 0.5 CPU workload.
