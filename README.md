@@ -1,6 +1,6 @@
 # "Three-layer Intent-based Networking" Architecture Proof-of-Concept 
 
-For more info on the functionality, see the Bachelor Thesis.
+For more info on the functionality, see the Bachelor's Thesis or the [suceeding paper on _Intent-based Management for the Distributed Computing Continuum_](https://dsg.tuwien.ac.at/team/sd/papers/SOSE_2023_A_Morichetta_Intent.pdf).
 
 ## Datasets
 
